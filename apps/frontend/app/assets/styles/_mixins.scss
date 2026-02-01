@@ -1,0 +1,57 @@
+@use 'variables' as *;
+
+// Container mixin
+@mixin container {
+  max-width: $container-max-width;
+  margin: 0 auto;
+  padding: 0 $spacing-sm;
+}
+
+// Page wrapper mixin
+@mixin page-wrapper {
+  padding: $spacing-2xl $spacing-sm;
+  min-height: calc(100vh - $navbar-height);
+}
+
+// Focus visible mixin for accessibility
+@mixin focus-visible {
+  &:focus-visible {
+    outline: 2px solid $color-black;
+    outline-offset: 2px;
+  }
+}
+
+// Media query mixins
+@mixin tablet {
+  @media (min-width: $breakpoint-tablet) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $breakpoint-desktop) {
+    @content;
+  }
+}
+
+// Link underline animation
+@mixin link-underline {
+  position: relative;
+  text-decoration: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: currentColor;
+    transition: width $transition-base;
+  }
+
+  &:hover::after,
+  &:focus::after {
+    width: 100%;
+  }
+}

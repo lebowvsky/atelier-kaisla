@@ -1,0 +1,108 @@
+/**
+ * SCSS Mixins - Reusable Style Patterns
+ *
+ * Common mixins used across components.
+ * These mixins are auto-imported in all components via nuxt.config.ts.
+ */
+
+// ============================================================================
+// LAYOUT MIXINS
+// ============================================================================
+
+/**
+ * Container mixin
+ * Centers content with max-width and horizontal padding
+ */
+@mixin container {
+  max-width: $container-max-width;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: $spacing-md;
+  padding-right: $spacing-md;
+
+  @media (min-width: $breakpoint-tablet) {
+    padding-left: $spacing-lg;
+    padding-right: $spacing-lg;
+  }
+}
+
+/**
+ * Page wrapper mixin
+ * Adds consistent vertical padding to pages
+ */
+@mixin page-wrapper {
+  padding: $spacing-xl $spacing-md;
+  min-height: calc(100vh - $navbar-height);
+
+  @media (min-width: $breakpoint-tablet) {
+    padding: $spacing-2xl $spacing-lg;
+  }
+}
+
+// ============================================================================
+// RESPONSIVE MIXINS
+// ============================================================================
+
+/**
+ * Tablet breakpoint
+ * For screens >= 768px
+ */
+@mixin tablet {
+  @media (min-width: $breakpoint-tablet) {
+    @content;
+  }
+}
+
+/**
+ * Desktop breakpoint
+ * For screens >= 1024px
+ */
+@mixin desktop {
+  @media (min-width: $breakpoint-desktop) {
+    @content;
+  }
+}
+
+// ============================================================================
+// ACCESSIBILITY MIXINS
+// ============================================================================
+
+/**
+ * Focus visible styles
+ * Provides accessible focus indicators for keyboard navigation
+ */
+@mixin focus-visible {
+  &:focus-visible {
+    outline: 2px solid $color-black;
+    outline-offset: 2px;
+    border-radius: $border-radius-sm;
+  }
+}
+
+// ============================================================================
+// ANIMATION MIXINS
+// ============================================================================
+
+/**
+ * Link underline animation
+ * Animated underline effect for links
+ */
+@mixin link-underline {
+  position: relative;
+  text-decoration: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: currentColor;
+    transition: width $transition-base;
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
+}
