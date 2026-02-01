@@ -16,7 +16,7 @@
  * const { galleryImages, createMockImage } = useGalleryData()
  */
 
-import type { GalleryImage } from '~/types/gallery'
+import type { GalleryImage } from "~/types/gallery";
 
 /**
  * Factory function to create a mock gallery image
@@ -28,12 +28,7 @@ import type { GalleryImage } from '~/types/gallery'
  * @param description - Optional description for the image
  * @returns A properly typed GalleryImage object
  */
-const createMockImage = (
-  id: string,
-  alt: string,
-  title?: string,
-  description?: string
-): GalleryImage => {
+const createMockImage = (id: string, alt: string, title?: string, description?: string): GalleryImage => {
   return Object.freeze({
     id,
     src: `/placeholder-${id}.jpg`, // Placeholder path
@@ -42,8 +37,8 @@ const createMockImage = (
     description,
     width: 800,
     height: 800,
-  })
-}
+  });
+};
 
 /**
  * Generate an array of mock gallery images
@@ -55,16 +50,16 @@ const createMockImage = (
 const generateMockGallery = (count: number): readonly GalleryImage[] => {
   return Object.freeze(
     Array.from({ length: count }, (_, index) => {
-      const imageNumber = index + 1
+      const imageNumber = index + 1;
       return createMockImage(
         `image-${imageNumber}`,
         `Gallery image ${imageNumber}`,
         `Artwork ${imageNumber}`,
-        `This is a placeholder for artwork piece number ${imageNumber}. Click to view in full size.`
-      )
-    })
-  )
-}
+        `This is a placeholder for artwork piece number ${imageNumber}. Click to view in full size.`,
+      );
+    }),
+  );
+};
 
 /**
  * Gallery Data Composable
@@ -75,21 +70,19 @@ export const useGalleryData = () => {
   /**
    * Default gallery with 12 images (3 rows on desktop)
    */
-  const galleryImages = computed<readonly GalleryImage[]>(() =>
-    generateMockGallery(12)
-  )
+  const galleryImages = computed<readonly GalleryImage[]>(() => generateMockGallery(20));
 
   /**
    * Get a specific number of gallery images
    * Useful for different gallery sizes
    */
   const getGalleryImages = (count: number): readonly GalleryImage[] => {
-    return generateMockGallery(count)
-  }
+    return generateMockGallery(count);
+  };
 
   return {
     galleryImages,
     createMockImage,
     getGalleryImages,
-  }
-}
+  };
+};

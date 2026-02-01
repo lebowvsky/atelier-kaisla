@@ -44,7 +44,7 @@ const props = withDefaults(defineProps<Props>(), {
   config: () => ({
     columns: 4,
     imageSize: 220,
-    gap: "2rem", // Uses 2rem which matches $spacing-lg
+    gap: "1.5rem", // Uses 1.5rem which matches $spacing-md
   }),
 });
 
@@ -134,7 +134,7 @@ const getGridItemClasses = (image: GalleryImage): string => {
 .image-grid__container {
   display: grid;
   grid-template-columns: 1fr;
-  gap: $spacing-lg; // 2rem = ~20px (closest to the 20px spec)
+  gap: $spacing-md; // 2rem = ~20px (closest to the 20px spec)
   width: 100%;
 
   @include tablet {
@@ -153,7 +153,6 @@ const getGridItemClasses = (image: GalleryImage): string => {
   height: auto;
   cursor: pointer;
   overflow: hidden;
-  border-radius: $border-radius-base;
   transition:
     transform $transition-base,
     box-shadow $transition-base;

@@ -71,6 +71,38 @@ useSeoMeta({
         </a>
       </div>
     </section>
+
+    <!-- What is Kaisla Section -->
+    <section class="kaisla-intro" aria-labelledby="kaisla-intro-title">
+      <div class="container">
+        <h2 id="kaisla-intro-title" class="visually-hidden">Qu'est-ce que Kaisla ?</h2>
+        <ul class="kaisla-intro__list">
+          <li class="kaisla-intro__item kaisla-intro__item--large">
+            Un atelier artisanal dédié à la création de pièces murales uniques
+          </li>
+          <li class="kaisla-intro__item kaisla-intro__item--medium">
+            Chaque création est pensée et réalisée à la main avec soin
+          </li>
+          <li class="kaisla-intro__item kaisla-intro__item--small">
+            Des matériaux naturels et durables pour un artisanat responsable
+          </li>
+          <li class="kaisla-intro__item kaisla-intro__item--medium">
+            Un style contemporain inspiré par la nature et les formes organiques
+          </li>
+          <li class="kaisla-intro__item kaisla-intro__item--large">
+            Des œuvres qui transforment votre intérieur en un espace chaleureux et authentique
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Social Share Section -->
+    <section class="social-section" aria-labelledby="social-section-title">
+      <div class="container">
+        <h2 id="social-section-title" class="visually-hidden">Suivez-nous et contactez-nous</h2>
+        <SocialShare />
+      </div>
+    </section>
   </div>
 </template>
 
@@ -118,10 +150,12 @@ useSeoMeta({
 
 .gallery-section {
   padding: $spacing-2xl $spacing-md;
+  padding-bottom: 0;
   background-color: $color-white;
 
   @include tablet {
     padding: $spacing-3xl $spacing-lg;
+    padding-bottom: 0;
   }
 }
 
@@ -160,11 +194,11 @@ useSeoMeta({
 }
 
 .badge-section {
-  padding: $spacing-2xl $spacing-md;
+  padding: $spacing-xl $spacing-md;
   text-align: center;
 
   @include tablet {
-    padding: $spacing-3xl $spacing-lg;
+    padding: $spacing-2xl $spacing-lg;
   }
 }
 
@@ -194,6 +228,91 @@ useSeoMeta({
 
   @include tablet {
     max-width: 250px;
+  }
+}
+
+.kaisla-intro {
+  padding: $spacing-3xl $spacing-md;
+  padding-top: $spacing-xl;
+  background-color: $color-gray-100;
+  text-align: center;
+
+  @include tablet {
+    padding: $spacing-3xl $spacing-lg;
+    padding-top: $spacing-2xl;
+  }
+}
+
+.kaisla-intro__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+
+  @include tablet {
+    gap: $spacing-xl;
+  }
+}
+
+.kaisla-intro__item {
+  color: $color-gray-600;
+  line-height: $line-height-base;
+  font-weight: 400;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: $color-black;
+  }
+}
+
+.kaisla-intro__item--large {
+  font-size: $font-size-xl;
+  font-weight: 500;
+
+  @include tablet {
+    font-size: $font-size-2xl;
+  }
+}
+
+.kaisla-intro__item--medium {
+  font-size: $font-size-lg;
+
+  @include tablet {
+    font-size: $font-size-xl;
+  }
+}
+
+.kaisla-intro__item--small {
+  font-size: $font-size-base;
+
+  @include tablet {
+    font-size: $font-size-lg;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.social-section {
+  padding: $spacing-2xl $spacing-md;
+  background-color: $color-white;
+
+  @include tablet {
+    padding: $spacing-3xl $spacing-lg;
   }
 }
 </style>
