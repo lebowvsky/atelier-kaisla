@@ -40,10 +40,8 @@ useSeoMeta({
       <slot />
     </main>
 
-    <!-- Footer placeholder for future implementation -->
-    <!-- <footer class="app-footer">
-      <AppFooter />
-    </footer> -->
+    <!-- Footer with navigation, social links, and legal information -->
+    <Footer />
   </div>
 </template>
 
