@@ -63,7 +63,7 @@ services:
       NUXT_PORT: 3000
       NUXT_PUBLIC_API_URL: http://localhost:4000
     ports:
-      - "3000:3000"
+      - "3002:3000"
     volumes:
       - ./apps/frontend:/app
       - /app/node_modules

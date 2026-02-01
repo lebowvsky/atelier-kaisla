@@ -1,8 +1,5 @@
-// Import variables and mixins
-@use 'variables' as *;
-@use 'mixins' as *;
-
 // Global CSS reset and base styles
+// Note: Variables and mixins are automatically imported via nuxt.config.ts
 * {
   margin: 0;
   padding: 0;

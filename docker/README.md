@@ -102,13 +102,13 @@ docker stats
 ## URLs des applications
 
 ### Développement
-- Frontend : http://localhost:3000
+- Frontend : http://localhost:3002
 - Backoffice : http://localhost:3001
 - Backend API : http://localhost:4000
 - PostgreSQL : localhost:5432
 
 ### Production
-- Frontend : http://localhost:3000
+- Frontend : http://localhost:3002
 - Backoffice : http://localhost:3001
 - Backend API : http://localhost:4000
 

@@ -44,7 +44,7 @@ const props = withDefaults(defineProps<Props>(), {
   config: () => ({
     columns: 4,
     imageSize: 220,
-    gap: "$spacing-lg",
+    gap: "2rem", // Uses 2rem which matches $spacing-lg
   }),
 });
 

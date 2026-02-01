@@ -94,7 +94,7 @@ docker-compose -f docker-compose.dev.yml logs -f frontend
 # You should see Nuxt starting successfully without sass-embedded errors
 
 # Test the application
-curl http://localhost:3000
+curl http://localhost:3002
 
 # Enter the container to verify sass-embedded
 docker exec -it atelier-kaisla-frontend-dev sh

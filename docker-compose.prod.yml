@@ -65,7 +65,7 @@ services:
       NUXT_PORT: 3000
       NUXT_PUBLIC_API_URL: ${API_URL:-http://backend:4000}
     ports:
-      - "3000:3000"
+      - "3002:3000"
     networks:
       - atelier-network
     healthcheck:

@@ -91,7 +91,7 @@ atelier-kaisla/
 1. Copier `.env.dev.example` vers `.env`
 2. Exécuter `make init` ou `docker compose -f docker-compose.dev.yml up`
 3. Accéder aux applications :
-   - Frontend : http://localhost:3000
+   - Frontend : http://localhost:3002
    - Backoffice : http://localhost:3001
    - Backend : http://localhost:4000
 

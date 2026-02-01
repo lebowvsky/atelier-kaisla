@@ -9,7 +9,11 @@ export default defineNuxtConfig({
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: '@use "~/assets/styles/_variables.scss" as *; @use "~/assets/styles/_mixins.scss" as *;'
+          additionalData: `
+            @import "@/assets/styles/_variables.scss";
+            @import "@/assets/styles/_mixins.scss";
+          `,
+          api: 'modern-compiler' // Use modern Sass compiler for better performance
         }
       }
     }

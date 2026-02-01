@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Atelier Kaisla is an e-commerce platform for handcrafted wall art and rugs built as a monorepo with three main applications:
 
-- **Frontend**: Customer-facing Nuxt 4 application (port 3000)
+- **Frontend**: Customer-facing Nuxt 4 application (port 3002)
 - **Backoffice**: Admin panel using Nuxt 4 (port 3001)
 - **Backend**: NestJS API server with TypeScript and PostgreSQL (port 4000)
 
@@ -197,7 +197,7 @@ NestJS follows modular architecture:
 
 ```bash
 # Find process using port
-lsof -i :3000
+lsof -i :3002
 lsof -i :4000
 
 # Kill process if needed
