@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
+  <!-- Background -->
+  <rect width="600" height="800" fill="#f5f5f5"/>
+
+  <!-- Decorative Pattern -->
+  <g opacity="0.3">
+    <polygon points="100,150 150,100 200,150 150,200" fill="#e0e0e0"/>
+    <polygon points="400,600 450,550 500,600 450,650" fill="#e0e0e0"/>
+    <polygon points="250,400 300,350 350,400 300,450" fill="#e0e0e0"/>
+  </g>
+
+  <!-- Main Icon (Open Book) -->
+  <g transform="translate(300, 300)">
+    <!-- Book base -->
+    <rect x="-140" y="-100" width="280" height="180" fill="#ffffff" stroke="#4b5563" stroke-width="4" rx="4"/>
+    <!-- Spine -->
+    <line x1="0" y1="-100" x2="0" y2="80" stroke="#4b5563" stroke-width="4"/>
+    <!-- Left page lines -->
+    <line x1="-120" y1="-60" x2="-20" y2="-60" stroke="#e0e0e0" stroke-width="2"/>
+    <line x1="-120" y1="-30" x2="-20" y2="-30" stroke="#e0e0e0" stroke-width="2"/>
+    <line x1="-120" y1="0" x2="-20" y2="0" stroke="#e0e0e0" stroke-width="2"/>
+    <line x1="-120" y1="30" x2="-20" y2="30" stroke="#e0e0e0" stroke-width="2"/>
+    <!-- Right page lines -->
+    <line x1="20" y1="-60" x2="120" y2="-60" stroke="#e0e0e0" stroke-width="2"/>
+    <line x1="20" y1="-30" x2="120" y2="-30" stroke="#e0e0e0" stroke-width="2"/>
+    <line x1="20" y1="0" x2="120" y2="0" stroke="#e0e0e0" stroke-width="2"/>
+    <line x1="20" y1="30" x2="120" y2="30" stroke="#e0e0e0" stroke-width="2"/>
+    <!-- Page curl effect -->
+    <path d="M 120 60 Q 130 70 140 80" fill="none" stroke="#4b5563" stroke-width="3"/>
+  </g>
+
+  <!-- Text Label -->
+  <text x="300" y="550" font-family="Arial, sans-serif" font-size="24" fill="#000000" text-anchor="middle" font-weight="bold">
+    Le Livre
+  </text>
+  <text x="300" y="590" font-family="Arial, sans-serif" font-size="16" fill="#4b5563" text-anchor="middle">
+    Book placeholder
+  </text>
+  <text x="300" y="620" font-family="Arial, sans-serif" font-size="14" fill="#4b5563" text-anchor="middle" opacity="0.7">
+    600 x 800
+  </text>
+</svg>
