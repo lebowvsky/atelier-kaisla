@@ -190,6 +190,78 @@ export function useArtworkData() {
       category: 'rug',
       detailUrl: '/rugs/bohemian-dreams',
     },
+    {
+      id: 'rug-003',
+      title: 'Scandinavian Hygge',
+      imageSrc: '/placeholder-rug-3.jpg',
+      imageAlt: 'Cozy Scandinavian-style rug in neutral earth tones',
+      dimensions: {
+        width: 160,
+        height: 230,
+        unit: 'cm',
+      },
+      material: '100% organic wool',
+      description:
+        'Embrace the Scandinavian concept of hygge with this warm, inviting rug. Natural earth tones and plush texture create ultimate comfort.',
+      price: 1200,
+      available: true,
+      category: 'rug',
+      detailUrl: '/rugs/scandinavian-hygge',
+    },
+    {
+      id: 'rug-004',
+      title: 'Geometric Balance',
+      imageSrc: '/placeholder-rug-4.jpg',
+      imageAlt: 'Modern rug with bold geometric patterns in black and white',
+      dimensions: {
+        width: 150,
+        height: 200,
+        unit: 'cm',
+      },
+      material: 'Wool and recycled cotton',
+      description:
+        'Bold geometric patterns in a striking monochrome palette. A contemporary statement piece that anchors any modern space.',
+      price: 980,
+      available: false,
+      category: 'rug',
+      detailUrl: '/rugs/geometric-balance',
+    },
+    {
+      id: 'rug-005',
+      title: 'Desert Nomad',
+      imageSrc: '/placeholder-rug-5.jpg',
+      imageAlt: 'Traditional nomadic-inspired rug with tribal patterns',
+      dimensions: {
+        width: 130,
+        height: 190,
+        unit: 'cm',
+      },
+      material: 'Hand-spun wool with natural dyes',
+      description:
+        'Inspired by traditional nomadic weaving, this rug features authentic tribal patterns. Each knot is tied by hand using time-honored techniques.',
+      price: 1100,
+      available: true,
+      category: 'rug',
+      detailUrl: '/rugs/desert-nomad',
+    },
+    {
+      id: 'rug-006',
+      title: 'Ocean Breeze',
+      imageSrc: '/placeholder-rug-6.jpg',
+      imageAlt: 'Coastal-inspired rug with flowing blue and cream patterns',
+      dimensions: {
+        width: 140,
+        height: 210,
+        unit: 'cm',
+      },
+      material: 'Wool, cotton, and linen blend',
+      description:
+        'Flowing patterns in shades of blue and cream evoke gentle ocean waves. Brings a sense of calm and tranquility to any room.',
+      price: 1050,
+      available: true,
+      category: 'rug',
+      detailUrl: '/rugs/ocean-breeze',
+    },
   ])
 
   /**
