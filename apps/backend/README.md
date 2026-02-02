@@ -57,6 +57,28 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Database Seeding
+
+Populate your development database with test data:
+
+```bash
+# Add sample products (keeps existing data)
+$ npm run seed
+
+# Reset database and add sample products (removes ALL existing products)
+$ npm run seed:clean
+```
+
+This creates 18 realistic products:
+- 8 wall-hanging products (macramé, tapestries, fiber art)
+- 10 rug products (Berber, kilim, modern, vintage)
+
+Each with realistic names, descriptions, prices, dimensions, and images.
+
+For detailed documentation, see:
+- [SEEDER_USAGE.md](./SEEDER_USAGE.md) - Complete usage guide
+- [src/database/seeds/README.md](./src/database/seeds/README.md) - Technical documentation
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.

@@ -109,6 +109,35 @@ backoffice-shell: ## Accéder au shell du backoffice
 db-shell: ## Accéder à PostgreSQL
 	docker exec -it atelier-kaisla-postgres-dev psql -U postgres -d atelier_kaisla_dev
 
+# Commandes de base de données
+seed: ## Exécuter les seeders (depuis le host - nécessite .env avec POSTGRES_HOST=localhost)
+	@echo "$(GREEN)Exécution des seeders depuis le host...$(NC)"
+	@cd apps/backend && npm run seed
+
+seed-clean: ## Exécuter les seeders en mode clean (supprime les données existantes)
+	@echo "$(YELLOW)Exécution des seeders en mode clean...$(NC)"
+	@cd apps/backend && npm run seed:clean
+
+seed-docker: ## Exécuter les seeders dans le conteneur Docker
+	@echo "$(GREEN)Exécution des seeders dans Docker...$(NC)"
+	docker exec atelier-kaisla-backend-dev npm run seed
+
+seed-docker-clean: ## Exécuter les seeders en mode clean dans Docker
+	@echo "$(YELLOW)Exécution des seeders en mode clean dans Docker...$(NC)"
+	docker exec atelier-kaisla-backend-dev npm run seed:clean
+
+migration-run: ## Exécuter les migrations (depuis le host)
+	@echo "$(GREEN)Exécution des migrations depuis le host...$(NC)"
+	@cd apps/backend && npm run migration:run
+
+migration-run-docker: ## Exécuter les migrations dans Docker
+	@echo "$(GREEN)Exécution des migrations dans Docker...$(NC)"
+	docker exec atelier-kaisla-backend-dev npm run migration:run
+
+migration-generate: ## Générer une nouvelle migration (usage: make migration-generate NAME=NomDeLaMigration)
+	@echo "$(GREEN)Génération de la migration...$(NC)"
+	@cd apps/backend && npm run migration:generate -- src/database/migrations/$(NAME)
+
 # Commandes d'initialisation
 init: ## Initialiser le projet (copier .env et démarrer)
 	@echo "$(GREEN)Initialisation du projet...$(NC)"
