@@ -37,6 +37,7 @@ services:
       DATABASE_NAME: ${POSTGRES_DB:-atelier_kaisla_dev}
       DATABASE_USER: ${POSTGRES_USER:-postgres}
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      TYPEORM_SYNC: "true"
     ports:
       - "4000:4000"
     volumes:

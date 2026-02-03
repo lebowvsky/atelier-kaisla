@@ -24,6 +24,13 @@ export default defineNuxtConfig({
     "~": path.resolve(__dirname, "./app"),
   },
 
+  // Runtime configuration
+  runtimeConfig: {
+    public: {
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:4000/api',
+    },
+  },
+
   // TypeScript configuration
   typescript: {
     strict: true,
