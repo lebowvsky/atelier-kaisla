@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Installer toutes les dépendances (y compris devDependencies)
-RUN npm install
+RUN npm install --force || (rm -rf node_modules package-lock.json && npm install --force)
 
 # Copier le code source
 COPY . .
@@ -38,6 +38,9 @@ RUN npm run build
 # Stage 3: Production
 FROM node:20-slim AS production
 WORKDIR /app
+
+# Installer wget pour les health checks
+RUN apt-get update && apt-get install -y --no-install-recommends wget && rm -rf /var/lib/apt/lists/*
 
 # Installer seulement les dépendances de production
 COPY package*.json ./

@@ -35,6 +35,9 @@ RUN npm run build
 FROM node:20-alpine AS production
 WORKDIR /app
 
+# Installer wget pour les health checks
+RUN apk add --no-cache wget
+
 # Installer seulement les dépendances de production
 COPY package*.json ./
 RUN npm ci --omit=dev
