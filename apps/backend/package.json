@@ -27,7 +27,9 @@
     "schema:sync": "npm run typeorm -- schema:sync",
     "schema:drop": "npm run typeorm -- schema:drop",
     "seed": "ts-node -r tsconfig-paths/register src/database/seeds/seed.ts",
-    "seed:clean": "ts-node -r tsconfig-paths/register src/database/seeds/seed.ts --clean"
+    "seed:clean": "ts-node -r tsconfig-paths/register src/database/seeds/seed.ts --clean",
+    "seed:enhanced": "ts-node -r tsconfig-paths/register src/database/seeds/seed-enhanced.ts",
+    "seed:enhanced:clean": "ts-node -r tsconfig-paths/register src/database/seeds/seed-enhanced.ts --clean"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

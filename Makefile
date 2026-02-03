@@ -109,7 +109,7 @@ backoffice-shell: ## Accéder au shell du backoffice
 db-shell: ## Accéder à PostgreSQL
 	docker exec -it atelier-kaisla-postgres-dev psql -U postgres -d atelier_kaisla_dev
 
-# Commandes de base de données
+# Commandes de base de données - Développement
 seed: ## Exécuter les seeders (depuis le host - nécessite .env avec POSTGRES_HOST=localhost)
 	@echo "$(GREEN)Exécution des seeders depuis le host...$(NC)"
 	@cd apps/backend && npm run seed
@@ -118,13 +118,118 @@ seed-clean: ## Exécuter les seeders en mode clean (supprime les données exista
 	@echo "$(YELLOW)Exécution des seeders en mode clean...$(NC)"
 	@cd apps/backend && npm run seed:clean
 
-seed-docker: ## Exécuter les seeders dans le conteneur Docker
+seed-docker: ## Exécuter les seeders dans le conteneur Docker (dev)
 	@echo "$(GREEN)Exécution des seeders dans Docker...$(NC)"
 	docker exec atelier-kaisla-backend-dev npm run seed
 
-seed-docker-clean: ## Exécuter les seeders en mode clean dans Docker
+seed-docker-clean: ## Exécuter les seeders en mode clean dans Docker (dev)
 	@echo "$(YELLOW)Exécution des seeders en mode clean dans Docker...$(NC)"
 	docker exec atelier-kaisla-backend-dev npm run seed:clean
+
+seed-enhanced: ## Exécuter le seeder amélioré (évite les doublons) - dev
+	@echo "$(GREEN)Exécution du seeder amélioré (depuis le host)...$(NC)"
+	@cd apps/backend && npm run seed:enhanced
+
+seed-enhanced-docker: ## Exécuter le seeder amélioré dans Docker - dev
+	@echo "$(GREEN)Exécution du seeder amélioré dans Docker...$(NC)"
+	docker exec atelier-kaisla-backend-dev npm run seed:enhanced
+
+seed-enhanced-clean: ## Exécuter le seeder amélioré en mode clean - dev
+	@echo "$(YELLOW)Exécution du seeder amélioré en mode clean...$(NC)"
+	@cd apps/backend && npm run seed:enhanced:clean
+
+seed-enhanced-docker-clean: ## Exécuter le seeder amélioré en mode clean dans Docker - dev
+	@echo "$(YELLOW)Exécution du seeder amélioré en mode clean dans Docker...$(NC)"
+	docker exec atelier-kaisla-backend-dev npm run seed:enhanced:clean
+
+# Commandes de base de données - Production
+seed-prod: ## Exécuter les seeders en production (ATTENTION: ajoute des données)
+	@echo "$(YELLOW)⚠️  ATTENTION: Vous allez ajouter des données en PRODUCTION$(NC)"
+	@read -p "Êtes-vous sûr de vouloir continuer? [y/N] " -n 1 -r; \
+	echo; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		echo "$(GREEN)Exécution des seeders en production...$(NC)"; \
+		docker exec atelier-kaisla-backend-prod npm run seed; \
+	else \
+		echo "$(YELLOW)Opération annulée.$(NC)"; \
+	fi
+
+seed-prod-clean: ## Exécuter les seeders en mode clean en production (DANGER!)
+	@echo "$(YELLOW)⚠️  DANGER: Vous allez SUPPRIMER toutes les données en PRODUCTION$(NC)"
+	@echo "$(YELLOW)⚠️  Cette action est IRRÉVERSIBLE!$(NC)"
+	@read -p "Avez-vous fait un backup? [y/N] " -n 1 -r; \
+	echo; \
+	if [[ ! $$REPLY =~ ^[Yy]$$ ]]; then \
+		echo "$(YELLOW)Opération annulée. Faites d'abord un backup avec: make backup-prod$(NC)"; \
+		exit 1; \
+	fi; \
+	read -p "Tapez 'DELETE ALL PRODUCTION DATA' pour confirmer: " confirm; \
+	if [ "$$confirm" = "DELETE ALL PRODUCTION DATA" ]; then \
+		echo "$(GREEN)Exécution des seeders en mode clean en production...$(NC)"; \
+		docker exec atelier-kaisla-backend-prod npm run seed:clean; \
+	else \
+		echo "$(YELLOW)Confirmation incorrecte. Opération annulée.$(NC)"; \
+	fi
+
+seed-enhanced-prod: ## Exécuter le seeder amélioré en production (évite les doublons)
+	@echo "$(YELLOW)⚠️  ATTENTION: Seeding en PRODUCTION avec prévention des doublons$(NC)"
+	@read -p "Êtes-vous sûr de vouloir continuer? [y/N] " -n 1 -r; \
+	echo; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		echo "$(GREEN)Exécution du seeder amélioré en production...$(NC)"; \
+		docker exec atelier-kaisla-backend-prod npm run seed:enhanced; \
+	else \
+		echo "$(YELLOW)Opération annulée.$(NC)"; \
+	fi
+
+# Commandes de backup
+backup-prod: ## Créer un backup de la base de données de production
+	@echo "$(GREEN)Création d'un backup de la base de production...$(NC)"
+	@mkdir -p backups
+	@BACKUP_FILE="backups/backup_prod_$$(date +%Y%m%d_%H%M%S).sql"; \
+	docker exec atelier-kaisla-postgres-prod pg_dump -U postgres -d atelier_kaisla_prod > $$BACKUP_FILE; \
+	echo "$(GREEN)✓ Backup créé: $$BACKUP_FILE$(NC)"; \
+	ls -lh $$BACKUP_FILE
+
+backup-dev: ## Créer un backup de la base de données de développement
+	@echo "$(GREEN)Création d'un backup de la base de dev...$(NC)"
+	@mkdir -p backups
+	@BACKUP_FILE="backups/backup_dev_$$(date +%Y%m%d_%H%M%S).sql"; \
+	docker exec atelier-kaisla-postgres-dev pg_dump -U postgres -d atelier_kaisla_dev > $$BACKUP_FILE; \
+	echo "$(GREEN)✓ Backup créé: $$BACKUP_FILE$(NC)"; \
+	ls -lh $$BACKUP_FILE
+
+restore-prod: ## Restaurer un backup en production (usage: make restore-prod FILE=backups/backup.sql)
+	@if [ -z "$(FILE)" ]; then \
+		echo "$(YELLOW)Usage: make restore-prod FILE=backups/backup_xxx.sql$(NC)"; \
+		echo "$(YELLOW)Backups disponibles:$(NC)"; \
+		ls -1 backups/*.sql 2>/dev/null || echo "Aucun backup trouvé"; \
+		exit 1; \
+	fi
+	@echo "$(YELLOW)⚠️  Restauration du backup: $(FILE)$(NC)"
+	@read -p "Êtes-vous sûr? [y/N] " -n 1 -r; \
+	echo; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		cat $(FILE) | docker exec -i atelier-kaisla-postgres-prod psql -U postgres -d atelier_kaisla_prod; \
+		echo "$(GREEN)✓ Backup restauré avec succès$(NC)"; \
+	else \
+		echo "$(YELLOW)Opération annulée.$(NC)"; \
+	fi
+
+# Commandes de vérification
+verify-data-dev: ## Vérifier les données en développement (complet)
+	@bash apps/backend/scripts/verify-data.sh dev
+
+verify-data-prod: ## Vérifier les données en production (complet)
+	@bash apps/backend/scripts/verify-data.sh prod
+
+verify-quick-dev: ## Vérification rapide des données en développement
+	@echo "$(GREEN)Vérification rapide des données de développement...$(NC)"
+	@docker exec atelier-kaisla-postgres-dev psql -U postgres -d atelier_kaisla_dev -c "SELECT 'Total products:' as info, COUNT(*)::text as count FROM products UNION ALL SELECT 'Wall hangings:', COUNT(*)::text FROM products WHERE category='wall-hanging' UNION ALL SELECT 'Rugs:', COUNT(*)::text FROM products WHERE category='rug' UNION ALL SELECT 'Available:', COUNT(*)::text FROM products WHERE status='available';"
+
+verify-quick-prod: ## Vérification rapide des données en production
+	@echo "$(GREEN)Vérification rapide des données de production...$(NC)"
+	@docker exec atelier-kaisla-postgres-prod psql -U postgres -d atelier_kaisla_prod -c "SELECT 'Total products:' as info, COUNT(*)::text as count FROM products UNION ALL SELECT 'Wall hangings:', COUNT(*)::text FROM products WHERE category='wall-hanging' UNION ALL SELECT 'Rugs:', COUNT(*)::text FROM products WHERE category='rug' UNION ALL SELECT 'Available:', COUNT(*)::text FROM products WHERE status='available';"
 
 migration-run: ## Exécuter les migrations (depuis le host)
 	@echo "$(GREEN)Exécution des migrations depuis le host...$(NC)"

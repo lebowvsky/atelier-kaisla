@@ -171,25 +171,89 @@ This provides a complete API reference with:
 
 ## Database Seeding
 
-Populate your development database with test data:
+Populate your database with test data using the comprehensive seeding system.
+
+### Quick Start
 
 ```bash
-# Add sample products (keeps existing data)
-$ npm run seed
+# Development (Docker)
+$ make seed-docker                  # Add sample products
+$ make seed-docker-clean            # Reset and add products
+$ make seed-enhanced-docker         # Smart seeding (prevents duplicates)
 
-# Reset database and add sample products (removes ALL existing products)
-$ npm run seed:clean
+# Production (with safeguards)
+$ make backup-prod                  # Always backup first!
+$ make seed-enhanced-prod           # Seed with duplicate prevention
 ```
 
-This creates 18 realistic products:
-- 8 wall-hanging products (macramé, tapestries, fiber art)
-- 10 rug products (Berber, kilim, modern, vintage)
+### Available Seeders
 
-Each with realistic names, descriptions, prices, dimensions, and images.
+#### Standard Seeder
+- Fast and simple
+- Creates 18 realistic products (8 wall hangings, 10 rugs)
+- May create duplicates if run multiple times
 
-For detailed documentation, see:
-- [SEEDER_USAGE.md](./SEEDER_USAGE.md) - Complete usage guide
-- [src/database/seeds/README.md](./src/database/seeds/README.md) - Technical documentation
+```bash
+npm run seed          # Append mode
+npm run seed:clean    # Clean mode (removes all products first)
+```
+
+#### Enhanced Seeder (Recommended for Production)
+- Prevents duplicate products
+- Updates existing products instead of creating new ones
+- Provides detailed statistics
+- Production-safe with confirmation prompts
+
+```bash
+npm run seed:enhanced              # Smart seeding
+npm run seed:enhanced:clean        # Clean + smart seeding
+```
+
+### Data Verification
+
+```bash
+# Quick verification
+$ make verify-quick-dev             # Development
+$ make verify-quick-prod            # Production
+
+# Complete integrity check
+$ make verify-data-dev              # Development
+$ make verify-data-prod             # Production
+```
+
+### Backup & Restore
+
+```bash
+# Create backups
+$ make backup-dev                   # Development backup
+$ make backup-prod                  # Production backup
+
+# Restore from backup
+$ make restore-prod FILE=backups/backup_prod_20260203_100000.sql
+```
+
+### Documentation
+
+Complete seeding documentation available:
+
+- **[SEEDING_QUICKSTART.md](./SEEDING_QUICKSTART.md)** - Quick reference guide with all commands
+- **[SEEDING_GUIDE.md](./SEEDING_GUIDE.md)** - Complete guide for development and production
+- **[SEEDING_BEST_PRACTICES.md](./SEEDING_BEST_PRACTICES.md)** - Best practices and recommendations
+- **[src/database/seeds/README.md](./src/database/seeds/README.md)** - Technical implementation details
+
+### Seeded Data
+
+The seeding system creates 18 realistic products:
+- 8 wall-hanging products (macramé, tapestries, fiber art, etc.)
+- 10 rug products (Berber, kilim, modern, vintage, etc.)
+
+Each product includes:
+- Realistic names and descriptions
+- Various statuses (available, sold, draft)
+- Stock quantities
+- Dimensions in cm
+- Material information
+- Sample image URLs
 
 ## Deployment
 

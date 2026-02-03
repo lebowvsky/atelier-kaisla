@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { config } from 'dotenv';
-import { ProductSeeder } from './product.seeder';
+import { EnhancedProductSeeder } from './product.seeder.enhanced';
 import { Product } from '../../entities/product.entity';
 import * as readline from 'readline';
 
@@ -9,23 +9,22 @@ import * as readline from 'readline';
 config();
 
 /**
- * Database seeder CLI
+ * Enhanced Database Seeder CLI
  *
- * Environment setup:
- * - Local development: Set POSTGRES_HOST=localhost in .env
- * - Docker environment: Set POSTGRES_HOST=postgres in .env or use DATABASE_HOST
+ * Features:
+ * - Duplicate prevention (checks by product name)
+ * - Updates existing products instead of creating duplicates
+ * - Production safety with confirmation prompts
+ * - Detailed operation statistics
  *
  * Usage:
- * - Run seeder (append): npm run seed
- * - Run seeder (clean & seed): npm run seed:clean
+ * - Run seeder with duplicate prevention: npm run seed:enhanced
+ * - Run seeder and clean first: npm run seed:enhanced:clean
+ * - Run seeder without duplicate check: npm run seed:enhanced -- --no-check
  *
- * Alternative (inside Docker):
- * - docker compose -f docker-compose.dev.yml exec backend npm run seed
- *
- * Safety features:
- * - Production clean seeding requires confirmation
- * - Shows environment and database info before execution
- * - Provides detailed statistics after seeding
+ * Flags:
+ * - --clean: Remove all existing products before seeding
+ * - --no-check: Disable duplicate checking (faster but may create duplicates)
  */
 
 /**
@@ -68,8 +67,10 @@ async function confirmProductionClean(nodeEnv: string): Promise<boolean> {
  * Main seeder function
  */
 async function runSeeders() {
-  // Check if --clean flag is provided
+  // Parse command line arguments
   const cleanFlag = process.argv.includes('--clean');
+  const noCheckFlag = process.argv.includes('--no-check');
+  const preventDuplicates = !noCheckFlag;
   const nodeEnv = process.env.NODE_ENV || 'development';
 
   // Database connection configuration
@@ -83,10 +84,11 @@ async function runSeeders() {
   const dbName = process.env.POSTGRES_DB || process.env.DATABASE_NAME || 'atelier_kaisla_dev';
 
   console.log('========================================');
-  console.log('  Database Seeder');
+  console.log('  Enhanced Database Seeder');
   console.log('========================================');
   console.log(`Environment: ${nodeEnv}`);
   console.log(`Clean mode: ${cleanFlag ? 'ENABLED ⚠️' : 'DISABLED'}`);
+  console.log(`Duplicate check: ${preventDuplicates ? 'ENABLED ✓' : 'DISABLED'}`);
   console.log(`Database host: ${dbHost}:${dbPort}`);
   console.log(`Database name: ${dbName}`);
   console.log(`Database user: ${dbUsername}`);
@@ -120,9 +122,9 @@ async function runSeeders() {
     await dataSource.initialize();
     console.log('Database connected successfully!\n');
 
-    // Run product seeder
-    const productSeeder = new ProductSeeder(dataSource);
-    await productSeeder.run(cleanFlag);
+    // Run enhanced product seeder
+    const productSeeder = new EnhancedProductSeeder(dataSource);
+    await productSeeder.run(cleanFlag, preventDuplicates);
 
     console.log('\n========================================');
     console.log('  Seeding completed successfully!');
