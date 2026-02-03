@@ -117,6 +117,60 @@ curl "http://localhost:4000/api/products?category=rug&status=available&limit=20"
 }
 ```
 
+#### Create Product (JSON)
+```bash
+POST /api/products
+Content-Type: application/json
+```
+
+Create a product with JSON payload (without file upload).
+
+**Example:**
+```bash
+curl -X POST http://localhost:4000/api/products \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Handwoven Wall Hanging",
+    "category": "wall-hanging",
+    "price": 149.99,
+    "description": "Beautiful handwoven wall hanging",
+    "images": ["https://example.com/image1.jpg"]
+  }'
+```
+
+#### Create Product with Image Upload
+```bash
+POST /api/products/with-upload
+Content-Type: multipart/form-data
+```
+
+Create a product with file upload (1-5 images, max 5MB each).
+
+**Required Fields:**
+- `name` (string): Product name
+- `category` (enum): "wall-hanging" or "rug"
+- `price` (number): Product price
+- `images` (files): 1-5 image files (JPEG, PNG, WebP)
+
+**Optional Fields:**
+- `description`, `status`, `stockQuantity`, `dimensions`, `materials`
+
+**Example:**
+```bash
+curl -X POST http://localhost:4000/api/products/with-upload \
+  -F "name=Handwoven Wall Hanging" \
+  -F "category=wall-hanging" \
+  -F "price=149.99" \
+  -F "images=@/path/to/image1.jpg" \
+  -F "images=@/path/to/image2.jpg"
+```
+
+**Interactive Testing:**
+- Open `apps/backend/test-upload.html` in your browser for a visual upload form
+- Use Swagger UI at `http://localhost:4000/api/docs` for API testing
+
+**Full Documentation:** See [UPLOAD-API.md](./UPLOAD-API.md) for complete upload API documentation.
+
 #### Get Single Product
 ```bash
 GET /api/products/:id
@@ -125,6 +179,29 @@ GET /api/products/:id
 **Example:**
 ```bash
 curl http://localhost:4000/api/products/uuid-here
+```
+
+#### Update Product
+```bash
+PATCH /api/products/:id
+Content-Type: application/json
+```
+
+**Example:**
+```bash
+curl -X PATCH http://localhost:4000/api/products/uuid-here \
+  -H "Content-Type: application/json" \
+  -d '{"price": 199.99, "status": "sold"}'
+```
+
+#### Delete Product
+```bash
+DELETE /api/products/:id
+```
+
+**Example:**
+```bash
+curl -X DELETE http://localhost:4000/api/products/uuid-here
 ```
 
 #### Get Product Statistics

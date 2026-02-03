@@ -46,20 +46,19 @@ async function confirmProductionClean(nodeEnv: string): Promise<boolean> {
   });
 
   return new Promise((resolve) => {
-    rl.question(
-      'Type "DELETE ALL PRODUCTION DATA" to confirm: ',
-      (answer) => {
-        rl.close();
+    rl.question('Type "DELETE ALL PRODUCTION DATA" to confirm: ', (answer) => {
+      rl.close();
 
-        if (answer === 'DELETE ALL PRODUCTION DATA') {
-          console.log('\n✓ Confirmation received. Proceeding with clean seeding...\n');
-          resolve(true);
-        } else {
-          console.log('\n❌ Confirmation failed. Operation cancelled.\n');
-          resolve(false);
-        }
-      },
-    );
+      if (answer === 'DELETE ALL PRODUCTION DATA') {
+        console.log(
+          '\n✓ Confirmation received. Proceeding with clean seeding...\n',
+        );
+        resolve(true);
+      } else {
+        console.log('\n❌ Confirmation failed. Operation cancelled.\n');
+        resolve(false);
+      }
+    });
   });
 }
 
@@ -74,21 +73,31 @@ async function runSeeders() {
   const nodeEnv = process.env.NODE_ENV || 'development';
 
   // Database connection configuration
-  const dbHost = process.env.POSTGRES_HOST || process.env.DATABASE_HOST || 'localhost';
+  const dbHost =
+    process.env.POSTGRES_HOST || process.env.DATABASE_HOST || 'localhost';
   const dbPort = parseInt(
     process.env.POSTGRES_PORT || process.env.DATABASE_PORT || '5432',
     10,
   );
-  const dbUsername = process.env.POSTGRES_USER || process.env.DATABASE_USER || 'postgres';
-  const dbPassword = process.env.POSTGRES_PASSWORD || process.env.DATABASE_PASSWORD || 'postgres';
-  const dbName = process.env.POSTGRES_DB || process.env.DATABASE_NAME || 'atelier_kaisla_dev';
+  const dbUsername =
+    process.env.POSTGRES_USER || process.env.DATABASE_USER || 'postgres';
+  const dbPassword =
+    process.env.POSTGRES_PASSWORD ||
+    process.env.DATABASE_PASSWORD ||
+    'postgres';
+  const dbName =
+    process.env.POSTGRES_DB ||
+    process.env.DATABASE_NAME ||
+    'atelier_kaisla_dev';
 
   console.log('========================================');
   console.log('  Enhanced Database Seeder');
   console.log('========================================');
   console.log(`Environment: ${nodeEnv}`);
   console.log(`Clean mode: ${cleanFlag ? 'ENABLED ⚠️' : 'DISABLED'}`);
-  console.log(`Duplicate check: ${preventDuplicates ? 'ENABLED ✓' : 'DISABLED'}`);
+  console.log(
+    `Duplicate check: ${preventDuplicates ? 'ENABLED ✓' : 'DISABLED'}`,
+  );
   console.log(`Database host: ${dbHost}:${dbPort}`);
   console.log(`Database name: ${dbName}`);
   console.log(`Database user: ${dbUsername}`);

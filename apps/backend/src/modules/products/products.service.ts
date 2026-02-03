@@ -10,6 +10,8 @@ import { Product } from '../../entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductQueryDto } from './dto/product-query.dto';
+import { CreateProductWithUploadDto } from './dto/create-product-with-upload.dto';
+import { UploadService } from '../upload/upload.service';
 
 /**
  * Product service - handles business logic for products
@@ -22,6 +24,7 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    private readonly uploadService: UploadService,
   ) {}
 
   /**
@@ -35,6 +38,46 @@ export class ProductsService {
       this.logger.log(`Product created successfully: ${saved.id}`);
       return saved;
     } catch (error) {
+      this.logger.error(`Failed to create product: ${error.message}`);
+      throw new BadRequestException('Failed to create product');
+    }
+  }
+
+  /**
+   * Create a new product with uploaded images
+   */
+  async createWithImages(
+    createDto: CreateProductWithUploadDto,
+    files: Express.Multer.File[],
+    baseUrl: string,
+  ): Promise<Product> {
+    // Ensure upload directory exists
+    await this.uploadService.ensureUploadDir();
+
+    try {
+      // Generate image URLs from uploaded files
+      const imageUrls = files.map((file) =>
+        this.uploadService.getFileUrl(file.filename, baseUrl),
+      );
+
+      // Create product with image URLs
+      const productData = {
+        ...createDto,
+        images: imageUrls,
+      };
+
+      const product = this.productRepository.create(productData);
+      const saved = await this.productRepository.save(product);
+
+      this.logger.log(
+        `Product created successfully with ${files.length} image(s): ${saved.id}`,
+      );
+      return saved;
+    } catch (error) {
+      // Clean up uploaded files if product creation fails
+      const filenames = files.map((file) => file.filename);
+      await this.uploadService.deleteFiles(filenames);
+
       this.logger.error(`Failed to create product: ${error.message}`);
       throw new BadRequestException('Failed to create product');
     }

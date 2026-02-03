@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Upload Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 600px;
+      width: 100%;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .required {
+      color: #e74c3c;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e1e8ed;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      font-family: inherit;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+
+    input[type="file"] {
+      font-size: 14px;
+      padding: 12px;
+      border: 2px dashed #667eea;
+      border-radius: 6px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    input[type="file"]:hover {
+      background: #f8f9fa;
+    }
+
+    .file-info {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .preview-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .preview-image {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 2px solid #e1e8ed;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #667eea;
+      font-weight: 500;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .result.active {
+      display: block;
+    }
+
+    .result.success {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .result.error {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .result h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .result pre {
+      background: rgba(0, 0, 0, 0.05);
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 Product Upload Test</h1>
+    <p class="subtitle">Test the /api/products/with-upload endpoint</p>
+
+    <form id="uploadForm">
+      <div class="form-group">
+        <label for="name">Product Name <span class="required">*</span></label>
+        <input type="text" id="name" name="name" required placeholder="e.g., Handwoven Wall Hanging">
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" placeholder="Describe your product..."></textarea>
+      </div>
+
+      <div class="grid">
+        <div class="form-group">
+          <label for="category">Category <span class="required">*</span></label>
+          <select id="category" name="category" required>
+            <option value="">Select category...</option>
+            <option value="wall-hanging">Wall Hanging</option>
+            <option value="rug">Rug</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="price">Price (€) <span class="required">*</span></label>
+          <input type="number" id="price" name="price" required step="0.01" min="0" placeholder="149.99">
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" name="status">
+            <option value="draft">Draft</option>
+            <option value="available">Available</option>
+            <option value="sold">Sold</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="stockQuantity">Stock Quantity</label>
+          <input type="number" id="stockQuantity" name="stockQuantity" min="0" value="0" placeholder="0">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="materials">Materials</label>
+        <input type="text" id="materials" name="materials" placeholder="e.g., Cotton, wool, natural dyes">
+      </div>
+
+      <div class="form-group">
+        <label>Dimensions (JSON)</label>
+        <input type="text" id="dimensions" name="dimensions" placeholder='{"width": 50, "height": 70, "unit": "cm"}'>
+      </div>
+
+      <div class="form-group">
+        <label for="images">Images <span class="required">*</span> (1-5 files, max 5MB each)</label>
+        <input type="file" id="images" name="images" accept="image/jpeg,image/jpg,image/png,image/webp" multiple required>
+        <div class="file-info">Accepted formats: JPEG, PNG, WebP</div>
+        <div class="preview-container" id="previewContainer"></div>
+      </div>
+
+      <button type="submit" id="submitBtn">Upload Product</button>
+    </form>
+
+    <div class="loading" id="loading">
+      <div>⏳ Uploading...</div>
+    </div>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const loading = document.getElementById('loading');
+    const result = document.getElementById('result');
+    const submitBtn = document.getElementById('submitBtn');
+    const imagesInput = document.getElementById('images');
+    const previewContainer = document.getElementById('previewContainer');
+
+    // Preview images
+    imagesInput.addEventListener('change', (e) => {
+      previewContainer.innerHTML = '';
+      const files = Array.from(e.target.files);
+
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.className = 'preview-image';
+          previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Reset UI
+      result.classList.remove('active', 'success', 'error');
+      loading.classList.add('active');
+      submitBtn.disabled = true;
+
+      try {
+        // Create FormData
+        const formData = new FormData();
+
+        // Add text fields
+        formData.append('name', document.getElementById('name').value);
+        formData.append('category', document.getElementById('category').value);
+        formData.append('price', document.getElementById('price').value);
+
+        const description = document.getElementById('description').value;
+        if (description) formData.append('description', description);
+
+        const status = document.getElementById('status').value;
+        if (status) formData.append('status', status);
+
+        const stockQuantity = document.getElementById('stockQuantity').value;
+        if (stockQuantity) formData.append('stockQuantity', stockQuantity);
+
+        const materials = document.getElementById('materials').value;
+        if (materials) formData.append('materials', materials);
+
+        const dimensions = document.getElementById('dimensions').value;
+        if (dimensions) formData.append('dimensions', dimensions);
+
+        // Add images
+        const images = document.getElementById('images').files;
+        for (let i = 0; i < images.length; i++) {
+          formData.append('images', images[i]);
+        }
+
+        // Send request
+        const response = await fetch('http://localhost:4000/api/products/with-upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        // Display result
+        loading.classList.remove('active');
+        result.classList.add('active');
+
+        if (response.ok) {
+          result.classList.add('success');
+          result.innerHTML = `
+            <h3>✅ Product Created Successfully!</h3>
+            <p><strong>ID:</strong> ${data.id}</p>
+            <p><strong>Name:</strong> ${data.name}</p>
+            <p><strong>Images:</strong> ${data.images.length} uploaded</p>
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+          `;
+          form.reset();
+          previewContainer.innerHTML = '';
+        } else {
+          result.classList.add('error');
+          result.innerHTML = `
+            <h3>❌ Error</h3>
+            <p>${data.message || 'Upload failed'}</p>
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+          `;
+        }
+      } catch (error) {
+        loading.classList.remove('active');
+        result.classList.add('active', 'error');
+        result.innerHTML = `
+          <h3>❌ Network Error</h3>
+          <p>${error.message}</p>
+          <p>Make sure the backend is running on http://localhost:4000</p>
+        `;
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

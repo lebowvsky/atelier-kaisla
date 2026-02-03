@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
 import { Product } from '../../entities/product.entity';
+import { UploadModule } from '../upload/upload.module';
 
 /**
  * Products module
@@ -12,6 +13,8 @@ import { Product } from '../../entities/product.entity';
   imports: [
     // Import the Product entity for this module
     TypeOrmModule.forFeature([Product]),
+    // Import upload module for file handling
+    UploadModule,
   ],
   controllers: [ProductsController],
   providers: [ProductsService],

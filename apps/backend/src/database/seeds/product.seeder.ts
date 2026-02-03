@@ -1,10 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Product } from '../../entities/product.entity';
-import {
-  wallHangingProducts,
-  rugProducts,
-} from './data/products.data';
+import { wallHangingProducts, rugProducts } from './data/products.data';
 
 /**
  * Product Seeder
@@ -37,9 +34,7 @@ export class ProductSeeder {
         productRepository,
         wallHangingProducts,
       );
-      this.logger.log(
-        `Created ${wallHangings.length} wall-hanging products`,
-      );
+      this.logger.log(`Created ${wallHangings.length} wall-hanging products`);
 
       // Seed rug products
       const rugs = await this.seedProducts(productRepository, rugProducts);
@@ -80,9 +75,7 @@ export class ProductSeeder {
   /**
    * Get statistics about seeded products
    */
-  private async getStatistics(
-    repository: Repository<Product>,
-  ): Promise<{
+  private async getStatistics(repository: Repository<Product>): Promise<{
     total: number;
     wallHangings: number;
     rugs: number;

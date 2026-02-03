@@ -239,9 +239,7 @@ export const rugProducts: ProductSeedData[] = [
     price: 149.99,
     status: 'available',
     stockQuantity: 4,
-    images: [
-      'https://images.unsplash.com/photo-1563298723-dcfebaa392e3?w=800',
-    ],
+    images: ['https://images.unsplash.com/photo-1563298723-dcfebaa392e3?w=800'],
     dimensions: {
       width: 150,
       height: 150,

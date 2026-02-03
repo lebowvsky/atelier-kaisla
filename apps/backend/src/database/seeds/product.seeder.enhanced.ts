@@ -1,10 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Product } from '../../entities/product.entity';
-import {
-  wallHangingProducts,
-  rugProducts,
-} from './data/products.data';
+import { wallHangingProducts, rugProducts } from './data/products.data';
 
 /**
  * Enhanced Product Seeder with duplicate prevention
@@ -92,9 +89,7 @@ export class EnhancedProductSeeder {
     let updated = 0;
     let skipped = 0;
 
-    this.logger.log(
-      `\nProcessing ${data.length} ${category} products...`,
-    );
+    this.logger.log(`\nProcessing ${data.length} ${category} products...`);
 
     for (const item of data) {
       if (preventDuplicates) {
@@ -111,9 +106,7 @@ export class EnhancedProductSeeder {
             Object.assign(existing, item);
             await repository.save(existing);
             updated++;
-            this.logger.log(
-              `  ↻ Updated: "${item.name}" (${existing.id})`,
-            );
+            this.logger.log(`  ↻ Updated: "${item.name}" (${existing.id})`);
           } else {
             skipped++;
             this.logger.log(`  ⊘ Skipped: "${item.name}" (no changes)`);
@@ -189,9 +182,7 @@ export class EnhancedProductSeeder {
   /**
    * Get statistics about seeded products
    */
-  private async getStatistics(
-    repository: Repository<Product>,
-  ): Promise<{
+  private async getStatistics(repository: Repository<Product>): Promise<{
     total: number;
     wallHangings: number;
     rugs: number;
@@ -239,9 +230,15 @@ export class EnhancedProductSeeder {
     this.logger.log(`  Sold: ${stats.sold}`);
     this.logger.log(`  Draft: ${stats.draft}`);
     this.logger.log('\nThis seeding operation:');
-    this.logger.log(`  Created: ${wallHangingResult.created + rugResult.created}`);
-    this.logger.log(`  Updated: ${wallHangingResult.updated + rugResult.updated}`);
-    this.logger.log(`  Skipped: ${wallHangingResult.skipped + rugResult.skipped}`);
+    this.logger.log(
+      `  Created: ${wallHangingResult.created + rugResult.created}`,
+    );
+    this.logger.log(
+      `  Updated: ${wallHangingResult.updated + rugResult.updated}`,
+    );
+    this.logger.log(
+      `  Skipped: ${wallHangingResult.skipped + rugResult.skipped}`,
+    );
     this.logger.log('========================================');
   }
 }
