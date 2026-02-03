@@ -16,6 +16,9 @@ export function setupSwagger(app: INestApplication): void {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
+  // Setup Swagger at /api/docs
+  // Note: Using 'api/docs' as the path because SwaggerModule.setup uses absolute paths
+  // that bypass the global prefix. This ensures docs are available at /api/docs.
   SwaggerModule.setup('api/docs', app, document, {
     customSiteTitle: 'Atelier Kaisla API Docs',
     customCss: '.swagger-ui .topbar { display: none }',

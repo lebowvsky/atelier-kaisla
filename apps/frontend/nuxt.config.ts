@@ -13,5 +13,14 @@ export default defineNuxtConfig({
         }
       }
     }
+  },
+
+  runtimeConfig: {
+    public: {
+      // API URL - configurable via NUXT_PUBLIC_API_URL environment variable
+      // In Docker: http://backend:4000/api
+      // Local dev: http://localhost:4000/api
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:4000/api'
+    }
   }
 })

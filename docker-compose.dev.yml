@@ -61,7 +61,7 @@ services:
       NODE_ENV: development
       NUXT_HOST: 0.0.0.0
       NUXT_PORT: 3000
-      NUXT_PUBLIC_API_URL: http://localhost:4000
+      NUXT_PUBLIC_API_URL: http://backend:4000/api
     ports:
       - "3002:3000"
     volumes:
@@ -84,7 +84,7 @@ services:
       NODE_ENV: development
       NUXT_HOST: 0.0.0.0
       NUXT_PORT: 3001
-      NUXT_PUBLIC_API_URL: http://localhost:4000
+      NUXT_PUBLIC_API_URL: http://backend:4000/api
     ports:
       - "3001:3001"
     volumes:

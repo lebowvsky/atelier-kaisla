@@ -2,21 +2,26 @@
 /**
  * Rugs Collection Page
  *
- * Displays the complete collection of handcrafted rugs.
- * Features responsive grid layout, loading states, and full SEO optimization.
+ * Displays the complete collection of handcrafted rugs fetched from the backend API.
+ * Features responsive grid layout, real API integration, loading states, and full SEO optimization.
  *
  * Design Patterns Applied:
  * - @pattern Facade Pattern
  * - @category Structural
- * - @purpose Simplifies complex artwork data presentation through composables
+ * - @purpose Simplifies complex API interactions through useProducts composable
+ *
+ * - @pattern Adapter Pattern
+ * - @category Structural
+ * - @purpose Converts backend Product entities to frontend Artwork interface
  *
  * - @pattern Observer Pattern (implicit through Vue reactivity)
  * - @category Behavioral
  * - @purpose Reactive data updates automatically propagate to child components
  *
  * Features:
+ * - Real-time product fetching from backend API
  * - Responsive artwork grid with ArtworkList component
- * - Loading state simulation (for future API integration)
+ * - Loading and error state management
  * - SEO optimized with comprehensive meta tags
  * - Accessible page structure with proper headings
  * - Configurable card display (clickable, hover effects)
@@ -30,11 +35,8 @@
 
 import type { ArtworkCardConfig } from '~/types/artwork'
 
-// Composable: Get artwork data
-const { rugs } = useArtworkData()
-
-// State: Loading simulation (in production, this would track API call status)
-const isLoading = ref(false)
+import type { Product } from '~/types/product'
+import { adaptProductToArtwork } from '~/composables/useProducts'
 
 /**
  * Card configuration for rug display
@@ -49,14 +51,35 @@ const cardConfig: ArtworkCardConfig = {
 }
 
 /**
- * Simulate loading state on mount (for development purposes)
- * In production, this would be replaced with actual API call
+ * Fetch rugs using useAsyncData for proper SSR support
+ * Pattern: Decorator Pattern - Loading/error states handled by Nuxt
  */
-onMounted(() => {
-  isLoading.value = true
-  setTimeout(() => {
-    isLoading.value = false
-  }, 800)
+const config = useRuntimeConfig()
+
+// Get API URL based on environment (server vs client)
+const getApiUrl = () => {
+  if (import.meta.server) {
+    return config.public.apiUrl || 'http://backend:4000/api'
+  } else {
+    return 'http://localhost:4000/api'
+  }
+}
+
+const { data: products, error, pending: loading } = await useAsyncData(
+  'rug-products',
+  () => {
+    const url = `${getApiUrl()}/products/category/rug`
+    console.log(`[rugs] Fetching from: ${url}`)
+    return $fetch<Product[]>(url)
+  }
+)
+
+// Convert products to artworks using adapter pattern
+const artworks = computed(() => {
+  if (!products.value || !Array.isArray(products.value)) {
+    return []
+  }
+  return products.value.map(adaptProductToArtwork)
 })
 
 // Page-specific SEO meta tags
@@ -107,9 +130,26 @@ useSeoMeta({
           Available Rugs
         </h2>
 
+        <!-- Error State -->
+        <div
+          v-if="error"
+          class="error-message"
+          role="alert"
+        >
+          <p>Unable to load rugs. Please try again later.</p>
+          <button
+            class="retry-button"
+            @click="() => refreshNuxtData('rug-products')"
+          >
+            Retry
+          </button>
+        </div>
+
+        <!-- Product Grid -->
         <ArtworkList
-          :artworks="rugs"
-          :loading="isLoading"
+          v-else
+          :artworks="artworks"
+          :loading="loading"
           :card-config="cardConfig"
           grid-layout="default"
           empty-message="No rugs are currently available. Please check back soon for new pieces."
@@ -298,6 +338,43 @@ useSeoMeta({
   color: $color-gray-600;
   line-height: $line-height-base;
   margin: 0;
+}
+
+// Error Message
+.error-message {
+  text-align: center;
+  padding: $spacing-2xl;
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: $border-radius-base;
+  margin: $spacing-xl 0;
+
+  p {
+    color: #c33;
+    font-size: $font-size-lg;
+    margin-bottom: $spacing-md;
+  }
+}
+
+.retry-button {
+  background-color: $color-black;
+  color: $color-white;
+  padding: $spacing-sm $spacing-lg;
+  border: none;
+  border-radius: $border-radius-base;
+  font-size: $font-size-base;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color $transition-base;
+
+  &:hover {
+    background-color: $color-gray-900;
+  }
+
+  &:focus {
+    outline: 2px solid $color-black;
+    outline-offset: 2px;
+  }
 }
 
 // Accessibility - Visually Hidden

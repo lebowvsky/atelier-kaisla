@@ -8,6 +8,10 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
+  // Set global prefix for all routes (e.g., /api/products instead of /products)
+  // Benefits: clear API/frontend separation, reverse proxy routing, future versioning
+  app.setGlobalPrefix('api');
+
   // Global validation pipe - validates all incoming requests
   app.useGlobalPipes(
     new ValidationPipe({
@@ -27,8 +31,10 @@ async function bootstrap() {
   // Enable CORS for frontend applications
   app.enableCors({
     origin: [
-      'http://localhost:3002', // Frontend
-      'http://localhost:3001', // Backoffice
+      'http://localhost:3002', // Frontend (local)
+      'http://localhost:3001', // Backoffice (local)
+      'http://frontend:3002', // Frontend (Docker)
+      'http://backoffice:3001', // Backoffice (Docker)
       process.env.FRONTEND_URL,
       process.env.BACKOFFICE_URL,
     ].filter(Boolean),
@@ -43,7 +49,7 @@ async function bootstrap() {
   const port = process.env.PORT ?? 4000;
   await app.listen(port);
 
-  logger.log(`🚀 Backend API is running on: http://localhost:${port}`);
+  logger.log(`🚀 Backend API is running on: http://localhost:${port}/api`);
   logger.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
   logger.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
   logger.log(

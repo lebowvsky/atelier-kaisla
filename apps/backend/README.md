@@ -57,6 +57,118 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## API Routes
+
+All API endpoints are prefixed with `/api`. For example:
+
+- Products: `http://localhost:4000/api/products`
+- Documentation: `http://localhost:4000/api/docs`
+- Product by ID: `http://localhost:4000/api/products/:id`
+
+This follows industry best practices for:
+- Clear API/frontend separation
+- Future API versioning (`/api/v1`, `/api/v2`)
+- Reverse proxy routing in production
+- Consistent naming conventions
+
+### Products API Endpoints
+
+#### Get Products by Category
+```bash
+GET /api/products/category/:category
+```
+Fetch all available products for a specific category.
+
+**Parameters:**
+- `category`: `wall-hanging` or `rug`
+
+**Example:**
+```bash
+curl http://localhost:4000/api/products/category/wall-hanging
+```
+
+**Response:** Array of Product objects with `status='available'`
+
+#### Get All Products (with filters)
+```bash
+GET /api/products?category=&status=&search=&page=&limit=
+```
+
+**Query Parameters:**
+- `category` (optional): Filter by category (`wall-hanging`, `rug`)
+- `status` (optional): Filter by status (`available`, `sold`, `draft`)
+- `search` (optional): Search products by name
+- `page` (optional): Page number (default: 1)
+- `limit` (optional): Items per page (default: 10)
+
+**Example:**
+```bash
+curl "http://localhost:4000/api/products?category=rug&status=available&limit=20"
+```
+
+**Response:**
+```json
+{
+  "data": [...],
+  "total": 10,
+  "page": 1,
+  "limit": 20,
+  "totalPages": 1
+}
+```
+
+#### Get Single Product
+```bash
+GET /api/products/:id
+```
+
+**Example:**
+```bash
+curl http://localhost:4000/api/products/uuid-here
+```
+
+#### Get Product Statistics
+```bash
+GET /api/products/statistics
+```
+
+Returns product counts by category and status.
+
+**Example:**
+```bash
+curl http://localhost:4000/api/products/statistics
+```
+
+**Response:**
+```json
+{
+  "total": 18,
+  "byCategory": {
+    "wall-hanging": 8,
+    "rug": 10
+  },
+  "byStatus": {
+    "available": 15,
+    "sold": 2,
+    "draft": 1
+  }
+}
+```
+
+### API Documentation
+
+Interactive Swagger documentation is available in development:
+
+```
+http://localhost:4000/api/docs
+```
+
+This provides a complete API reference with:
+- All available endpoints
+- Request/response schemas
+- Try-it-out functionality
+- Type definitions
+
 ## Database Seeding
 
 Populate your development database with test data:

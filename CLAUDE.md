@@ -136,11 +136,21 @@ docker/                # Docker configuration
 
 The frontend follows functional programming and composition patterns:
 
-1. **Composables**: Reusable logic extracted to `composables/` (e.g., `useNavigation.ts`)
+1. **Composables**: Reusable logic extracted to `composables/` (e.g., `useNavigation.ts`, `useProducts.ts`)
 2. **Pure utilities**: Side-effect-free functions in `utils/`
 3. **Type safety**: All types defined in `types/` directory
 4. **File-based routing**: Pages in `pages/` automatically become routes
 5. **Scoped styles**: Component styles use `<style scoped>` with SCSS
+
+#### API Integration
+
+The frontend integrates with the backend using design patterns:
+
+- **Adapter Pattern**: Converts backend `Product` entities to frontend `Artwork` interfaces
+- **Facade Pattern**: Simplifies API interactions through `useProducts` composable
+- **Decorator Pattern**: Adds loading/error state management to async operations
+
+See `/apps/frontend/API-INTEGRATION.md` for detailed documentation.
 
 ### SCSS Architecture
 
@@ -263,11 +273,48 @@ make prod-logs
 
 ## Current Implementation Status
 
-The frontend currently has:
+### Frontend
 - Fully responsive navigation bar with mobile menu
 - 5 main pages (Home, Wall Hanging, Rugs, About, Blog)
+- **Real API integration** for products (wall hangings and rugs)
 - SEO optimization with meta tags
 - Accessibility features (ARIA, keyboard navigation)
 - TypeScript support throughout
+- Loading and error state management
 
-Backend and backoffice are starter templates ready for development.
+### Backend
+- NestJS REST API with TypeORM
+- Products module with full CRUD operations
+- PostgreSQL database integration
+- Swagger API documentation (`http://localhost:4000/api/docs`)
+- CORS configured for frontend/backoffice
+- Database seeding capabilities
+
+### Backoffice
+- Starter template ready for development
+
+## Testing API Integration
+
+Run the test script to verify the integration:
+
+```bash
+./test-api-integration.sh
+```
+
+Or manually test endpoints:
+
+```bash
+# Get wall hangings
+curl http://localhost:4000/api/products/category/wall-hanging
+
+# Get rugs
+curl http://localhost:4000/api/products/category/rug
+
+# View API documentation
+open http://localhost:4000/api/docs
+```
+
+For detailed integration documentation, see:
+- `/FRONTEND-BACKEND-INTEGRATION.md` - Quick start guide
+- `/apps/frontend/API-INTEGRATION.md` - Detailed technical documentation
+- `/apps/backend/README.md` - Backend API reference
