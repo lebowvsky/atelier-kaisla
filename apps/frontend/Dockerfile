@@ -1,16 +1,8 @@
 # Dockerfile multi-stage pour Frontend Nuxt 4
 
 # Stage 1: Development
-FROM node:20-alpine AS development
+FROM node:20-slim AS development
 WORKDIR /app
-
-# Installer les dépendances nécessaires pour les modules natifs (sass-embedded)
-# sass-embedded nécessite des outils de build natifs
-RUN apk add --no-cache \
-    python3 \
-    make \
-    g++ \
-    libc6-compat
 
 # Copier les fichiers de dépendances
 COPY package*.json ./
@@ -28,21 +20,14 @@ EXPOSE 3000
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
 # Stage 2: Builder
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 WORKDIR /app
-
-# Installer les dépendances nécessaires pour les modules natifs (sass-embedded)
-RUN apk add --no-cache \
-    python3 \
-    make \
-    g++ \
-    libc6-compat
 
 # Copier les fichiers de dépendances
 COPY package*.json ./
 
-# Installer toutes les dépendances (npm ci installe aussi devDependencies par défaut)
-RUN npm ci
+# Installer toutes les dépendances
+RUN npm install
 
 # Copier le code source
 COPY . .
@@ -51,7 +36,7 @@ COPY . .
 RUN npm run build
 
 # Stage 3: Production
-FROM node:20-alpine AS production
+FROM node:20-slim AS production
 WORKDIR /app
 
 # Installer seulement les dépendances de production
@@ -62,8 +47,8 @@ RUN npm ci --omit=dev
 COPY --from=builder /app/.output ./.output
 
 # Créer un utilisateur non-root
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nuxtjs -u 1001
+RUN groupadd -g 1001 nodejs && \
+    useradd -m -u 1001 -g nodejs nuxtjs
 
 # Changer la propriété des fichiers
 RUN chown -R nuxtjs:nodejs /app

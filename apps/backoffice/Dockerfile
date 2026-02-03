@@ -1,7 +1,7 @@
 # Dockerfile multi-stage pour Backoffice Nuxt 4
 
 # Stage 1: Development
-FROM node:20-alpine AS development
+FROM node:20-slim AS development
 WORKDIR /app
 
 # Copier les fichiers de dépendances
@@ -18,12 +18,12 @@ EXPOSE 3001
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3001"]
 
 # Stage 2: Builder
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 WORKDIR /app
 
 # Copier les fichiers de dépendances
 COPY package*.json ./
-RUN npm ci
+RUN npm install --force || (rm -rf node_modules package-lock.json && npm install --force)
 
 # Copier le code source
 COPY . .
@@ -32,19 +32,19 @@ COPY . .
 RUN npm run build
 
 # Stage 3: Production
-FROM node:20-alpine AS production
+FROM node:20-slim AS production
 WORKDIR /app
 
 # Installer seulement les dépendances de production
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --production --force || (rm -rf node_modules package-lock.json && npm install --production --force)
 
 # Copier les fichiers buildés depuis le builder
 COPY --from=builder /app/.output ./.output
 
 # Créer un utilisateur non-root
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nuxtjs -u 1001
+RUN groupadd -g 1001 nodejs && \
+    useradd -m -u 1001 -g nodejs nuxtjs
 
 # Changer la propriété des fichiers
 RUN chown -R nuxtjs:nodejs /app
