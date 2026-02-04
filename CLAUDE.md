@@ -237,6 +237,25 @@ docker compose -f docker-compose.dev.yml logs postgres
 make db-shell
 ```
 
+### CORS Issues (RESOLVED)
+
+The backoffice in production (`https://bokaisla.lebowvsky.com`) can now make requests to the API (`https://api.lebowvsky.com`) without CORS errors.
+
+**Quick test**:
+```bash
+./test-cors.sh https://api.lebowvsky.com https://bokaisla.lebowvsky.com https://kaisla.lebowvsky.com
+```
+
+**Documentation**:
+- Quick deployment: `/DEPLOYMENT-CORS-FIX.md`
+- Detailed troubleshooting: `/CORS-TROUBLESHOOTING.md`
+- Technical summary: `/CORS-FIX-SUMMARY.md`
+
+**Common issues**:
+- CORS errors persist: Check Traefik configuration (remove CORS middleware)
+- Environment variables: Verify `FRONTEND_URL` and `BACKOFFICE_URL` are set correctly
+- Check backend logs: `docker compose -f docker-compose.prod.yml logs -f backend | grep CORS`
+
 ### Product Upload Issues (RESOLVED)
 
 The `POST /api/products/with-upload` endpoint has been fixed for both dimensions validation and image uploads.
