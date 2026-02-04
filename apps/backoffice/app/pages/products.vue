@@ -10,6 +10,8 @@
 
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import ProductForm from '@/components/products/ProductForm.vue'
 import { Plus, Search, Eye, Pencil, Trash2, Filter, RefreshCw } from 'lucide-vue-next'
 import type { ProductCategory, ProductStatus } from '@/types/product'
 
@@ -186,6 +188,19 @@ const getProductImage = (images?: string[]): string => {
   }
   return 'https://placehold.co/60x60/e2e8f0/64748b?text=No+Image'
 }
+
+/**
+ * Sheet state for product form
+ */
+const isFormOpen = ref(false)
+
+/**
+ * Handle form success
+ */
+const handleFormSuccess = async () => {
+  isFormOpen.value = false
+  await refreshProducts()
+}
 </script>
 
 <template>
@@ -212,10 +227,21 @@ const getProductImage = (images?: string[]): string => {
             />
             Refresh
           </Button>
-          <Button>
-            <Plus class="mr-2 h-4 w-4" />
-            Add Product
-          </Button>
+          <Sheet v-model:open="isFormOpen">
+            <SheetTrigger as-child>
+              <Button>
+                <Plus class="mr-2 h-4 w-4" />
+                Add Product
+              </Button>
+            </SheetTrigger>
+            <SheetContent class="w-full sm:max-w-2xl">
+              <ProductForm
+                :open="isFormOpen"
+                @close="isFormOpen = false"
+                @success="handleFormSuccess"
+              />
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
 
@@ -349,10 +375,21 @@ const getProductImage = (images?: string[]): string => {
             <p class="mt-1 text-sm text-muted-foreground">
               Get started by creating your first product
             </p>
-            <Button class="mt-4">
-              <Plus class="mr-2 h-4 w-4" />
-              Add Product
-            </Button>
+            <Sheet v-model:open="isFormOpen">
+              <SheetTrigger as-child>
+                <Button class="mt-4">
+                  <Plus class="mr-2 h-4 w-4" />
+                  Add Product
+                </Button>
+              </SheetTrigger>
+              <SheetContent class="w-full sm:max-w-2xl">
+                <ProductForm
+                  :open="isFormOpen"
+                  @close="isFormOpen = false"
+                  @success="handleFormSuccess"
+                />
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
 
