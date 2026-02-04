@@ -38,6 +38,8 @@ services:
       DATABASE_USER: ${POSTGRES_USER:-postgres}
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       TYPEORM_SYNC: "true"
+      FRONTEND_URL: ${FRONTEND_URL}
+      BACKOFFICE_URL: ${BACKOFFICE_URL}
     ports:
       - "4000:4000"
     volumes:

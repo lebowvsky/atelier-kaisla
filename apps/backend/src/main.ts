@@ -56,7 +56,7 @@ async function bootstrap() {
       }
 
       if (allowedOrigins.includes(origin)) {
-        logger.debug(`✅ CORS allowed for origin: ${origin}`);
+        logger.log(`✅ CORS allowed for origin: ${origin}`);
         callback(null, true);
       } else {
         logger.warn(`❌ CORS blocked for origin: ${origin}`);

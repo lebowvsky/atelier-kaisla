@@ -39,6 +39,9 @@ services:
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
       FRONTEND_URL: https://kaisla.lebowvsky.com
       BACKOFFICE_URL: https://bokaisla.lebowvsky.com
+    volumes:
+      # Persist uploaded files
+      - uploads_prod:/app/uploads
     expose:
       - "4000"
     depends_on:
@@ -103,6 +106,8 @@ services:
 
 volumes:
   postgres_data_prod:
+    driver: local
+  uploads_prod:
     driver: local
 
 networks:
