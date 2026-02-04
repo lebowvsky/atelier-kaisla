@@ -237,6 +237,24 @@ docker compose -f docker-compose.dev.yml logs postgres
 make db-shell
 ```
 
+### Product Upload Issues (RESOLVED)
+
+The `POST /api/products/with-upload` endpoint has been fixed for both dimensions validation and image uploads.
+
+**Quick test**:
+```bash
+./test-product-upload.sh
+```
+
+**Documentation**:
+- Quick start: `/QUICK-START-UPLOAD.md`
+- Detailed fixes: `/FIXES-SUMMARY.md`
+- Technical docs: `/PRODUCT-UPLOAD-FIX.md`
+
+**Common issues**:
+- Images not accessible: Check backend logs and verify upload directory exists
+- Dimensions validation errors: Ensure JSON string format: `'{"width": 120, "height": 180, "unit": "cm"}'`
+
 ## Code Conventions
 
 ### Frontend (Vue/Nuxt)

@@ -9,13 +9,13 @@ import {
   MaxLength,
   ValidateNested,
 } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
+import { Type, Transform, plainToClass } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
  * Dimensions DTO for product dimensions
  */
-class DimensionsDto {
+export class DimensionsDto {
   @ApiProperty({ description: 'Width of the product' })
   @IsNumber()
   @IsPositive()
@@ -97,22 +97,36 @@ export class CreateProductWithUploadDto {
   stockQuantity?: number;
 
   @ApiPropertyOptional({
-    description: 'Product dimensions (JSON string)',
+    description: 'Product dimensions (JSON string or object)',
     example: '{"width": 50, "height": 70, "unit": "cm"}',
   })
+  @IsOptional()
+  @Transform(
+    ({ value }) => {
+      // If value is undefined or null, return undefined
+      if (value === undefined || value === null || value === '') {
+        return undefined;
+      }
+
+      // If value is a string, parse it as JSON
+      if (typeof value === 'string') {
+        try {
+          const parsed = JSON.parse(value);
+          // Use plainToClass to properly convert the plain object to DimensionsDto
+          return plainToClass(DimensionsDto, parsed);
+        } catch (error) {
+          // If parsing fails, return undefined (will be handled by validation)
+          return undefined;
+        }
+      }
+
+      // If value is already an object, convert to DimensionsDto using plainToClass
+      return plainToClass(DimensionsDto, value);
+    },
+    { toClassOnly: true },
+  )
   @ValidateNested()
   @Type(() => DimensionsDto)
-  @IsOptional()
-  @Transform(({ value }) => {
-    if (typeof value === 'string') {
-      try {
-        return JSON.parse(value) as unknown as DimensionsDto;
-      } catch {
-        return value;
-      }
-    }
-    return value;
-  })
   dimensions?: DimensionsDto;
 
   @ApiPropertyOptional({

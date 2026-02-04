@@ -54,11 +54,19 @@ export class ProductsService {
     // Ensure upload directory exists
     await this.uploadService.ensureUploadDir();
 
+    this.logger.log(`Creating product with ${files.length} image(s)`);
+    this.logger.debug(`Received DTO: ${JSON.stringify(createDto, null, 2)}`);
+    this.logger.debug(
+      `Uploaded files: ${files.map((f) => `${f.filename} (${f.size} bytes)`).join(', ')}`,
+    );
+
     try {
       // Generate image URLs from uploaded files
-      const imageUrls = files.map((file) =>
-        this.uploadService.getFileUrl(file.filename, baseUrl),
-      );
+      const imageUrls = files.map((file) => {
+        const url = this.uploadService.getFileUrl(file.filename, baseUrl);
+        this.logger.debug(`Generated URL for ${file.filename}: ${url}`);
+        return url;
+      });
 
       // Create product with image URLs
       const productData = {
@@ -66,12 +74,17 @@ export class ProductsService {
         images: imageUrls,
       };
 
+      this.logger.debug(
+        `Product data to save: ${JSON.stringify(productData, null, 2)}`,
+      );
+
       const product = this.productRepository.create(productData);
       const saved = await this.productRepository.save(product);
 
       this.logger.log(
         `Product created successfully with ${files.length} image(s): ${saved.id}`,
       );
+      this.logger.log(`Product images: ${saved.images.join(', ')}`);
       return saved;
     } catch (error) {
       // Clean up uploaded files if product creation fails
@@ -79,6 +92,13 @@ export class ProductsService {
       await this.uploadService.deleteFiles(filenames);
 
       this.logger.error(`Failed to create product: ${error.message}`);
+      this.logger.error(`Error stack: ${error.stack}`);
+
+      // If it's a validation error, provide more details
+      if (error.response?.message) {
+        throw new BadRequestException(error.response.message);
+      }
+
       throw new BadRequestException('Failed to create product');
     }
   }

@@ -15,7 +15,9 @@ export class UploadService {
    * Get the full URL for an uploaded file
    */
   getFileUrl(filename: string, baseUrl: string): string {
-    return `${baseUrl}/uploads/products/${filename}`;
+    const url = `${baseUrl}/uploads/products/${filename}`;
+    this.logger.debug(`Generated file URL: ${url}`);
+    return url;
   }
 
   /**
@@ -55,9 +57,11 @@ export class UploadService {
   async ensureUploadDir(): Promise<void> {
     try {
       await fs.access(this.uploadDir);
+      this.logger.debug(`Upload directory exists: ${this.uploadDir}`);
     } catch {
+      this.logger.log(`Creating upload directory: ${this.uploadDir}`);
       await fs.mkdir(this.uploadDir, { recursive: true });
-      this.logger.log(`Created upload directory: ${this.uploadDir}`);
+      this.logger.log(`Upload directory created successfully: ${this.uploadDir}`);
     }
   }
 }

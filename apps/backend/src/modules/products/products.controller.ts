@@ -14,6 +14,7 @@ import {
   UploadedFiles,
   Req,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import {
@@ -38,6 +39,8 @@ import { CreateProductWithUploadDto } from './dto/create-product-with-upload.dto
 @ApiTags('products')
 @Controller('products')
 export class ProductsController {
+  private readonly logger = new Logger(ProductsController.name);
+
   constructor(private readonly productsService: ProductsService) {}
 
   /**
@@ -135,20 +138,31 @@ export class ProductsController {
     @UploadedFiles() files: Express.Multer.File[],
     @Req() request: Request,
   ) {
+    this.logger.log('POST /api/products/with-upload - Request received');
+    this.logger.debug(`Body: ${JSON.stringify(createDto, null, 2)}`);
+    this.logger.debug(
+      `Files: ${files ? files.length : 0} file(s) received`,
+    );
+
     // Validate that at least one image is uploaded
     if (!files || files.length === 0) {
+      this.logger.warn('Request rejected: No images uploaded');
       throw new BadRequestException('At least one image is required');
     }
 
     // Get base URL for constructing image URLs
     const baseUrl = `${request.protocol}://${request.get('host')}`;
+    this.logger.debug(`Base URL: ${baseUrl}`);
 
     // Create product with uploaded images
-    return await this.productsService.createWithImages(
+    const result = await this.productsService.createWithImages(
       createDto,
       files,
       baseUrl,
     );
+
+    this.logger.log(`Product created successfully: ${result.id}`);
+    return result;
   }
 
   /**

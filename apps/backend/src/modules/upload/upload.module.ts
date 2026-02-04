@@ -1,10 +1,12 @@
-import { Module } from '@nestjs/common';
+import { Module, Logger } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UploadService } from './upload.service';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
+
+const logger = new Logger('UploadModule');
 
 /**
  * Upload module
@@ -21,6 +23,9 @@ import { v4 as uuidv4 } from 'uuid';
           filename: (req, file, callback) => {
             // Generate unique filename with original extension
             const uniqueName = `${uuidv4()}${extname(file.originalname)}`;
+            logger.debug(
+              `Saving file: ${file.originalname} as ${uniqueName} (${file.mimetype}, ${file.size} bytes)`,
+            );
             callback(null, uniqueName);
           },
         }),
@@ -34,8 +39,12 @@ import { v4 as uuidv4 } from 'uuid';
           ];
 
           if (allowedMimeTypes.includes(file.mimetype)) {
+            logger.debug(`File accepted: ${file.originalname} (${file.mimetype})`);
             callback(null, true);
           } else {
+            logger.warn(
+              `File rejected: ${file.originalname} (${file.mimetype}) - Invalid mime type`,
+            );
             callback(
               new Error(
                 'Invalid file type. Only JPEG, PNG, and WebP images are allowed.',

@@ -193,6 +193,74 @@ export function useProducts() {
   }
 
   /**
+   * Create a new product with image file uploads
+   * Pattern: Adapter Pattern - Converts form data to multipart/form-data format
+   *
+   * @param dto - Product data transfer object
+   * @param imageFiles - Array of image files to upload (max 5)
+   * @returns Created product with uploaded image URLs or null on error
+   */
+  const createProductWithImages = async (
+    dto: Omit<CreateProductDto, 'images'>,
+    imageFiles: File[]
+  ): Promise<Product | null> => {
+    const result = await executeApiCall(async () => {
+      // Pattern: Builder Pattern - Progressive FormData construction
+      const formData = new FormData()
+
+      // Add product fields to FormData
+      formData.append('name', dto.name)
+      if (dto.description) formData.append('description', dto.description)
+      formData.append('category', dto.category)
+      formData.append('price', dto.price.toString())
+      if (dto.status) formData.append('status', dto.status)
+      if (dto.stockQuantity !== undefined) {
+        formData.append('stockQuantity', dto.stockQuantity.toString())
+      }
+      if (dto.materials) formData.append('materials', dto.materials)
+
+      // Add dimensions as JSON string if provided
+      if (dto.dimensions) {
+        formData.append('dimensions', JSON.stringify(dto.dimensions))
+      }
+
+      // Add image files
+      imageFiles.forEach((file) => {
+        formData.append('images', file)
+      })
+
+      // Use native fetch for multipart/form-data (Nuxt $fetch doesn't handle FormData well)
+      const apiUrl = getApiUrl()
+      const response = await fetch(`${apiUrl}/products/with-upload`, {
+        method: 'POST',
+        body: formData,
+        // Don't set Content-Type header - browser will set it with boundary
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: 'Failed to create product',
+          statusCode: response.status,
+        }))
+        throw {
+          statusCode: response.status,
+          message: errorData.message || 'Failed to create product',
+          data: errorData,
+        }
+      }
+
+      return await response.json()
+    })
+
+    // Refresh products list after creation
+    if (result) {
+      await fetchProducts()
+    }
+
+    return result
+  }
+
+  /**
    * Update an existing product
    */
   const updateProduct = async (
@@ -315,6 +383,7 @@ export function useProducts() {
     fetchProductById,
     fetchByCategory,
     createProduct,
+    createProductWithImages,
     updateProduct,
     deleteProduct,
     fetchStatistics,

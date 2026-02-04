@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select } from '@/components/ui/select'
-import { X, Loader2, CheckCircle2, AlertCircle } from 'lucide-vue-next'
+import { X, Loader2, CheckCircle2, AlertCircle, Upload, Image as ImageIcon } from 'lucide-vue-next'
 import type { CreateProductDto, ProductDimensions } from '@/types/product'
 
 /**
@@ -38,7 +38,7 @@ const emit = defineEmits<Emits>()
 /**
  * Pattern: Facade Pattern - Centralized product management
  */
-const { createProduct, loading, error, clearError } = useProducts()
+const { createProductWithImages, loading, error, clearError } = useProducts()
 
 /**
  * Form state (Builder Pattern)
@@ -66,9 +66,19 @@ const dimensionsData = ref<ProductDimensions>({
 })
 
 /**
- * Image URLs state
+ * Image files state (Strategy Pattern for file handling)
  */
-const imageUrls = ref<string>('')
+const imageFiles = ref<File[]>([])
+const imagePreviews = ref<string[]>([])
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
+/**
+ * Image validation constants
+ */
+const MAX_IMAGES = 5
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB in bytes
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp']
 
 /**
  * Validation errors (Chain of Responsibility Pattern)
@@ -126,25 +136,117 @@ const validateForm = (): boolean => {
     }
   }
 
+  // Image validation
+  if (imageFiles.value.length === 0) {
+    validationErrors.value.images = 'At least one product image is required'
+    isValid = false
+  }
+
   return isValid
 }
 
 /**
- * Process image URLs from textarea
+ * Validate a single file (Chain of Responsibility Pattern)
+ * Returns error message or null if valid
  */
-const processImageUrls = () => {
-  if (!imageUrls.value.trim()) {
-    formData.value.images = []
+const validateFile = (file: File): string | null => {
+  // Check file type
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return `Invalid file type. Allowed: JPEG, PNG, WebP`
+  }
+
+  // Check file size
+  if (file.size > MAX_FILE_SIZE) {
+    return `File size exceeds 5MB limit`
+  }
+
+  return null
+}
+
+/**
+ * Handle file input change
+ * Pattern: Decorator Pattern - Adds validation to file selection
+ */
+const handleFileChange = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const files = input.files
+
+  if (!files || files.length === 0) return
+
+  // Clear previous errors
+  validationErrors.value.images = ''
+
+  // Convert FileList to Array
+  const newFiles = Array.from(files)
+
+  // Check total number of images
+  const totalImages = imageFiles.value.length + newFiles.length
+  if (totalImages > MAX_IMAGES) {
+    validationErrors.value.images = `Maximum ${MAX_IMAGES} images allowed. You've selected ${totalImages} images.`
+    input.value = '' // Reset input
     return
   }
 
-  // Split by newlines and filter empty strings
-  const urls = imageUrls.value
-    .split('\n')
-    .map((url) => url.trim())
-    .filter((url) => url.length > 0)
+  // Validate each file
+  const validFiles: File[] = []
+  for (const file of newFiles) {
+    const error = validateFile(file)
+    if (error) {
+      validationErrors.value.images = `${file.name}: ${error}`
+      input.value = '' // Reset input
+      return
+    }
+    validFiles.push(file)
+  }
 
-  formData.value.images = urls
+  // Add valid files to state
+  imageFiles.value.push(...validFiles)
+
+  // Generate previews for new files
+  validFiles.forEach((file) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        imagePreviews.value.push(e.target.result as string)
+      }
+    }
+    reader.readAsDataURL(file)
+  })
+
+  // Reset input to allow selecting the same file again
+  input.value = ''
+}
+
+/**
+ * Remove an image from the selection
+ * @param index - Index of the image to remove
+ */
+const removeImage = (index: number) => {
+  imageFiles.value.splice(index, 1)
+  imagePreviews.value.splice(index, 1)
+
+  // Clear validation error if images exist
+  if (imageFiles.value.length > 0) {
+    validationErrors.value.images = ''
+  }
+}
+
+/**
+ * Trigger file input click
+ */
+const triggerFileInput = () => {
+  fileInputRef.value?.click()
+}
+
+/**
+ * Format file size for display
+ */
+const formatFileSize = (bytes: number): string => {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
 }
 
 /**
@@ -160,18 +262,24 @@ const handleSubmit = async () => {
     return
   }
 
-  // Process image URLs
-  processImageUrls()
+  // Prepare product DTO (without images field)
+  const productDto: Omit<CreateProductDto, 'images'> = {
+    name: formData.value.name,
+    description: formData.value.description,
+    category: formData.value.category,
+    price: formData.value.price,
+    status: formData.value.status,
+    stockQuantity: formData.value.stockQuantity,
+    materials: formData.value.materials,
+  }
 
   // Add dimensions if enabled
   if (dimensionsEnabled.value) {
-    formData.value.dimensions = { ...dimensionsData.value }
-  } else {
-    formData.value.dimensions = undefined
+    productDto.dimensions = { ...dimensionsData.value }
   }
 
-  // Create product via API
-  const result = await createProduct(formData.value)
+  // Create product with image uploads via API
+  const result = await createProductWithImages(productDto, imageFiles.value)
 
   if (result) {
     // Show success message
@@ -208,7 +316,11 @@ const resetForm = () => {
     height: 0,
     unit: 'cm',
   }
-  imageUrls.value = ''
+
+  // Clear image files and previews
+  imageFiles.value = []
+  imagePreviews.value = []
+
   validationErrors.value = {}
   clearError()
   showSuccess.value = false
@@ -437,19 +549,118 @@ watch(
           </div>
         </div>
 
-        <!-- Image URLs -->
-        <div class="space-y-2">
-          <Label for="images">Image URLs</Label>
-          <Textarea
-            id="images"
-            v-model="imageUrls"
-            placeholder="Enter image URLs, one per line&#10;https://example.com/image1.jpg&#10;https://example.com/image2.jpg"
-            rows="4"
-            :disabled="loading"
+        <!-- Image Upload -->
+        <div class="space-y-3">
+          <Label for="images" required>Product Images</Label>
+
+          <!-- File Input (hidden) -->
+          <input
+            ref="fileInputRef"
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp"
+            multiple
+            class="hidden"
+            @change="handleFileChange"
+            :disabled="loading || imageFiles.length >= MAX_IMAGES"
           />
-          <p class="text-muted-foreground text-xs">
-            Enter one URL per line. These images will be displayed in the product gallery.
+
+          <!-- Upload Button -->
+          <div class="flex flex-col gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              @click="triggerFileInput"
+              :disabled="loading || imageFiles.length >= MAX_IMAGES"
+              class="w-full justify-center gap-2"
+            >
+              <Upload class="h-4 w-4" />
+              {{
+                imageFiles.length === 0
+                  ? 'Upload Images'
+                  : `Add More Images (${imageFiles.length}/${MAX_IMAGES})`
+              }}
+            </Button>
+
+            <p class="text-muted-foreground text-xs">
+              Upload up to {{ MAX_IMAGES }} images. Formats: JPEG, PNG, WebP. Max size: 5MB per image.
+            </p>
+          </div>
+
+          <!-- Validation Error -->
+          <p v-if="validationErrors.images" class="text-sm text-red-600">
+            {{ validationErrors.images }}
           </p>
+
+          <!-- Image Previews Grid -->
+          <div
+            v-if="imagePreviews.length > 0"
+            class="grid grid-cols-2 gap-3 rounded-md border p-3"
+          >
+            <div
+              v-for="(preview, index) in imagePreviews"
+              :key="index"
+              class="group relative aspect-square overflow-hidden rounded-md border bg-gray-50 dark:bg-gray-900"
+            >
+              <!-- Image Preview -->
+              <img
+                :src="preview"
+                :alt="`Preview ${index + 1}`"
+                class="h-full w-full object-cover"
+              />
+
+              <!-- Image Info Overlay -->
+              <div
+                class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 text-white"
+              >
+                <p class="truncate text-xs font-medium">
+                  {{ imageFiles[index]?.name }}
+                </p>
+                <p class="text-xs opacity-90">
+                  {{ formatFileSize(imageFiles[index]?.size || 0) }}
+                </p>
+              </div>
+
+              <!-- Remove Button -->
+              <button
+                type="button"
+                @click="removeImage(index)"
+                :disabled="loading"
+                class="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-white opacity-0 transition-opacity hover:bg-red-700 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"
+                :aria-label="`Remove image ${index + 1}`"
+              >
+                <X class="h-4 w-4" />
+              </button>
+
+              <!-- Primary Badge (for first image) -->
+              <div
+                v-if="index === 0"
+                class="absolute left-1 top-1 rounded-full bg-blue-600 px-2 py-0.5 text-xs font-semibold text-white"
+              >
+                Primary
+              </div>
+            </div>
+
+            <!-- Empty Slots (show how many more can be added) -->
+            <div
+              v-for="n in Math.max(0, MAX_IMAGES - imagePreviews.length)"
+              :key="`empty-${n}`"
+              class="flex aspect-square items-center justify-center rounded-md border-2 border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-900"
+            >
+              <ImageIcon class="h-8 w-8 text-gray-400" />
+            </div>
+          </div>
+
+          <!-- Empty State (no images uploaded) -->
+          <div
+            v-else
+            class="flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-gray-300 bg-gray-50 p-8 dark:border-gray-700 dark:bg-gray-900"
+          >
+            <ImageIcon class="h-12 w-12 text-gray-400" />
+            <p class="text-muted-foreground text-sm font-medium">No images uploaded</p>
+            <p class="text-muted-foreground text-xs text-center">
+              Click the button above to upload product images
+            </p>
+          </div>
         </div>
       </form>
     </div>
