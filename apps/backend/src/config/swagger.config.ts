@@ -12,6 +12,7 @@ export function setupSwagger(app: INestApplication): void {
     )
     .setVersion('1.0')
     .addTag('products', 'Product management endpoints')
+    .addTag('about-sections', 'About page sections management endpoints')
     .addBearerAuth() // For future JWT authentication
     .build();
 

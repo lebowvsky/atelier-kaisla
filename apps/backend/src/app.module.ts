@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { getDatabaseConfig } from './config/database.config';
 import { validationSchema } from './config/environment.validation';
 import { ProductsModule } from './modules/products/products.module';
+import { AboutSectionsModule } from './modules/about-sections/about-sections.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
@@ -33,6 +34,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
     // Feature modules
     ProductsModule,
+    AboutSectionsModule,
     AuthModule,
   ],
   controllers: [AppController],
