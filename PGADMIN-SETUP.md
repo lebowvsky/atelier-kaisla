@@ -4,7 +4,7 @@ pgAdmin est un outil d'administration web pour PostgreSQL, maintenant disponible
 
 ## 🚀 Accès rapide
 
-**URL** : `https://pgadmin.lebowvsky.com`
+**URL** : `https://pgadminkaisla.lebowvsky.com`
 
 ## 📋 Configuration
 
@@ -20,7 +20,7 @@ PGADMIN_PASSWORD=VotreMotDePasseSecurise123!
 ### 2. Configurer le domaine dans Dokploy
 
 Dans l'interface Dokploy :
-1. Le domaine `pgadmin.lebowvsky.com` est déjà configuré dans les labels Traefik
+1. Le domaine `pgadminkaisla.lebowvsky.com` est déjà configuré dans les labels Traefik
 2. Ajoutez un enregistrement DNS :
    - Type : `A`
    - Nom : `pgadmin`
@@ -43,7 +43,7 @@ sudo docker logs atelier-kaisla-pgadmin-prod
 
 ### Première connexion
 
-1. Ouvrez `https://pgadmin.lebowvsky.com`
+1. Ouvrez `https://pgadminkaisla.lebowvsky.com`
 2. Connectez-vous avec :
    - Email : `admin@kaisla.local` (ou votre PGADMIN_EMAIL)
    - Mot de passe : Votre PGADMIN_PASSWORD
@@ -145,7 +145,7 @@ sudo docker compose -f docker-compose.prod.yml up -d --force-recreate pgadmin
 Attendez quelques minutes que Let's Encrypt génère le certificat, puis testez :
 
 ```bash
-curl https://pgadmin.lebowvsky.com
+curl https://pgadminkaisla.lebowvsky.com
 ```
 
 ## 🎯 Alternative légère : Adminer

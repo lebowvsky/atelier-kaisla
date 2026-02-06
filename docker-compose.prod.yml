@@ -140,11 +140,11 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=dokploy-network"
       # HTTP router (redirect to HTTPS)
-      - "traefik.http.routers.pgadmin.rule=Host(`pgadmin.lebowvsky.com`)"
+      - "traefik.http.routers.pgadmin.rule=Host(`pgadminkaisla.lebowvsky.com`)"
       - "traefik.http.routers.pgadmin.entrypoints=web"
       - "traefik.http.routers.pgadmin.middlewares=redirect-to-https@file"
       # HTTPS router
-      - "traefik.http.routers.pgadmin-secure.rule=Host(`pgadmin.lebowvsky.com`)"
+      - "traefik.http.routers.pgadmin-secure.rule=Host(`pgadminkaisla.lebowvsky.com`)"
       - "traefik.http.routers.pgadmin-secure.entrypoints=websecure"
       - "traefik.http.routers.pgadmin-secure.tls=true"
       - "traefik.http.routers.pgadmin-secure.tls.certresolver=letsencrypt"
