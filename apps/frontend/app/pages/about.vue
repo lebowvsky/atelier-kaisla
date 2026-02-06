@@ -2,28 +2,31 @@
 /**
  * About Page
  *
- * Presents the story of Atelier Kaisla through three main sections:
- * - Creator's story
- * - Project's story
- * - Book's story
+ * Presents the story of Atelier Kaisla through dynamically fetched sections
+ * from the backend API (GET /api/about-sections).
  *
- * @pattern Template Method Pattern
- * @purpose Consistent page structure with varying content sections
+ * @pattern Adapter Pattern
+ * @purpose Backend AboutSection entities are adapted to frontend Story interface
+ *
+ * @pattern Facade Pattern
+ * @purpose useAboutSections composable simplifies API interaction
  *
  * @pattern Strategy Pattern
  * @purpose Alternating image positions for visual rhythm
  *
  * Features:
+ * - Dynamic content from backend API
  * - Fully responsive layout
  * - SEO optimized with rich meta tags
  * - Accessible with semantic HTML and ARIA
  * - Smooth scroll behavior between sections
  * - Reusable StorySection components
  * - Theme alternation for visual interest
+ * - Loading and error state management
  *
  * Accessibility:
  * - WCAG 2.1 AA compliant
- * - Proper heading hierarchy (h1 → h2)
+ * - Proper heading hierarchy (h1 -> h2)
  * - Semantic HTML structure
  * - Keyboard navigable
  * - Screen reader friendly
@@ -35,8 +38,11 @@
  * - Efficient data fetching with composables
  */
 
-// Fetch story data using composable (Factory Pattern)
-const { aboutStories } = useStoryData()
+// Fetch about sections from backend API (Adapter + Facade patterns)
+const { stories, loading, error, fetchAboutSections } = useAboutSections()
+
+// Fetch data on component setup (SSR-compatible)
+await fetchAboutSections()
 
 // Page-specific SEO meta tags
 useHead({
@@ -75,10 +81,36 @@ useSeoMeta({
     </section>
 
     <!-- Story Sections -->
-    <!-- Pattern: Template Method with Strategy for alternating layouts -->
-    <div class="about-stories">
+    <!-- Loading State -->
+    <div v-if="loading" class="about-loading" role="status" aria-label="Chargement des sections">
+      <div class="container">
+        <p class="about-loading__text">Chargement...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="about-error" role="alert">
+      <div class="container">
+        <p class="about-error__text">
+          Impossible de charger les sections. Veuillez r&eacute;essayer plus tard.
+        </p>
+        <button class="about-error__button" @click="fetchAboutSections">
+          R&eacute;essayer
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div v-else-if="stories.length === 0" class="about-empty">
+      <div class="container">
+        <p class="about-empty__text">Aucune section disponible pour le moment.</p>
+      </div>
+    </div>
+
+    <!-- Sections from API (Adapter + Strategy patterns) -->
+    <div v-else class="about-stories">
       <StorySection
-        v-for="(story, index) in aboutStories"
+        v-for="(story, index) in stories"
         :key="story.id"
         :id="story.id"
         :title="story.title"
@@ -169,6 +201,61 @@ useSeoMeta({
 // Story Sections Container
 .about-stories {
   // Story sections have their own padding, no need for additional container padding
+}
+
+// Loading State
+.about-loading {
+  padding: $spacing-3xl $spacing-md;
+  text-align: center;
+}
+
+.about-loading__text {
+  font-size: $font-size-lg;
+  color: $color-gray-600;
+  margin: 0;
+}
+
+// Error State
+.about-error {
+  padding: $spacing-3xl $spacing-md;
+  text-align: center;
+}
+
+.about-error__text {
+  font-size: $font-size-lg;
+  color: $color-gray-600;
+  margin: 0 0 $spacing-lg 0;
+}
+
+.about-error__button {
+  display: inline-block;
+  padding: $spacing-sm $spacing-xl;
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $color-white;
+  background-color: $color-black;
+  border: none;
+  border-radius: $border-radius-base;
+  cursor: pointer;
+  transition: background-color $transition-base;
+
+  &:hover {
+    background-color: $color-gray-900;
+  }
+
+  @include focus-visible;
+}
+
+// Empty State
+.about-empty {
+  padding: $spacing-3xl $spacing-md;
+  text-align: center;
+}
+
+.about-empty__text {
+  font-size: $font-size-lg;
+  color: $color-gray-600;
+  margin: 0;
 }
 
 // Call to Action Section

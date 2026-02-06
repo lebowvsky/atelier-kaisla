@@ -8,6 +8,7 @@ import { getDatabaseConfig } from './config/database.config';
 import { validationSchema } from './config/environment.validation';
 import { ProductsModule } from './modules/products/products.module';
 import { AboutSectionsModule } from './modules/about-sections/about-sections.module';
+import { ContactLinksModule } from './modules/contact-links/contact-links.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
@@ -35,6 +36,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
     // Feature modules
     ProductsModule,
     AboutSectionsModule,
+    ContactLinksModule,
     AuthModule,
   ],
   controllers: [AppController],

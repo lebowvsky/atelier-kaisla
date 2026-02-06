@@ -347,6 +347,8 @@ const handleClose = () => {
 
 /**
  * Watch open prop to reset/populate form when sheet opens
+ * Uses immediate: true so it also fires on mount (the Sheet remounts content each time it opens,
+ * so without immediate the watcher would not fire since open is already true at mount time)
  */
 watch(
   () => props.open,
@@ -359,6 +361,7 @@ watch(
       }
     }
   },
+  { immediate: true },
 )
 </script>
 
