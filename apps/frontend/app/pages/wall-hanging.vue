@@ -56,13 +56,32 @@ const cardConfig: ArtworkCardConfig = {
  */
 const config = useRuntimeConfig()
 
-// Get API URL based on environment (server vs client)
-const getApiUrl = () => {
-  if (import.meta.server) {
-    return config.public.apiUrl || 'http://backend:4000/api'
-  } else {
-    return config.public.apiUrl || 'http://localhost:4000/api'
+/**
+ * Get API URL based on environment and execution context
+ *
+ * Development:
+ *   - Client-side: http://localhost:4000/api (browser can't access Docker hostnames)
+ *   - Server-side: http://backend:4000/api (Nuxt in Docker can access backend container)
+ *
+ * Production:
+ *   - Client-side: https://api.lebowvsky.com (public URL)
+ *   - Server-side: https://api.lebowvsky.com (public URL)
+ */
+const getApiUrl = (): string => {
+  // Client-side (browser)
+  if (import.meta.client) {
+    // Production: use public API URL from environment
+    if (process.env.NODE_ENV === 'production') {
+      return config.public.apiUrl
+    }
+    // Development: force localhost (backend hostname not accessible from browser)
+    return 'http://localhost:4000/api'
   }
+
+  // Server-side (SSR): always use environment variable
+  // Dev: http://backend:4000/api
+  // Prod: https://api.lebowvsky.com
+  return config.public.apiUrl
 }
 
 const { data: products, error, pending: loading } = await useAsyncData(

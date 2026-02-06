@@ -239,22 +239,31 @@ make db-shell
 
 ### CORS Issues (RESOLVED)
 
-The backoffice in production (`https://bokaisla.lebowvsky.com`) can now make requests to the API (`https://api.lebowvsky.com`) without CORS errors.
+Both the frontend (`https://kaisla.lebowvsky.com`) and backoffice (`https://bokaisla.lebowvsky.com`) can now make requests to the API (`https://api.lebowvsky.com`) without CORS errors in both development and production.
 
 **Quick test**:
 ```bash
+# Test frontend in development
+./test-frontend-api.sh
+
+# Test CORS in production
 ./test-cors.sh https://api.lebowvsky.com https://bokaisla.lebowvsky.com https://kaisla.lebowvsky.com
 ```
 
 **Documentation**:
-- Quick deployment: `/DEPLOYMENT-CORS-FIX.md`
-- Detailed troubleshooting: `/CORS-TROUBLESHOOTING.md`
-- Technical summary: `/CORS-FIX-SUMMARY.md`
+- Frontend CORS fix (new): `/QUICK-FIX-FRONTEND-CORS.md`
+- Frontend detailed: `/FRONTEND-CORS-FIX.md`
+- Frontend before/after: `/FRONTEND-CORS-BEFORE-AFTER.md`
+- Frontend summary: `/FRONTEND-CORS-SUMMARY.md`
+- Backoffice CORS: `/CORS-FIX-SUMMARY.md`
+- Deployment: `/DEPLOYMENT-CORS-FIX.md`
+- Troubleshooting: `/CORS-TROUBLESHOOTING.md`
 
 **Common issues**:
 - CORS errors persist: Check Traefik configuration (remove CORS middleware)
 - Environment variables: Verify `FRONTEND_URL` and `BACKOFFICE_URL` are set correctly
 - Check backend logs: `docker compose -f docker-compose.prod.yml logs -f backend | grep CORS`
+- Frontend development: Browser console should show `http://localhost:4000/api`, NOT `http://backend:4000/api`
 
 ### Product Upload Issues (RESOLVED)
 

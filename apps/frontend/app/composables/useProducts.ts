@@ -82,20 +82,31 @@ export function useProducts() {
   const config = useRuntimeConfig()
 
   /**
-   * Get the correct API URL based on environment (server vs client)
-   * In Docker:
-   * - Server (SSR): http://backend:4000/api (internal Docker network)
-   * - Client (browser): http://localhost:4000/api (host machine)
+   * Get API URL based on environment and execution context
+   *
+   * Development:
+   *   - Client-side: http://localhost:4000/api (browser can't access Docker hostnames)
+   *   - Server-side: http://backend:4000/api (Nuxt in Docker can access backend container)
+   *
+   * Production:
+   *   - Client-side: https://api.lebowvsky.com (public URL)
+   *   - Server-side: https://api.lebowvsky.com (public URL)
    */
-  const getApiUrl = () => {
-    // Check if we're on the server (SSR) or client (browser)
-    if (import.meta.server) {
-      // Server-side: use internal Docker network address
-      return config.public.apiUrl || 'http://backend:4000/api'
-    } else {
-      // Client-side: use localhost for browser
+  const getApiUrl = (): string => {
+    // Client-side (browser)
+    if (import.meta.client) {
+      // Production: use public API URL from environment
+      if (process.env.NODE_ENV === 'production') {
+        return config.public.apiUrl
+      }
+      // Development: force localhost (backend hostname not accessible from browser)
       return 'http://localhost:4000/api'
     }
+
+    // Server-side (SSR): always use environment variable
+    // Dev: http://backend:4000/api
+    // Prod: https://api.lebowvsky.com
+    return config.public.apiUrl
   }
 
   // Reactive state
