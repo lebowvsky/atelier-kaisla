@@ -11,8 +11,16 @@
 /**
  * Supported social media platforms
  * Extensible enum-like type for type safety
+ * Aligned with the backend ContactPlatform enum (excluding 'email', 'website', 'other')
  */
-export type SocialPlatform = 'instagram' | 'facebook' | 'twitter' | 'pinterest' | 'linkedin'
+export type SocialPlatform =
+  | 'instagram'
+  | 'facebook'
+  | 'twitter'
+  | 'pinterest'
+  | 'linkedin'
+  | 'tiktok'
+  | 'youtube'
 
 /**
  * Represents a single social media link
@@ -80,23 +88,3 @@ export interface ContactInfo {
   ariaLabel?: string
 }
 
-/**
- * Complete social share configuration
- * This structure mirrors what could come from an API endpoint
- */
-export interface SocialShareConfig {
-  /**
-   * Array of social media links
-   */
-  socialLinks: SocialLink[]
-
-  /**
-   * Contact information
-   */
-  contactInfo: ContactInfo
-
-  /**
-   * Optional theme (light/dark) for icons
-   */
-  theme?: 'light' | 'dark'
-}

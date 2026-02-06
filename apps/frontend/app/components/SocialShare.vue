@@ -3,22 +3,25 @@
  * SocialShare Component
  *
  * Displays social media links and contact information for Atelier Kaisla.
- * Designed with extensibility in mind for future API integration.
+ * Fetches data dynamically from the backend API (GET /api/contact-links)
+ * with graceful fallback to hardcoded data if the API is unavailable.
  *
  * Design Patterns:
- * - Factory Pattern: Social links created via factory function in composable
+ * - Facade Pattern: useSocialData composable abstracts API + fallback logic
+ * - Adapter Pattern: Backend ContactLink entities adapted to frontend SocialLink
  * - Strategy Pattern: Different rendering strategies for different platforms
- * - Adapter Pattern: Data structure ready for API integration
  * - Functional Programming: Pure functions, immutable data, reactive state
  *
  * Features:
+ * - Dynamic data from backend API with fallback
  * - Responsive layout (stacked on mobile, horizontal on desktop)
  * - Accessible links with ARIA labels
  * - Hover effects on social icons
  * - Inline SVG icons for performance and theming
  * - Email link with proper mailto protocol
  * - Keyboard accessible
- * - Extensible architecture for adding new platforms
+ * - SSR compatible (data fetched server-side via useAsyncData)
+ * - Graceful fallback if API is unavailable
  *
  * SEO Considerations:
  * - Semantic HTML structure
@@ -33,20 +36,12 @@
  * - Sufficient color contrast
  * - Focus indicators
  *
- * Future Enhancements:
- * - Replace useSocialData() with API call
- * - Add share functionality (share current page)
- * - Add analytics tracking on link clicks
- * - Add platform availability status
- *
  * @example
  * <SocialShare />
  *
  * @example With custom theme
  * <SocialShare theme="light" />
  */
-
-import type { SocialShareConfig } from '~/types/social'
 
 interface Props {
   /**
@@ -65,41 +60,15 @@ const props = withDefaults(defineProps<Props>(), {
   compact: false
 })
 
-// Fetch social media data using composable (Factory + Adapter pattern)
-const { socialLinks, contactInfo } = useSocialData()
+// Fetch social media data using composable (Facade + Adapter pattern)
+const { socialLinks, contactInfo, fetchSocialData } = useSocialData()
 
-/**
- * Handle social link click
- * Future: Add analytics tracking here
- *
- * @param platform - Social media platform name
- * @param url - Target URL
- */
-const handleSocialClick = (platform: string, url: string): void => {
-  // Future enhancement: Track analytics
-  // trackEvent('social_click', { platform, url })
-
-  // Link navigation is handled by the anchor tag
-  // This function is a hook for future analytics integration
-}
-
-/**
- * Handle email link click
- * Future: Add analytics tracking
- */
-const handleEmailClick = (): void => {
-  // Future enhancement: Track analytics
-  // trackEvent('email_click', { email: contactInfo.email })
-}
-
-/**
- * Get icon fill color based on theme
- * Strategy Pattern: Different colors for different themes
- *
- * @returns CSS color value
- */
-const iconColor = computed(() => {
-  return props.theme === 'light' ? '#ffffff' : '#000000'
+// Fetch data using useLazyAsyncData for non-blocking SSR compatibility
+// Renders immediately with fallback data, then updates when API responds
+// Nuxt deduplicates this call across components using the same key
+useLazyAsyncData('contact-links', () => fetchSocialData(), {
+  dedupe: 'defer',
+  server: true,
 })
 
 /**
@@ -127,7 +96,6 @@ const containerClasses = computed(() => {
         class="social-share__link"
         target="_blank"
         rel="noopener noreferrer"
-        @click="handleSocialClick(link.platform, link.url)"
       >
         <!-- Inline SVG Icon -->
         <svg
@@ -154,7 +122,6 @@ const containerClasses = computed(() => {
         :href="`mailto:${contactInfo.email}`"
         :aria-label="contactInfo.ariaLabel"
         class="social-share__email"
-        @click="handleEmailClick"
       >
         {{ contactInfo.email }}
       </a>
