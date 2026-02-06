@@ -61,7 +61,7 @@ const getApiUrl = () => {
   if (import.meta.server) {
     return config.public.apiUrl || 'http://backend:4000/api'
   } else {
-    return 'http://localhost:4000/api'
+    return config.public.apiUrl || 'http://localhost:4000/api'
   }
 }
 
