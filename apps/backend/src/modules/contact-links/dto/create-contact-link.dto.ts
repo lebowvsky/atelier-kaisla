@@ -47,9 +47,9 @@ export class CreateContactLinkDto {
   @IsString()
   @IsOptional()
   @MaxLength(255)
-  @Matches(/^[a-zA-Z0-9@_.\-\s]*$/, {
+  @Matches(/^[a-zA-ZÀ-ÿ0-9@_.\-\s]*$/, {
     message:
-      'Label can only contain letters, numbers, @, _, ., - and spaces',
+      'Label can only contain letters (including accented), numbers, @, _, ., - and spaces',
   })
   label?: string;
 
