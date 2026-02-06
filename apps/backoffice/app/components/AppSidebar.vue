@@ -17,12 +17,24 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar'
-import { ChevronUp, User2 } from 'lucide-vue-next'
+import { User2, LogOut } from 'lucide-vue-next'
 
 /**
  * Navigation composable - Singleton pattern
  */
 const { navigationItems } = useNavigation()
+
+/**
+ * Authentication composable
+ */
+const { user, logout } = useAuth()
+
+/**
+ * Handle logout action
+ */
+const handleLogout = async () => {
+  await logout()
+}
 </script>
 
 <template>
@@ -75,16 +87,24 @@ const { navigationItems } = useNavigation()
     <!-- Footer Section -->
     <SidebarFooter>
       <SidebarMenu>
+        <!-- User Info -->
         <SidebarMenuItem>
-          <SidebarMenuButton size="lg">
+          <SidebarMenuButton size="lg" disabled>
             <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-accent text-sidebar-accent-foreground">
               <User2 class="size-4" />
             </div>
             <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-semibold">Admin User</span>
-              <span class="truncate text-xs text-sidebar-foreground/70">admin@example.com</span>
+              <span class="truncate font-semibold">{{ user?.username || 'User' }}</span>
+              <span class="truncate text-xs text-sidebar-foreground/70">{{ user?.role || 'Role' }}</span>
             </div>
-            <ChevronUp class="ml-auto size-4" />
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        <!-- Logout Button -->
+        <SidebarMenuItem>
+          <SidebarMenuButton @click="handleLogout" tooltip="Logout">
+            <LogOut class="size-4" />
+            <span>Logout</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

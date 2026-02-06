@@ -39,20 +39,60 @@ export function useProducts() {
   const config = useRuntimeConfig()
 
   /**
-   * Get the correct API URL based on environment (server vs client)
+   * Get API URL based on environment and execution context
    * Pattern: Adapter Pattern for environment-specific configuration
    *
-   * In Docker:
-   * - Server (SSR): http://backend:4000/api (internal Docker network)
-   * - Client (browser): http://localhost:4000/api (host machine)
+   * Development:
+   *   - Client-side: http://localhost:4000/api (browser can't access Docker hostnames)
+   *   - Server-side: http://backend:4000/api (Nuxt in Docker can access backend container)
+   *
+   * Production:
+   *   - Client-side: https://api.lebowvsky.com (public URL)
+   *   - Server-side: https://api.lebowvsky.com (public URL)
    */
   const getApiUrl = (): string => {
+    // Client-side (browser)
+    if (import.meta.client) {
+      // Production: use public API URL from environment
+      if (process.env.NODE_ENV === 'production') {
+        return config.public.apiUrl
+      }
+      // Development: force localhost (backend hostname not accessible from browser)
+      return 'http://localhost:4000/api'
+    }
+
+    // Server-side (SSR): always use environment variable
+    // Dev: http://backend:4000/api
+    // Prod: https://api.lebowvsky.com
+    return config.public.apiUrl || 'http://backend:4000/api'
+  }
+
+  /**
+   * Get authentication headers for API calls
+   * Pattern: Adapter Pattern - provides consistent auth headers
+   */
+  const getAuthHeaders = (): HeadersInit => {
+    // Only run on client-side (localStorage)
     if (import.meta.server) {
-      // Server-side (SSR): use internal Docker network address
-      return config.public.apiUrl || 'http://backend:4000/api'
-    } else {
-      // Client-side (browser): use configured API URL or fallback to localhost
-      return config.public.apiUrl || 'http://localhost:4000/api'
+      return {
+        'Content-Type': 'application/json',
+      }
+    }
+
+    try {
+      const token = localStorage.getItem('auth_token')
+      return token
+        ? {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          }
+        : {
+            'Content-Type': 'application/json',
+          }
+    } catch {
+      return {
+        'Content-Type': 'application/json',
+      }
     }
   }
 
@@ -74,9 +114,20 @@ export function useProducts() {
     } catch (err: any) {
       console.error('API Error:', err)
 
+      // Check for 401 Unauthorized - token invalid/expired
+      if (err.statusCode === 401 || err.status === 401) {
+        console.error('[useProducts] Unauthorized - token invalid/expired')
+
+        // Clear auth state and redirect to login
+        if (!import.meta.server) {
+          localStorage.removeItem('auth_token')
+          await navigateTo('/login')
+        }
+      }
+
       // Adapter Pattern: Transform error to standard format
       error.value = {
-        statusCode: err.statusCode || 500,
+        statusCode: err.statusCode || err.status || 500,
         message: err.data?.message || err.message || 'An error occurred',
         error: err.data?.error || 'Unknown error',
       }
@@ -105,9 +156,15 @@ export function useProducts() {
         if (params?.sortOrder) query.append('sortOrder', params.sortOrder)
 
         const queryString = query.toString()
-        const url = `${getApiUrl()}/products${queryString ? `?${queryString}` : ''}`
+        const apiUrl = getApiUrl()
+        const url = `${apiUrl}/products${queryString ? `?${queryString}` : ''}`
 
-        console.log(`[useProducts] Fetching from: ${url} (${import.meta.server ? 'server' : 'client'})`)
+        console.log('[useProducts] Fetching from:', url)
+        console.log('[useProducts] Context:', {
+          client: import.meta.client,
+          env: process.env.NODE_ENV,
+          url: apiUrl,
+        })
 
         // Backend returns paginated response: { data, total, page, limit, totalPages }
         const response = await $fetch<{
@@ -118,6 +175,7 @@ export function useProducts() {
           totalPages: number
         }>(url, {
           method: 'GET',
+          headers: getAuthHeaders(),
         })
 
         // Extract and return only the data array
@@ -137,11 +195,18 @@ export function useProducts() {
   const fetchProductById = async (id: string): Promise<Product | null> => {
     const result = await executeApiCall(
       async () => {
-        const url = `${getApiUrl()}/products/${id}`
-        console.log(`[useProducts] Fetching product by ID from: ${url} (${import.meta.server ? 'server' : 'client'})`)
+        const apiUrl = getApiUrl()
+        const url = `${apiUrl}/products/${id}`
+        console.log('[useProducts] Fetching product by ID from:', url)
+        console.log('[useProducts] Context:', {
+          client: import.meta.client,
+          env: process.env.NODE_ENV,
+          url: apiUrl,
+        })
 
         return await $fetch<Product>(url, {
           method: 'GET',
+          headers: getAuthHeaders(),
         })
       },
       (data) => {
@@ -161,8 +226,19 @@ export function useProducts() {
   ): Promise<Product[]> => {
     const result = await executeApiCall(
       async () => {
-        return await $fetch<Product[]>(`${getApiUrl()}/products/category/${category}`, {
+        const apiUrl = getApiUrl()
+        const url = `${apiUrl}/products/category/${category}`
+
+        console.log('[useProducts] Fetching by category:', url)
+        console.log('[useProducts] Context:', {
+          client: import.meta.client,
+          env: process.env.NODE_ENV,
+          url: apiUrl,
+        })
+
+        return await $fetch<Product[]>(url, {
           method: 'GET',
+          headers: getAuthHeaders(),
         })
       },
       (data) => {
@@ -178,8 +254,19 @@ export function useProducts() {
    */
   const createProduct = async (dto: CreateProductDto): Promise<Product | null> => {
     const result = await executeApiCall(async () => {
-      return await $fetch<Product>(`${getApiUrl()}/products`, {
+      const apiUrl = getApiUrl()
+      const url = `${apiUrl}/products`
+
+      console.log('[useProducts] Creating product at:', url)
+      console.log('[useProducts] Context:', {
+        client: import.meta.client,
+        env: process.env.NODE_ENV,
+        url: apiUrl,
+      })
+
+      return await $fetch<Product>(url, {
         method: 'POST',
+        headers: getAuthHeaders(),
         body: dto,
       })
     })
@@ -231,10 +318,33 @@ export function useProducts() {
 
       // Use native fetch for multipart/form-data (Nuxt $fetch doesn't handle FormData well)
       const apiUrl = getApiUrl()
-      const response = await fetch(`${apiUrl}/products/with-upload`, {
+      const url = `${apiUrl}/products/with-upload`
+
+      console.log('[useProducts] Creating product with images at:', url)
+      console.log('[useProducts] Context:', {
+        client: import.meta.client,
+        env: process.env.NODE_ENV,
+        url: apiUrl,
+        filesCount: imageFiles.length,
+      })
+
+      // Get auth headers (without Content-Type for FormData)
+      const headers: HeadersInit = {}
+      if (!import.meta.server) {
+        try {
+          const token = localStorage.getItem('auth_token')
+          if (token) {
+            headers['Authorization'] = `Bearer ${token}`
+          }
+        } catch {
+          // Ignore localStorage errors
+        }
+      }
+
+      const response = await fetch(url, {
         method: 'POST',
+        headers, // Authorization header only, browser sets Content-Type with boundary
         body: formData,
-        // Don't set Content-Type header - browser will set it with boundary
       })
 
       if (!response.ok) {
@@ -268,8 +378,19 @@ export function useProducts() {
     dto: UpdateProductDto
   ): Promise<Product | null> => {
     const result = await executeApiCall(async () => {
-      return await $fetch<Product>(`${getApiUrl()}/products/${id}`, {
+      const apiUrl = getApiUrl()
+      const url = `${apiUrl}/products/${id}`
+
+      console.log('[useProducts] Updating product at:', url)
+      console.log('[useProducts] Context:', {
+        client: import.meta.client,
+        env: process.env.NODE_ENV,
+        url: apiUrl,
+      })
+
+      return await $fetch<Product>(url, {
         method: 'PATCH',
+        headers: getAuthHeaders(),
         body: dto,
       })
     })
@@ -293,8 +414,19 @@ export function useProducts() {
    */
   const deleteProduct = async (id: string): Promise<boolean> => {
     const result = await executeApiCall(async () => {
-      await $fetch(`${getApiUrl()}/products/${id}`, {
+      const apiUrl = getApiUrl()
+      const url = `${apiUrl}/products/${id}`
+
+      console.log('[useProducts] Deleting product at:', url)
+      console.log('[useProducts] Context:', {
+        client: import.meta.client,
+        env: process.env.NODE_ENV,
+        url: apiUrl,
+      })
+
+      await $fetch(url, {
         method: 'DELETE',
+        headers: getAuthHeaders(),
       })
       return true
     })
@@ -316,8 +448,19 @@ export function useProducts() {
   const fetchStatistics = async (): Promise<ProductStatistics | null> => {
     const result = await executeApiCall(
       async () => {
-        return await $fetch<ProductStatistics>(`${getApiUrl()}/products/statistics`, {
+        const apiUrl = getApiUrl()
+        const url = `${apiUrl}/products/statistics`
+
+        console.log('[useProducts] Fetching statistics from:', url)
+        console.log('[useProducts] Context:', {
+          client: import.meta.client,
+          env: process.env.NODE_ENV,
+          url: apiUrl,
+        })
+
+        return await $fetch<ProductStatistics>(url, {
           method: 'GET',
+          headers: getAuthHeaders(),
         })
       },
       (data) => {

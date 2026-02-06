@@ -10,7 +10,7 @@
  */
 
 import { computed } from 'vue'
-import { Home, Package, Info } from 'lucide-vue-next'
+import { Home, Package, Info, Settings } from 'lucide-vue-next'
 import type { NavigationItem } from '~/types/navigation'
 
 /**
@@ -41,6 +41,12 @@ export function useNavigation() {
       path: '/about',
       icon: Info,
       isActive: route.path === '/about'
+    },
+    {
+      title: 'Settings',
+      path: '/settings/credentials',
+      icon: Settings,
+      isActive: route.path.startsWith('/settings')
     }
   ])
 

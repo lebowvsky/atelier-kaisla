@@ -36,4 +36,11 @@ export default defineNuxtConfig({
     strict: true,
     typeCheck: false, // Disable for now to avoid blocking
   },
+
+  // Vue configuration - suppress experimental feature warnings
+  vue: {
+    compilerOptions: {
+      isCustomElement: () => false,
+    },
+  },
 });
