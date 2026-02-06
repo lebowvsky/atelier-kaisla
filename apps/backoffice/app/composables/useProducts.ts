@@ -51,8 +51,8 @@ export function useProducts() {
       // Server-side (SSR): use internal Docker network address
       return config.public.apiUrl || 'http://backend:4000/api'
     } else {
-      // Client-side (browser): use localhost for browser requests
-      return 'http://localhost:4000/api'
+      // Client-side (browser): use configured API URL or fallback to localhost
+      return config.public.apiUrl || 'http://localhost:4000/api'
     }
   }
 
