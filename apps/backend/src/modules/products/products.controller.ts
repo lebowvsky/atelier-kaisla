@@ -31,6 +31,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductQueryDto } from './dto/product-query.dto';
 import { CreateProductWithUploadDto } from './dto/create-product-with-upload.dto';
+import { Public } from '../auth/decorators/public.decorator';
 
 /**
  * Products controller - handles HTTP requests for products
@@ -168,6 +169,7 @@ export class ProductsController {
   /**
    * Get all products with filters and pagination
    */
+  @Public()
   @Get()
   @ApiOperation({ summary: 'Get all products with optional filters' })
   @ApiResponse({
@@ -181,6 +183,7 @@ export class ProductsController {
   /**
    * Get products by category (public endpoint)
    */
+  @Public()
   @Get('category/:category')
   @ApiOperation({ summary: 'Get products by category' })
   @ApiParam({
@@ -199,6 +202,7 @@ export class ProductsController {
   /**
    * Get product statistics
    */
+  @Public()
   @Get('statistics')
   @ApiOperation({ summary: 'Get product statistics' })
   @ApiResponse({
@@ -212,6 +216,7 @@ export class ProductsController {
   /**
    * Get a single product by ID
    */
+  @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Get a product by ID' })
   @ApiParam({
