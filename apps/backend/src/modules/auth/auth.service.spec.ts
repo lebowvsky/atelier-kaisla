@@ -2,7 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UnauthorizedException, BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  UnauthorizedException,
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { User } from '../../entities/user.entity';
@@ -79,12 +84,12 @@ describe('AuthService - updateCredentials', () => {
         newPassword: 'newPassword456',
       };
 
-      await expect(service.updateCredentials('invalid-id', dto)).rejects.toThrow(
-        NotFoundException,
-      );
-      await expect(service.updateCredentials('invalid-id', dto)).rejects.toThrow(
-        'User not found',
-      );
+      await expect(
+        service.updateCredentials('invalid-id', dto),
+      ).rejects.toThrow(NotFoundException);
+      await expect(
+        service.updateCredentials('invalid-id', dto),
+      ).rejects.toThrow('User not found');
     });
 
     it('should throw UnauthorizedException when current password is incorrect', async () => {
@@ -125,7 +130,9 @@ describe('AuthService - updateCredentials', () => {
     it('should successfully update password', async () => {
       mockUserRepository.findOne.mockResolvedValue(mockUser);
       jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
-      jest.spyOn(bcrypt, 'hash').mockResolvedValue('$2b$10$newhashedpassword' as never);
+      jest
+        .spyOn(bcrypt, 'hash')
+        .mockResolvedValue('$2b$10$newhashedpassword' as never);
 
       const updatedUser = {
         ...mockUser,
@@ -179,7 +186,9 @@ describe('AuthService - updateCredentials', () => {
         .mockResolvedValueOnce(null); // Second call for username check (not taken)
 
       jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
-      jest.spyOn(bcrypt, 'hash').mockResolvedValue('$2b$10$newhashedpassword' as never);
+      jest
+        .spyOn(bcrypt, 'hash')
+        .mockResolvedValue('$2b$10$newhashedpassword' as never);
 
       const updatedUser = {
         ...mockUser,
@@ -206,7 +215,9 @@ describe('AuthService - updateCredentials', () => {
     it('should hash password with correct salt rounds', async () => {
       mockUserRepository.findOne.mockResolvedValue(mockUser);
       jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
-      const hashSpy = jest.spyOn(bcrypt, 'hash').mockResolvedValue('$2b$10$newhashedpassword' as never);
+      const hashSpy = jest
+        .spyOn(bcrypt, 'hash')
+        .mockResolvedValue('$2b$10$newhashedpassword' as never);
 
       const updatedUser = {
         ...mockUser,

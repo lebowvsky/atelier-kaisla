@@ -36,9 +36,7 @@ export class AboutSectionsService {
 
     this.logger.log('Creating about section with image');
     this.logger.debug(`Received DTO: ${JSON.stringify(createDto, null, 2)}`);
-    this.logger.debug(
-      `Uploaded file: ${file.filename} (${file.size} bytes)`,
-    );
+    this.logger.debug(`Uploaded file: ${file.filename} (${file.size} bytes)`);
 
     try {
       const imageUrl = this.uploadService.getFileUrl(

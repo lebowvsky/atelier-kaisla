@@ -39,7 +39,9 @@ const logger = new Logger('UploadModule');
           ];
 
           if (allowedMimeTypes.includes(file.mimetype)) {
-            logger.debug(`File accepted: ${file.originalname} (${file.mimetype})`);
+            logger.debug(
+              `File accepted: ${file.originalname} (${file.mimetype})`,
+            );
             callback(null, true);
           } else {
             logger.warn(

@@ -1,5 +1,18 @@
-import { Controller, Post, Get, Patch, Body, Request, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Post,
+  Get,
+  Patch,
+  Body,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
@@ -67,7 +80,9 @@ export class AuthController {
   @Patch('credentials')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update user credentials (username and/or password)' })
+  @ApiOperation({
+    summary: 'Update user credentials (username and/or password)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Credentials updated successfully',
@@ -78,7 +93,8 @@ export class AuthController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Unauthorized - current password is incorrect or invalid token',
+    description:
+      'Unauthorized - current password is incorrect or invalid token',
   })
   @ApiResponse({
     status: 404,
@@ -92,6 +108,9 @@ export class AuthController {
     @Request() req,
     @Body() updateCredentialsDto: UpdateCredentialsDto,
   ) {
-    return this.authService.updateCredentials(req.user.id, updateCredentialsDto);
+    return this.authService.updateCredentials(
+      req.user.id,
+      updateCredentialsDto,
+    );
   }
 }

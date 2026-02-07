@@ -39,7 +39,9 @@ export class UserSeeder {
       });
 
       if (adminExists) {
-        this.logger.log(`User "${adminUsername}" already exists, skipping creation`);
+        this.logger.log(
+          `User "${adminUsername}" already exists, skipping creation`,
+        );
         return;
       }
 

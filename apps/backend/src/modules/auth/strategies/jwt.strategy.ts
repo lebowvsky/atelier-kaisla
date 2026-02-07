@@ -17,7 +17,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET || 'dev-secret-change-in-production',
     });
-    this.logger.log(`JWT Strategy initialized with secret: ${process.env.JWT_SECRET ? '***' : 'USING DEFAULT'}`);
+    this.logger.log(
+      `JWT Strategy initialized with secret: ${process.env.JWT_SECRET ? '***' : 'USING DEFAULT'}`,
+    );
   }
 
   /**
@@ -27,7 +29,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * @returns User object if valid
    */
   async validate(payload: any) {
-    this.logger.debug(`Validating JWT payload for user: ${payload.username} (id: ${payload.sub})`);
+    this.logger.debug(
+      `Validating JWT payload for user: ${payload.username} (id: ${payload.sub})`,
+    );
 
     const user = await this.authService.getUserById(payload.sub);
 

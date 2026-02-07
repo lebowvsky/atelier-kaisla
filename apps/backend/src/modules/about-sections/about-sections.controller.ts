@@ -99,9 +99,7 @@ export class AboutSectionsController {
     @UploadedFile() file: Express.Multer.File,
     @Req() request: Request,
   ) {
-    this.logger.log(
-      'POST /api/about-sections/with-upload - Request received',
-    );
+    this.logger.log('POST /api/about-sections/with-upload - Request received');
 
     if (!file) {
       throw new BadRequestException('Image is required');

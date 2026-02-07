@@ -1,4 +1,10 @@
-import { Injectable, UnauthorizedException, BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -107,7 +113,9 @@ export class AuthService {
 
     // Validate at least one field is provided
     if (!username && !newPassword) {
-      throw new BadRequestException('At least one field (username or newPassword) must be provided');
+      throw new BadRequestException(
+        'At least one field (username or newPassword) must be provided',
+      );
     }
 
     // Find the user
@@ -118,7 +126,10 @@ export class AuthService {
     }
 
     // Verify current password
-    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Current password is incorrect');

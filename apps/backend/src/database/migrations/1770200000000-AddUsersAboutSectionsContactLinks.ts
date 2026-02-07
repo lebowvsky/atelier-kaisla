@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddUsersAboutSectionsContactLinks1770200000000
-  implements MigrationInterface
-{
+export class AddUsersAboutSectionsContactLinks1770200000000 implements MigrationInterface {
   name = 'AddUsersAboutSectionsContactLinks1770200000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -77,9 +75,7 @@ export class AddUsersAboutSectionsContactLinks1770200000000
       `DROP INDEX "public"."IDX_contact_links_is_active_sort_order"`,
     );
     await queryRunner.query(`DROP TABLE "contact_links"`);
-    await queryRunner.query(
-      `DROP TYPE "public"."contact_links_platform_enum"`,
-    );
+    await queryRunner.query(`DROP TYPE "public"."contact_links_platform_enum"`);
 
     // === Drop about sections ===
     await queryRunner.query(

@@ -24,9 +24,7 @@ export class ContactLinksService {
     const contactLink = this.contactLinkRepository.create(createDto);
     const saved = await this.contactLinkRepository.save(contactLink);
 
-    this.logger.log(
-      `Contact link created: ${saved.id} (${saved.platform})`,
-    );
+    this.logger.log(`Contact link created: ${saved.id} (${saved.platform})`);
     return saved;
   }
 
@@ -74,8 +72,11 @@ export class ContactLinksService {
     const contactLink = await this.findById(id);
 
     // Exclude protected fields from the update payload
-    const { id: _id, createdAt: _createdAt, ...safeUpdate } =
-      updateDto as UpdateContactLinkDto & { id?: string; createdAt?: Date };
+    const {
+      id: _id,
+      createdAt: _createdAt,
+      ...safeUpdate
+    } = updateDto as UpdateContactLinkDto & { id?: string; createdAt?: Date };
     Object.assign(contactLink, safeUpdate);
 
     const updated = await this.contactLinkRepository.save(contactLink);
