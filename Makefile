@@ -243,6 +243,46 @@ migration-generate: ## Générer une nouvelle migration (usage: make migration-g
 	@echo "$(GREEN)Génération de la migration...$(NC)"
 	@cd apps/backend && npm run migration:generate -- src/database/migrations/$(NAME)
 
+# Commandes de migration - Production
+migration-run-prod: ## Exécuter les migrations en production
+	@echo "$(YELLOW)⚠️  Exécution des migrations en PRODUCTION$(NC)"
+	@read -p "Êtes-vous sûr de vouloir continuer? [y/N] " -n 1 -r; \
+	echo; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		echo "$(GREEN)Exécution des migrations...$(NC)"; \
+		docker exec atelier-kaisla-backend-prod npm run migration:run:prod; \
+	else \
+		echo "$(YELLOW)Opération annulée.$(NC)"; \
+	fi
+
+migration-show-prod: ## Afficher le statut des migrations en production
+	@echo "$(GREEN)Statut des migrations en production :$(NC)"
+	docker exec atelier-kaisla-backend-prod npm run migration:show:prod
+
+migration-baseline-prod: ## Marquer les migrations existantes comme exécutées (première fois seulement)
+	@echo "$(YELLOW)⚠️  Baseline : marque l'InitialSchema comme déjà exécutée en PRODUCTION$(NC)"
+	@echo "$(YELLOW)À utiliser UNIQUEMENT si la base a été créée par les scripts SQL init$(NC)"
+	@read -p "Êtes-vous sûr de vouloir continuer? [y/N] " -n 1 -r; \
+	echo; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		echo "$(GREEN)Création de la table migrations_history et insertion du baseline...$(NC)"; \
+		docker exec atelier-kaisla-postgres-prod psql -U postgres -d atelier_kaisla_prod -c " \
+			CREATE TABLE IF NOT EXISTS migrations_history ( \
+				id SERIAL PRIMARY KEY, \
+				timestamp BIGINT NOT NULL, \
+				name VARCHAR NOT NULL \
+			); \
+			INSERT INTO migrations_history (timestamp, name) \
+				SELECT 1770072119289, 'InitialSchema1770072119289' \
+				WHERE NOT EXISTS ( \
+					SELECT 1 FROM migrations_history WHERE name = 'InitialSchema1770072119289' \
+				); \
+		"; \
+		echo "$(GREEN)✓ Baseline effectué. Vous pouvez maintenant lancer: make migration-run-prod$(NC)"; \
+	else \
+		echo "$(YELLOW)Opération annulée.$(NC)"; \
+	fi
+
 # Commandes d'initialisation
 init: ## Initialiser le projet (copier .env et démarrer)
 	@echo "$(GREEN)Initialisation du projet...$(NC)"
