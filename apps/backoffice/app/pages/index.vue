@@ -10,8 +10,8 @@ import { BarChart3, TrendingUp, Users, Package } from 'lucide-vue-next'
  * SEO Configuration
  */
 useSeoMeta({
-  title: 'Dashboard - Atelier Kaisla Backoffice',
-  description: 'Admin dashboard for Atelier Kaisla e-commerce platform'
+  title: 'Tableau de bord - Atelier Kaisla Backoffice',
+  description: 'Tableau de bord administrateur pour la plateforme e-commerce Atelier Kaisla'
 })
 
 /**
@@ -28,28 +28,28 @@ interface DashboardStat {
 
 const stats: DashboardStat[] = [
   {
-    title: 'Total Revenue',
+    title: 'Revenu total',
     value: '$45,231.89',
     change: '+20.1%',
     icon: TrendingUp,
     trend: 'up'
   },
   {
-    title: 'Products',
+    title: 'Produits',
     value: '127',
     change: '+12',
     icon: Package,
     trend: 'up'
   },
   {
-    title: 'Customers',
+    title: 'Clients',
     value: '2,350',
     change: '+180',
     icon: Users,
     trend: 'up'
   },
   {
-    title: 'Orders',
+    title: 'Commandes',
     value: '573',
     change: '+48',
     icon: BarChart3,
@@ -64,10 +64,10 @@ const stats: DashboardStat[] = [
       <!-- Welcome Section -->
       <div>
         <h2 class="text-3xl font-bold tracking-tight">
-          Welcome back!
+          Bon retour !
         </h2>
         <p class="text-muted-foreground">
-          Here's what's happening with your store today.
+          Voici ce qui se passe dans votre boutique aujourd'hui.
         </p>
       </div>
 
@@ -98,7 +98,7 @@ const stats: DashboardStat[] = [
               >
                 {{ stat.change }}
               </span>
-              from last month
+              par rapport au mois dernier
             </p>
           </div>
         </div>
@@ -108,10 +108,10 @@ const stats: DashboardStat[] = [
       <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
         <div class="p-6">
           <h3 class="text-lg font-semibold">
-            Recent Activity
+            Activité récente
           </h3>
           <p class="text-sm text-muted-foreground">
-            Latest updates from your store
+            Dernières mises à jour de votre boutique
           </p>
         </div>
         <div class="border-t p-6">
@@ -119,22 +119,22 @@ const stats: DashboardStat[] = [
             <div class="flex items-center gap-4">
               <div class="h-2 w-2 rounded-full bg-green-500" />
               <div class="flex-1">
-                <p class="text-sm font-medium">New order received</p>
-                <p class="text-xs text-muted-foreground">2 minutes ago</p>
+                <p class="text-sm font-medium">Nouvelle commande reçue</p>
+                <p class="text-xs text-muted-foreground">Il y a 2 minutes</p>
               </div>
             </div>
             <div class="flex items-center gap-4">
               <div class="h-2 w-2 rounded-full bg-blue-500" />
               <div class="flex-1">
-                <p class="text-sm font-medium">Product added</p>
-                <p class="text-xs text-muted-foreground">1 hour ago</p>
+                <p class="text-sm font-medium">Produit ajouté</p>
+                <p class="text-xs text-muted-foreground">Il y a 1 heure</p>
               </div>
             </div>
             <div class="flex items-center gap-4">
               <div class="h-2 w-2 rounded-full bg-yellow-500" />
               <div class="flex-1">
-                <p class="text-sm font-medium">Customer registered</p>
-                <p class="text-xs text-muted-foreground">3 hours ago</p>
+                <p class="text-sm font-medium">Client inscrit</p>
+                <p class="text-xs text-muted-foreground">Il y a 3 heures</p>
               </div>
             </div>
           </div>

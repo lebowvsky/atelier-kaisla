@@ -579,23 +579,23 @@ describe('useProductFormatting', () => {
   })
 
   describe('formatCategory', () => {
-    it('should return "Wall Hanging" for wall-hanging category', () => {
+    it('should return "Suspension murale" for wall-hanging category', () => {
       const { formatCategory } = useProductFormatting()
-      expect(formatCategory('wall-hanging')).toBe('Wall Hanging')
+      expect(formatCategory('wall-hanging')).toBe('Suspension murale')
     })
 
-    it('should return "Rug" for rug category', () => {
+    it('should return "Tapis" for rug category', () => {
       const { formatCategory } = useProductFormatting()
-      expect(formatCategory('rug')).toBe('Rug')
+      expect(formatCategory('rug')).toBe('Tapis')
     })
   })
 
   describe('formatStatus', () => {
     it('should format status labels correctly', () => {
       const { formatStatus } = useProductFormatting()
-      expect(formatStatus('available')).toBe('Available')
-      expect(formatStatus('sold')).toBe('Sold')
-      expect(formatStatus('draft')).toBe('Draft')
+      expect(formatStatus('available')).toBe('Disponible')
+      expect(formatStatus('sold')).toBe('Vendu')
+      expect(formatStatus('draft')).toBe('Brouillon')
     })
   })
 

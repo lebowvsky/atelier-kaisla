@@ -19,8 +19,8 @@ import type { Product, ProductCategory, ProductStatus } from '@/types/product'
  * SEO Configuration
  */
 useSeoMeta({
-  title: 'Products - Atelier Kaisla Backoffice',
-  description: 'Manage products for Atelier Kaisla e-commerce platform',
+  title: 'Produits - Atelier Kaisla Backoffice',
+  description: 'Gérer les produits de la plateforme e-commerce Atelier Kaisla',
 })
 
 /**
@@ -150,7 +150,7 @@ const refreshProducts = async () => {
  * Handle product deletion
  */
 const handleDelete = async (id: string, name: string) => {
-  if (!confirm(`Are you sure you want to delete "${name}"?`)) {
+  if (!confirm(`Êtes-vous sûr de vouloir supprimer "${name}" ?`)) {
     return
   }
 
@@ -236,9 +236,9 @@ const handleEditFormSuccess = async () => {
       <!-- Header Section -->
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-3xl font-bold tracking-tight">Products</h2>
+          <h2 class="text-3xl font-bold tracking-tight">Produits</h2>
           <p class="text-muted-foreground">
-            Manage your product catalog
+            Gérez votre catalogue de produits
           </p>
         </div>
         <div class="flex gap-2">
@@ -252,13 +252,13 @@ const handleEditFormSuccess = async () => {
               class="mr-2 h-4 w-4"
               :class="{ 'animate-spin': loading }"
             />
-            Refresh
+            Actualiser
           </Button>
           <Sheet v-model:open="isFormOpen">
             <SheetTrigger as-child>
               <Button>
                 <Plus class="mr-2 h-4 w-4" />
-                Add Product
+                Ajouter un produit
               </Button>
             </SheetTrigger>
             <SheetContent class="w-full sm:max-w-2xl">
@@ -276,13 +276,13 @@ const handleEditFormSuccess = async () => {
       <div class="grid gap-4 md:grid-cols-3">
         <div class="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
           <div class="text-sm font-medium text-muted-foreground">
-            Total Products
+            Total produits
           </div>
           <div class="text-2xl font-bold">{{ totalProducts }}</div>
         </div>
         <div class="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
           <div class="text-sm font-medium text-muted-foreground">
-            Low Stock Alert
+            Alerte stock bas
           </div>
           <div class="text-2xl font-bold text-orange-600">
             {{ lowStockProducts }}
@@ -290,7 +290,7 @@ const handleEditFormSuccess = async () => {
         </div>
         <div class="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
           <div class="text-sm font-medium text-muted-foreground">
-            Draft Products
+            Produits brouillon
           </div>
           <div class="text-2xl font-bold text-yellow-600">
             {{ draftProducts }}
@@ -305,11 +305,11 @@ const handleEditFormSuccess = async () => {
       >
         <div class="flex items-start justify-between">
           <div>
-            <h3 class="font-semibold">Error Loading Products</h3>
+            <h3 class="font-semibold">Erreur de chargement des produits</h3>
             <p class="text-sm">{{ error.message }}</p>
           </div>
           <Button variant="ghost" size="sm" @click="clearError">
-            Dismiss
+            Fermer
           </Button>
         </div>
       </div>
@@ -325,7 +325,7 @@ const handleEditFormSuccess = async () => {
             <input
               v-model="filters.search"
               type="text"
-              placeholder="Search products..."
+              placeholder="Rechercher des produits..."
               class="w-full rounded-md border border-input bg-background px-10 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             />
           </div>
@@ -335,9 +335,9 @@ const handleEditFormSuccess = async () => {
             v-model="filters.category"
             class="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            <option value="">All Categories</option>
-            <option value="wall-hanging">Wall Hanging</option>
-            <option value="rug">Rug</option>
+            <option value="">Toutes les catégories</option>
+            <option value="wall-hanging">Suspension murale</option>
+            <option value="rug">Tapis</option>
           </select>
 
           <!-- Status Filter -->
@@ -345,10 +345,10 @@ const handleEditFormSuccess = async () => {
             v-model="filters.status"
             class="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            <option value="">All Status</option>
-            <option value="available">Available</option>
-            <option value="sold">Sold</option>
-            <option value="draft">Draft</option>
+            <option value="">Tous les statuts</option>
+            <option value="available">Disponible</option>
+            <option value="sold">Vendu</option>
+            <option value="draft">Brouillon</option>
           </select>
 
           <!-- Sort Options -->
@@ -356,9 +356,9 @@ const handleEditFormSuccess = async () => {
             v-model="sortBy"
             class="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            <option value="createdAt">Sort by Date</option>
-            <option value="name">Sort by Name</option>
-            <option value="price">Sort by Price</option>
+            <option value="createdAt">Trier par date</option>
+            <option value="name">Trier par nom</option>
+            <option value="price">Trier par prix</option>
           </select>
 
           <Button variant="outline" size="sm" @click="toggleSortOrder">
@@ -372,7 +372,7 @@ const handleEditFormSuccess = async () => {
             size="sm"
             @click="clearFilters"
           >
-            Clear Filters
+            Effacer les filtres
           </Button>
         </div>
       </div>
@@ -387,7 +387,7 @@ const handleEditFormSuccess = async () => {
           <div class="text-center">
             <RefreshCw class="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
             <p class="mt-2 text-sm text-muted-foreground">
-              Loading products...
+              Chargement des produits...
             </p>
           </div>
         </div>
@@ -398,15 +398,15 @@ const handleEditFormSuccess = async () => {
           class="flex flex-col items-center justify-center p-12"
         >
           <div class="text-center">
-            <h3 class="text-lg font-semibold">No products found</h3>
+            <h3 class="text-lg font-semibold">Aucun produit trouvé</h3>
             <p class="mt-1 text-sm text-muted-foreground">
-              Get started by creating your first product
+              Commencez par créer votre premier produit
             </p>
             <Sheet v-model:open="isFormOpen">
               <SheetTrigger as-child>
                 <Button class="mt-4">
                   <Plus class="mr-2 h-4 w-4" />
-                  Add Product
+                  Ajouter un produit
                 </Button>
               </SheetTrigger>
               <SheetContent class="w-full sm:max-w-2xl">
@@ -433,17 +433,17 @@ const handleEditFormSuccess = async () => {
                 <th
                   class="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
                 >
-                  Product
+                  Produit
                 </th>
                 <th
                   class="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
                 >
-                  Category
+                  Catégorie
                 </th>
                 <th
                   class="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
                 >
-                  Price
+                  Prix
                 </th>
                 <th
                   class="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
@@ -453,7 +453,7 @@ const handleEditFormSuccess = async () => {
                 <th
                   class="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
                 >
-                  Status
+                  Statut
                 </th>
                 <th
                   class="h-12 px-4 text-right align-middle font-medium text-muted-foreground"
@@ -518,16 +518,16 @@ const handleEditFormSuccess = async () => {
                 <!-- Actions -->
                 <td class="p-4 align-middle text-right">
                   <div class="flex justify-end gap-1">
-                    <Button variant="ghost" size="sm" title="View details">
+                    <Button variant="ghost" size="sm" title="Voir les détails">
                       <Eye class="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" title="Edit product" @click="handleEdit(product.id)">
+                    <Button variant="ghost" size="sm" title="Modifier le produit" @click="handleEdit(product.id)">
                       <Pencil class="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      title="Delete product"
+                      title="Supprimer le produit"
                       @click="handleDelete(product.id, product.name)"
                     >
                       <Trash2 class="h-4 w-4 text-red-600" />
@@ -545,8 +545,8 @@ const handleEditFormSuccess = async () => {
           class="flex items-center justify-between border-t px-4 py-4"
         >
           <div class="text-sm text-muted-foreground">
-            Showing <strong>{{ filteredProducts.length }}</strong> of
-            <strong>{{ products.length }}</strong> products
+            Affichage de <strong>{{ filteredProducts.length }}</strong> sur
+            <strong>{{ products.length }}</strong> produits
           </div>
           <div class="text-xs text-muted-foreground">
             <!-- Pagination controls can be added here when backend supports it -->

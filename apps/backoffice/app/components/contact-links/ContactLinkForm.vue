@@ -60,8 +60,8 @@ const platformOptions: PlatformConfig[] = [
   { value: 'pinterest', label: 'Pinterest', placeholder: 'https://pinterest.com/username' },
   { value: 'youtube', label: 'YouTube', placeholder: 'https://youtube.com/@channel' },
   { value: 'twitter', label: 'Twitter / X', placeholder: 'https://x.com/username' },
-  { value: 'website', label: 'Website', placeholder: 'https://example.com' },
-  { value: 'other', label: 'Other', placeholder: 'https://...' },
+  { value: 'website', label: 'Site web', placeholder: 'https://example.com' },
+  { value: 'other', label: 'Autre', placeholder: 'https://...' },
 ]
 
 /**
@@ -107,34 +107,34 @@ const validateForm = (): boolean => {
 
   // Required field: platform
   if (!formData.value.platform) {
-    validationErrors.value.platform = 'Platform is required'
+    validationErrors.value.platform = 'La plateforme est requise'
     isValid = false
   }
 
   // Required field: url
   if (!formData.value.url.trim()) {
-    validationErrors.value.url = 'URL is required'
+    validationErrors.value.url = "L'URL est requise"
     isValid = false
   } else if (!/^(https?:\/\/|mailto:).+/.test(formData.value.url)) {
-    validationErrors.value.url = 'URL must start with http://, https://, or mailto:'
+    validationErrors.value.url = "L'URL doit commencer par http://, https://, ou mailto:"
     isValid = false
   } else if (formData.value.url.length > 500) {
-    validationErrors.value.url = 'URL must be less than 500 characters'
+    validationErrors.value.url = "L'URL doit contenir moins de 500 caractères"
     isValid = false
   }
 
   // Optional field: label (validate only if provided)
   if (formData.value.label && formData.value.label.length > 255) {
-    validationErrors.value.label = 'Label must be less than 255 characters'
+    validationErrors.value.label = 'Le libellé doit contenir moins de 255 caractères'
     isValid = false
   } else if (formData.value.label && !/^[a-zA-ZÀ-ÿ0-9@_.\-\s]*$/.test(formData.value.label)) {
-    validationErrors.value.label = 'Label can only contain letters (including accented), numbers, @, _, ., - and spaces'
+    validationErrors.value.label = 'Le libellé ne peut contenir que des lettres (y compris accentuées), chiffres, @, _, ., - et espaces'
     isValid = false
   }
 
   // Sort order: must be >= 0
   if (formData.value.sortOrder < 0) {
-    validationErrors.value.sortOrder = 'Sort order must be 0 or greater'
+    validationErrors.value.sortOrder = "L'ordre d'affichage doit être 0 ou plus"
     isValid = false
   }
 
@@ -262,10 +262,10 @@ watch(
     <!-- Header -->
     <div class="border-b px-6 py-4">
       <h2 class="text-lg font-semibold">
-        {{ isEditMode ? 'Edit Contact Link' : 'Add New Contact Link' }}
+        {{ isEditMode ? 'Modifier le lien' : 'Ajouter un lien' }}
       </h2>
       <p class="text-muted-foreground text-sm">
-        {{ isEditMode ? 'Update the contact link details' : 'Add a new contact or social media link' }}
+        {{ isEditMode ? 'Modifier les détails du lien' : 'Ajouter un nouveau lien de contact ou réseau social' }}
       </p>
     </div>
 
@@ -277,9 +277,9 @@ watch(
       <CheckCircle2 class="h-5 w-5 flex-shrink-0" />
       <div>
         <p class="font-semibold">
-          {{ isEditMode ? 'Contact link updated successfully!' : 'Contact link created successfully!' }}
+          {{ isEditMode ? 'Lien mis à jour avec succès !' : 'Lien créé avec succès !' }}
         </p>
-        <p class="text-sm">Redirecting...</p>
+        <p class="text-sm">Redirection...</p>
       </div>
     </div>
 
@@ -291,7 +291,7 @@ watch(
       <AlertCircle class="mt-0.5 h-5 w-5 flex-shrink-0" />
       <div class="flex-1">
         <p class="font-semibold">
-          {{ isEditMode ? 'Error updating contact link' : 'Error creating contact link' }}
+          {{ isEditMode ? 'Erreur lors de la mise à jour' : 'Erreur lors de la création' }}
         </p>
         <p class="text-sm">{{ error.message }}</p>
       </div>
@@ -308,7 +308,7 @@ watch(
       <form @submit.prevent="handleSubmit" class="space-y-6">
         <!-- Platform -->
         <div class="space-y-2">
-          <Label for="platform">Platform *</Label>
+          <Label for="platform">Plateforme *</Label>
           <Select
             id="platform"
             v-model="formData.platform"
@@ -344,13 +344,13 @@ watch(
             {{ validationErrors.url }}
           </p>
           <p class="text-muted-foreground text-xs">
-            {{ formData.url.length }} / 500 characters. Must start with http://, https://, or mailto:
+            {{ formData.url.length }} / 500 caractères. Doit commencer par http://, https://, ou mailto:
           </p>
         </div>
 
         <!-- Label -->
         <div class="space-y-2">
-          <Label for="label">Display Label</Label>
+          <Label for="label">Libellé d'affichage</Label>
           <Input
             id="label"
             v-model="formData.label"
@@ -364,13 +364,13 @@ watch(
             {{ validationErrors.label }}
           </p>
           <p class="text-muted-foreground text-xs">
-            Optional display name shown on the frontend (e.g., @username, email address)
+            Nom d'affichage optionnel affiché sur le site (ex. @username, adresse email)
           </p>
         </div>
 
         <!-- Sort Order -->
         <div class="space-y-2">
-          <Label for="sortOrder">Sort Order</Label>
+          <Label for="sortOrder">Ordre d'affichage</Label>
           <Input
             id="sortOrder"
             v-model.number="formData.sortOrder"
@@ -384,7 +384,7 @@ watch(
             {{ validationErrors.sortOrder }}
           </p>
           <p class="text-muted-foreground text-xs">
-            Lower numbers appear first. Links with the same order are sorted by creation date.
+            Les nombres les plus bas apparaissent en premier. Les liens avec le même ordre sont triés par date de création.
           </p>
         </div>
 
@@ -398,10 +398,10 @@ watch(
             :disabled="loading"
           />
           <Label for="isActive" class="cursor-pointer">
-            Active
+            Actif
           </Label>
           <span class="text-muted-foreground text-xs">
-            (Only active links appear on the frontend)
+            (Seuls les liens actifs apparaissent sur le site)
           </span>
         </div>
       </form>
@@ -416,7 +416,7 @@ watch(
           @click="handleClose"
           :disabled="loading"
         >
-          Cancel
+          Annuler
         </Button>
         <Button
           type="submit"
@@ -425,8 +425,8 @@ watch(
         >
           <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
           {{ loading
-            ? (isEditMode ? 'Saving...' : 'Creating...')
-            : (isEditMode ? 'Save Changes' : 'Create Link')
+            ? (isEditMode ? 'Enregistrement...' : 'Création...')
+            : (isEditMode ? 'Enregistrer' : 'Créer le lien')
           }}
         </Button>
       </div>

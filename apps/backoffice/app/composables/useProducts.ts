@@ -558,8 +558,8 @@ export function useProductFormatting() {
    */
   const formatCategory = (category: 'wall-hanging' | 'rug'): string => {
     const labels: Record<string, string> = {
-      'wall-hanging': 'Wall Hanging',
-      'rug': 'Rug',
+      'wall-hanging': 'Suspension murale',
+      'rug': 'Tapis',
     }
     return labels[category] || category
   }
@@ -569,9 +569,9 @@ export function useProductFormatting() {
    */
   const formatStatus = (status: 'available' | 'sold' | 'draft'): string => {
     const labels: Record<string, string> = {
-      available: 'Available',
-      sold: 'Sold',
-      draft: 'Draft',
+      available: 'Disponible',
+      sold: 'Vendu',
+      draft: 'Brouillon',
     }
     return labels[status] || status
   }

@@ -25,31 +25,31 @@ export function useNavigation() {
    */
   const navigationItems = computed<NavigationItem[]>(() => [
     {
-      title: 'Home',
+      title: 'Accueil',
       path: '/',
       icon: Home,
       isActive: route.path === '/'
     },
     {
-      title: 'Products',
+      title: 'Produits',
       path: '/products',
       icon: Package,
       isActive: route.path === '/products'
     },
     {
-      title: 'About',
+      title: 'À propos',
       path: '/about',
       icon: Info,
       isActive: route.path === '/about'
     },
     {
-      title: 'Contact & Social',
+      title: 'Contact & Réseaux',
       path: '/contact-links',
       icon: Link,
       isActive: route.path === '/contact-links'
     },
     {
-      title: 'Settings',
+      title: 'Paramètres',
       path: '/settings/credentials',
       icon: Settings,
       isActive: route.path.startsWith('/settings')
@@ -70,7 +70,7 @@ export function useNavigation() {
    */
   const currentPageTitle = computed<string>(() => {
     const currentItem = navigationItems.value.find(item => item.isActive)
-    return currentItem?.title || 'Dashboard'
+    return currentItem?.title || 'Tableau de bord'
   })
 
   return {

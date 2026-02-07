@@ -19,8 +19,8 @@ import type { ContactLink } from '@/types/contact-link'
  * SEO Configuration
  */
 useSeoMeta({
-  title: 'Contact & Social Links - Atelier Kaisla Backoffice',
-  description: 'Manage contact and social media links for Atelier Kaisla e-commerce platform',
+  title: 'Contact & Réseaux sociaux - Atelier Kaisla Backoffice',
+  description: 'Gérer les liens de contact et réseaux sociaux pour Atelier Kaisla',
 })
 
 /**
@@ -74,7 +74,7 @@ const refreshContactLinks = async () => {
  */
 const handleDelete = async (id: string, platform: string, label?: string) => {
   const displayName = label || platform
-  if (!confirm(`Are you sure you want to delete "${displayName}"?`)) {
+  if (!confirm(`Êtes-vous sûr de vouloir supprimer "${displayName}" ?`)) {
     return
   }
 
@@ -139,8 +139,8 @@ const platformLabels: Record<string, string> = {
   pinterest: 'Pinterest',
   youtube: 'YouTube',
   twitter: 'Twitter / X',
-  website: 'Website',
-  other: 'Other',
+  website: 'Site web',
+  other: 'Autre',
 }
 
 /**
@@ -162,7 +162,7 @@ const truncateText = (text: string, maxLength: number): string => {
  * Format date helper
  */
 const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('en-US', {
+  return new Date(dateString).toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -176,9 +176,9 @@ const formatDate = (dateString: string): string => {
       <!-- Header Section -->
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-3xl font-bold tracking-tight">Contact & Social Links</h2>
+          <h2 class="text-3xl font-bold tracking-tight">Contact & Réseaux sociaux</h2>
           <p class="text-muted-foreground">
-            Manage contact methods and social media links displayed on the website
+            Gérez les méthodes de contact et liens de réseaux sociaux affichés sur le site
           </p>
         </div>
         <div class="flex gap-2">
@@ -192,13 +192,13 @@ const formatDate = (dateString: string): string => {
               class="mr-2 h-4 w-4"
               :class="{ 'animate-spin': loading }"
             />
-            Refresh
+            Actualiser
           </Button>
           <Sheet v-model:open="isFormOpen">
             <SheetTrigger as-child>
               <Button @click="openCreateForm">
                 <Plus class="mr-2 h-4 w-4" />
-                Add Link
+                Ajouter un lien
               </Button>
             </SheetTrigger>
             <SheetContent class="w-full sm:max-w-2xl">
@@ -217,13 +217,13 @@ const formatDate = (dateString: string): string => {
       <div class="grid gap-4 md:grid-cols-3">
         <div class="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
           <div class="text-sm font-medium text-muted-foreground">
-            Total Links
+            Total liens
           </div>
           <div class="text-2xl font-bold">{{ totalLinks }}</div>
         </div>
         <div class="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
           <div class="text-sm font-medium text-muted-foreground">
-            Active
+            Actifs
           </div>
           <div class="text-2xl font-bold text-green-600">
             {{ activeLinks }}
@@ -231,7 +231,7 @@ const formatDate = (dateString: string): string => {
         </div>
         <div class="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
           <div class="text-sm font-medium text-muted-foreground">
-            Inactive
+            Inactifs
           </div>
           <div class="text-2xl font-bold text-yellow-600">
             {{ inactiveLinks }}
@@ -246,11 +246,11 @@ const formatDate = (dateString: string): string => {
       >
         <div class="flex items-start justify-between">
           <div>
-            <h3 class="font-semibold">Error Loading Contact Links</h3>
+            <h3 class="font-semibold">Erreur de chargement des liens</h3>
             <p class="text-sm">{{ error.message }}</p>
           </div>
           <Button variant="ghost" size="sm" @click="clearError">
-            Dismiss
+            Fermer
           </Button>
         </div>
       </div>
@@ -265,7 +265,7 @@ const formatDate = (dateString: string): string => {
           <div class="text-center">
             <RefreshCw class="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
             <p class="mt-2 text-sm text-muted-foreground">
-              Loading contact links...
+              Chargement des liens...
             </p>
           </div>
         </div>
@@ -276,13 +276,13 @@ const formatDate = (dateString: string): string => {
           class="flex flex-col items-center justify-center p-12"
         >
           <div class="text-center">
-            <h3 class="text-lg font-semibold">No contact links found</h3>
+            <h3 class="text-lg font-semibold">Aucun lien trouvé</h3>
             <p class="mt-1 text-sm text-muted-foreground">
-              Get started by adding your first contact or social media link
+              Commencez par ajouter votre premier lien de contact ou réseau social
             </p>
             <Button class="mt-4" @click="openCreateForm">
               <Plus class="mr-2 h-4 w-4" />
-              Add Link
+              Ajouter un lien
             </Button>
           </div>
         </div>
@@ -324,7 +324,7 @@ const formatDate = (dateString: string): string => {
                 >
                   <Eye v-if="link.isActive" class="h-3 w-3" />
                   <EyeOff v-else class="h-3 w-3" />
-                  {{ link.isActive ? 'Active' : 'Inactive' }}
+                  {{ link.isActive ? 'Actif' : 'Inactif' }}
                 </span>
               </div>
 
@@ -335,8 +335,8 @@ const formatDate = (dateString: string): string => {
 
               <!-- Meta info -->
               <div class="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
-                <span v-if="link.label">Label: {{ link.label }}</span>
-                <span>Created {{ formatDate(link.createdAt) }}</span>
+                <span v-if="link.label">Libellé : {{ link.label }}</span>
+                <span>Créé le {{ formatDate(link.createdAt) }}</span>
               </div>
             </div>
 
@@ -347,14 +347,14 @@ const formatDate = (dateString: string): string => {
                 target="_blank"
                 rel="noopener noreferrer"
                 class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-accent hover:text-accent-foreground h-9 w-9"
-                title="Open link"
+                title="Ouvrir le lien"
               >
                 <ExternalLink class="h-4 w-4" />
               </a>
               <Button
                 variant="ghost"
                 size="sm"
-                title="Edit link"
+                title="Modifier le lien"
                 @click="openEditForm(link)"
               >
                 <Pencil class="h-4 w-4" />
@@ -362,7 +362,7 @@ const formatDate = (dateString: string): string => {
               <Button
                 variant="ghost"
                 size="sm"
-                title="Delete link"
+                title="Supprimer le lien"
                 @click="handleDelete(link.id, link.platform, link.label)"
               >
                 <Trash2 class="h-4 w-4 text-red-600" />
@@ -375,7 +375,7 @@ const formatDate = (dateString: string): string => {
             class="flex items-center justify-between border-t px-4 py-4"
           >
             <div class="text-sm text-muted-foreground">
-              Showing <strong>{{ sortedContactLinks.length }}</strong> link{{ sortedContactLinks.length !== 1 ? 's' : '' }}
+              Affichage de <strong>{{ sortedContactLinks.length }}</strong> lien{{ sortedContactLinks.length !== 1 ? 's' : '' }}
             </div>
           </div>
         </div>

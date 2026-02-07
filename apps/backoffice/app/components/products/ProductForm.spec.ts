@@ -216,27 +216,27 @@ describe('ProductForm', () => {
     it('should render in create mode when no product prop is provided', () => {
       const wrapper = mountForm({ open: true })
 
-      expect(wrapper.text()).toContain('Add New Product')
-      expect(wrapper.text()).toContain('Create a new product for your catalog')
+      expect(wrapper.text()).toContain('Ajouter un produit')
+      expect(wrapper.text()).toContain('Créer un nouveau produit pour votre catalogue')
     })
 
     it('should render in edit mode when product prop is provided', () => {
       const product = createMockProduct()
       const wrapper = mountForm({ open: true, product })
 
-      expect(wrapper.text()).toContain('Edit Product')
-      expect(wrapper.text()).toContain('Update product details')
+      expect(wrapper.text()).toContain('Modifier le produit')
+      expect(wrapper.text()).toContain('Modifier les détails du produit')
     })
 
-    it('should show "Create Product" button text in create mode', () => {
+    it('should show "Créer le produit" button text in create mode', () => {
       const wrapper = mountForm({ open: true })
-      expect(wrapper.text()).toContain('Create Product')
+      expect(wrapper.text()).toContain('Créer le produit')
     })
 
-    it('should show "Save Changes" button text in edit mode', () => {
+    it('should show "Enregistrer" button text in edit mode', () => {
       const product = createMockProduct()
       const wrapper = mountForm({ open: true, product })
-      expect(wrapper.text()).toContain('Save Changes')
+      expect(wrapper.text()).toContain('Enregistrer')
     })
   })
 
@@ -269,7 +269,7 @@ describe('ProductForm', () => {
       const wrapper = mountForm({ open: true, product })
       await nextTick()
 
-      expect(wrapper.text()).toContain('Current Images')
+      expect(wrapper.text()).toContain('Images actuelles')
     })
   })
 
@@ -278,12 +278,12 @@ describe('ProductForm', () => {
       const wrapper = mountForm({ open: true })
 
       // Submit the form (name is empty by default)
-      const submitButton = findButtonByText(wrapper, 'Create Product')
+      const submitButton = findButtonByText(wrapper, 'Créer le produit')
       expect(submitButton).toBeTruthy()
       await submitButton!.trigger('click')
       await nextTick()
 
-      expect(wrapper.text()).toContain('Product name is required')
+      expect(wrapper.text()).toContain('Le nom du produit est requis')
     })
 
     it('should show validation error when price is 0', async () => {
@@ -294,11 +294,11 @@ describe('ProductForm', () => {
       await nameInput.setValue('Test Product')
       await nextTick()
 
-      const submitButton = findButtonByText(wrapper, 'Create Product')
+      const submitButton = findButtonByText(wrapper, 'Créer le produit')
       await submitButton!.trigger('click')
       await nextTick()
 
-      expect(wrapper.text()).toContain('Price must be greater than 0')
+      expect(wrapper.text()).toContain('Le prix doit être supérieur à 0')
     })
 
     it('should show validation error when no images are provided in create mode', async () => {
@@ -312,11 +312,11 @@ describe('ProductForm', () => {
       await priceInput.setValue('100')
       await nextTick()
 
-      const submitButton = findButtonByText(wrapper, 'Create Product')
+      const submitButton = findButtonByText(wrapper, 'Créer le produit')
       await submitButton!.trigger('click')
       await nextTick()
 
-      expect(wrapper.text()).toContain('At least one product image is required')
+      expect(wrapper.text()).toContain('Au moins une image est requise')
     })
 
     it('should show validation error for description exceeding 500 characters', async () => {
@@ -329,11 +329,11 @@ describe('ProductForm', () => {
       await descTextarea.setValue('x'.repeat(501))
       await nextTick()
 
-      const submitButton = findButtonByText(wrapper, 'Create Product')
+      const submitButton = findButtonByText(wrapper, 'Créer le produit')
       await submitButton!.trigger('click')
       await nextTick()
 
-      expect(wrapper.text()).toContain('Description must be less than 500 characters')
+      expect(wrapper.text()).toContain('La description doit contenir moins de 500 caractères')
     })
   })
 
@@ -341,7 +341,7 @@ describe('ProductForm', () => {
     it('should emit close event when Cancel is clicked and not loading', async () => {
       const wrapper = mountForm({ open: true })
 
-      const cancelButton = findButtonByText(wrapper, 'Cancel')
+      const cancelButton = findButtonByText(wrapper, 'Annuler')
       expect(cancelButton).toBeTruthy()
       await cancelButton!.trigger('click')
 
@@ -357,7 +357,7 @@ describe('ProductForm', () => {
       // also checks loading.value before emitting. Since the button is disabled,
       // clicking it won't trigger the event from the stub.
       // Instead, verify that the Cancel button has disabled=true
-      const cancelButton = findButtonByText(wrapper, 'Cancel')
+      const cancelButton = findButtonByText(wrapper, 'Annuler')
       expect(cancelButton).toBeTruthy()
       expect(cancelButton!.attributes('disabled')).toBeDefined()
     })
@@ -366,17 +366,17 @@ describe('ProductForm', () => {
   describe('image handling', () => {
     it('should display empty state when no images are uploaded in create mode', () => {
       const wrapper = mountForm({ open: true })
-      expect(wrapper.text()).toContain('No images uploaded')
+      expect(wrapper.text()).toContain('Aucune image téléversée')
     })
 
-    it('should show "Upload Images" button text initially', () => {
+    it('should show "Téléverser des images" button text initially', () => {
       const wrapper = mountForm({ open: true })
-      expect(wrapper.text()).toContain('Upload Images')
+      expect(wrapper.text()).toContain('Téléverser des images')
     })
 
     it('should show image count info in upload button', () => {
       const wrapper = mountForm({ open: true })
-      expect(wrapper.text()).toContain('Upload up to 5 images')
+      expect(wrapper.text()).toContain('Téléversez jusqu\'à 5 images')
       expect(wrapper.text()).toContain('JPEG, PNG, WebP')
     })
   })
@@ -406,7 +406,7 @@ describe('ProductForm', () => {
       const wrapper = mountForm({ open: true, product })
       await nextTick()
 
-      expect(wrapper.text()).toContain('Current Images')
+      expect(wrapper.text()).toContain('Images actuelles')
 
       const existingImgs = wrapper.findAll('img[alt="Product image"]')
       expect(existingImgs).toHaveLength(2)
@@ -419,7 +419,7 @@ describe('ProductForm', () => {
       const wrapper = mountForm({ open: true, product })
       await nextTick()
 
-      const submitButton = findButtonByText(wrapper, 'Save Changes')
+      const submitButton = findButtonByText(wrapper, 'Enregistrer')
       expect(submitButton).toBeTruthy()
       await submitButton!.trigger('click')
       await flushPromises()
@@ -444,13 +444,13 @@ describe('ProductForm', () => {
       await priceInput.setValue('100')
       await nextTick()
 
-      const submitButton = findButtonByText(wrapper, 'Create Product')
+      const submitButton = findButtonByText(wrapper, 'Créer le produit')
       expect(submitButton).toBeTruthy()
       await submitButton!.trigger('click')
       await nextTick()
 
       // Should show image validation error since we cannot add files through the test
-      expect(wrapper.text()).toContain('At least one product image is required')
+      expect(wrapper.text()).toContain('Au moins une image est requise')
       // createProductWithImages should NOT have been called due to validation failure
       expect(mockCreateProductWithImages).not.toHaveBeenCalled()
     })
@@ -468,7 +468,7 @@ describe('ProductForm', () => {
       await nameInput.setValue('Updated Name')
       await nextTick()
 
-      const submitButton = findButtonByText(wrapper, 'Save Changes')
+      const submitButton = findButtonByText(wrapper, 'Enregistrer')
       expect(submitButton).toBeTruthy()
       await submitButton!.trigger('click')
       await flushPromises()
@@ -488,12 +488,12 @@ describe('ProductForm', () => {
       const wrapper = mountForm({ open: true, product })
       await nextTick()
 
-      const submitButton = findButtonByText(wrapper, 'Save Changes')
+      const submitButton = findButtonByText(wrapper, 'Enregistrer')
       expect(submitButton).toBeTruthy()
       await submitButton!.trigger('click')
       await flushPromises()
 
-      expect(wrapper.text()).toContain('Product updated successfully!')
+      expect(wrapper.text()).toContain('Produit mis à jour avec succès !')
 
       vi.useRealTimers()
     })
@@ -518,16 +518,16 @@ describe('ProductForm', () => {
       const wrapper = mountForm({ open: true })
       await nextTick()
 
-      expect(wrapper.text()).toContain('Creating...')
+      expect(wrapper.text()).toContain('Création...')
     })
 
-    it('should show "Saving..." in edit mode when loading', async () => {
+    it('should show "Enregistrement..." in edit mode when loading', async () => {
       mockLoadingRef.value = true
       const product = createMockProduct()
       const wrapper = mountForm({ open: true, product })
       await nextTick()
 
-      expect(wrapper.text()).toContain('Saving...')
+      expect(wrapper.text()).toContain('Enregistrement...')
     })
   })
 

@@ -97,38 +97,38 @@ const validateForm = (): boolean => {
 
   // Required field: title
   if (!formData.value.title.trim()) {
-    validationErrors.value.title = 'Title is required'
+    validationErrors.value.title = 'Le titre est requis'
     isValid = false
   } else if (formData.value.title.length > 255) {
-    validationErrors.value.title = 'Title must be less than 255 characters'
+    validationErrors.value.title = 'Le titre doit contenir moins de 255 caractères'
     isValid = false
   }
 
   // Paragraphs: at least one non-empty paragraph
   const nonEmptyParagraphs = formData.value.paragraphs.filter((p) => p.trim().length > 0)
   if (nonEmptyParagraphs.length === 0) {
-    validationErrors.value.paragraphs = 'At least one paragraph is required'
+    validationErrors.value.paragraphs = 'Au moins un paragraphe est requis'
     isValid = false
   }
 
   // Image: required for create, optional for edit
   if (!isEditMode.value && !imageFile.value) {
-    validationErrors.value.image = 'An image is required'
+    validationErrors.value.image = 'Une image est requise'
     isValid = false
   }
 
   // Image alt text: required
   if (!formData.value.imageAlt.trim()) {
-    validationErrors.value.imageAlt = 'Image alt text is required'
+    validationErrors.value.imageAlt = 'Le texte alternatif est requis'
     isValid = false
   } else if (formData.value.imageAlt.length > 255) {
-    validationErrors.value.imageAlt = 'Image alt text must be less than 255 characters'
+    validationErrors.value.imageAlt = 'Le texte alternatif doit contenir moins de 255 caractères'
     isValid = false
   }
 
   // Sort order: must be >= 0
   if (formData.value.sortOrder < 0) {
-    validationErrors.value.sortOrder = 'Sort order must be 0 or greater'
+    validationErrors.value.sortOrder = "L'ordre d'affichage doit être 0 ou plus"
     isValid = false
   }
 
@@ -140,10 +140,10 @@ const validateForm = (): boolean => {
  */
 const validateFile = (file: File): string | null => {
   if (!ALLOWED_TYPES.includes(file.type)) {
-    return 'Invalid file type. Allowed: JPEG, PNG, WebP'
+    return 'Type de fichier invalide. Formats acceptés : JPEG, PNG, WebP'
   }
   if (file.size > MAX_FILE_SIZE) {
-    return 'File size exceeds 5MB limit'
+    return 'La taille du fichier dépasse la limite de 5 Mo'
   }
   return null
 }
@@ -370,10 +370,10 @@ watch(
     <!-- Header -->
     <div class="border-b px-6 py-4">
       <h2 class="text-lg font-semibold">
-        {{ isEditMode ? 'Edit Section' : 'Add New Section' }}
+        {{ isEditMode ? 'Modifier la section' : 'Ajouter une section' }}
       </h2>
       <p class="text-muted-foreground text-sm">
-        {{ isEditMode ? 'Update the about section details' : 'Create a new about section for the About page' }}
+        {{ isEditMode ? 'Modifier les détails de la section' : 'Créer une nouvelle section pour la page À propos' }}
       </p>
     </div>
 
@@ -385,9 +385,9 @@ watch(
       <CheckCircle2 class="h-5 w-5 flex-shrink-0" />
       <div>
         <p class="font-semibold">
-          {{ isEditMode ? 'Section updated successfully!' : 'Section created successfully!' }}
+          {{ isEditMode ? 'Section mise à jour avec succès !' : 'Section créée avec succès !' }}
         </p>
-        <p class="text-sm">Redirecting...</p>
+        <p class="text-sm">Redirection...</p>
       </div>
     </div>
 
@@ -399,7 +399,7 @@ watch(
       <AlertCircle class="mt-0.5 h-5 w-5 flex-shrink-0" />
       <div class="flex-1">
         <p class="font-semibold">
-          {{ isEditMode ? 'Error updating section' : 'Error creating section' }}
+          {{ isEditMode ? 'Erreur lors de la mise à jour' : 'Erreur lors de la création' }}
         </p>
         <p class="text-sm">{{ error.message }}</p>
       </div>
@@ -416,12 +416,12 @@ watch(
       <form @submit.prevent="handleSubmit" class="space-y-6">
         <!-- Title -->
         <div class="space-y-2">
-          <Label for="title">Title *</Label>
+          <Label for="title">Titre *</Label>
           <Input
             id="title"
             v-model="formData.title"
             type="text"
-            placeholder="e.g., Our Story"
+            placeholder="ex. Notre histoire"
             maxlength="255"
             :aria-invalid="!!validationErrors.title"
             :disabled="loading"
@@ -430,13 +430,13 @@ watch(
             {{ validationErrors.title }}
           </p>
           <p class="text-muted-foreground text-xs">
-            {{ formData.title.length }} / 255 characters
+            {{ formData.title.length }} / 255 caractères
           </p>
         </div>
 
         <!-- Paragraphs (dynamic list) -->
         <div class="space-y-3">
-          <Label>Paragraphs *</Label>
+          <Label>Paragraphes *</Label>
           <div
             v-for="(paragraph, index) in formData.paragraphs"
             :key="index"
@@ -444,7 +444,7 @@ watch(
           >
             <Textarea
               v-model="formData.paragraphs[index]"
-              :placeholder="`Paragraph ${index + 1}...`"
+              :placeholder="`Paragraphe ${index + 1}...`"
               rows="3"
               class="flex-1"
               :disabled="loading"
@@ -471,7 +471,7 @@ watch(
             class="w-full justify-center gap-2"
           >
             <Plus class="h-4 w-4" />
-            Add Paragraph
+            Ajouter un paragraphe
           </Button>
           <p v-if="validationErrors.paragraphs" class="text-sm text-red-600">
             {{ validationErrors.paragraphs }}
@@ -502,10 +502,10 @@ watch(
               class="w-full justify-center gap-2"
             >
               <Upload class="h-4 w-4" />
-              {{ imageFile ? 'Replace Image' : (isEditMode ? 'Change Image' : 'Upload Image') }}
+              {{ imageFile ? "Remplacer l'image" : (isEditMode ? "Changer l'image" : 'Téléverser une image') }}
             </Button>
             <p class="text-muted-foreground text-xs">
-              Formats: JPEG, PNG, WebP. Max size: 5MB.
+              Formats : JPEG, PNG, WebP. Taille max : 5 Mo.
             </p>
           </div>
 
@@ -541,7 +541,7 @@ watch(
               v-else-if="isEditMode"
               class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 text-white"
             >
-              <p class="text-xs font-medium">Current image</p>
+              <p class="text-xs font-medium">Image actuelle</p>
             </div>
 
             <!-- Remove Button (only for newly selected files) -->
@@ -563,21 +563,21 @@ watch(
             class="flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-gray-300 bg-gray-50 p-8 dark:border-gray-700 dark:bg-gray-900"
           >
             <ImageIcon class="h-12 w-12 text-gray-400" />
-            <p class="text-muted-foreground text-sm font-medium">No image uploaded</p>
+            <p class="text-muted-foreground text-sm font-medium">Aucune image téléversée</p>
             <p class="text-muted-foreground text-xs text-center">
-              Click the button above to upload a section image
+              Cliquez sur le bouton ci-dessus pour téléverser une image
             </p>
           </div>
         </div>
 
         <!-- Image Alt Text -->
         <div class="space-y-2">
-          <Label for="imageAlt">Image Alt Text *</Label>
+          <Label for="imageAlt">Texte alternatif *</Label>
           <Input
             id="imageAlt"
             v-model="formData.imageAlt"
             type="text"
-            placeholder="e.g., Artisan working in the studio"
+            placeholder="ex. Artisan travaillant dans l'atelier"
             maxlength="255"
             :aria-invalid="!!validationErrors.imageAlt"
             :disabled="loading"
@@ -586,13 +586,13 @@ watch(
             {{ validationErrors.imageAlt }}
           </p>
           <p class="text-muted-foreground text-xs">
-            {{ formData.imageAlt.length }} / 255 characters
+            {{ formData.imageAlt.length }} / 255 caractères
           </p>
         </div>
 
         <!-- Sort Order -->
         <div class="space-y-2">
-          <Label for="sortOrder">Sort Order</Label>
+          <Label for="sortOrder">Ordre d'affichage</Label>
           <Input
             id="sortOrder"
             v-model.number="formData.sortOrder"
@@ -606,7 +606,7 @@ watch(
             {{ validationErrors.sortOrder }}
           </p>
           <p class="text-muted-foreground text-xs">
-            Lower numbers appear first on the About page.
+            Les nombres les plus bas apparaissent en premier sur la page À propos.
           </p>
         </div>
 
@@ -620,10 +620,10 @@ watch(
             :disabled="loading"
           />
           <Label for="isPublished" class="cursor-pointer">
-            Published
+            Publiée
           </Label>
           <span class="text-muted-foreground text-xs">
-            (Only published sections appear on the frontend)
+            (Seules les sections publiées apparaissent sur le site)
           </span>
         </div>
       </form>
@@ -638,7 +638,7 @@ watch(
           @click="handleClose"
           :disabled="loading"
         >
-          Cancel
+          Annuler
         </Button>
         <Button
           type="submit"
@@ -647,8 +647,8 @@ watch(
         >
           <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
           {{ loading
-            ? (isEditMode ? 'Saving...' : 'Creating...')
-            : (isEditMode ? 'Save Changes' : 'Create Section')
+            ? (isEditMode ? 'Enregistrement...' : 'Création...')
+            : (isEditMode ? 'Enregistrer' : 'Créer la section')
           }}
         </Button>
       </div>

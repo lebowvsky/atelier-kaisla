@@ -94,17 +94,17 @@ const handleLogout = async () => {
               <User2 class="size-4" />
             </div>
             <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-semibold">{{ user?.username || 'User' }}</span>
-              <span class="truncate text-xs text-sidebar-foreground/70">{{ user?.role || 'Role' }}</span>
+              <span class="truncate font-semibold">{{ user?.username || 'Utilisateur' }}</span>
+              <span class="truncate text-xs text-sidebar-foreground/70">{{ user?.role || 'Rôle' }}</span>
             </div>
           </SidebarMenuButton>
         </SidebarMenuItem>
 
         <!-- Logout Button -->
         <SidebarMenuItem>
-          <SidebarMenuButton @click="handleLogout" tooltip="Logout">
+          <SidebarMenuButton @click="handleLogout" tooltip="Déconnexion">
             <LogOut class="size-4" />
-            <span>Logout</span>
+            <span>Déconnexion</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

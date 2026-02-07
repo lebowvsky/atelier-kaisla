@@ -19,8 +19,8 @@ import type { AboutSection } from '@/types/about-section'
  * SEO Configuration
  */
 useSeoMeta({
-  title: 'About Sections - Atelier Kaisla Backoffice',
-  description: 'Manage about page sections for Atelier Kaisla e-commerce platform',
+  title: 'Sections À propos - Atelier Kaisla Backoffice',
+  description: 'Gérer les sections de la page À propos pour Atelier Kaisla',
 })
 
 /**
@@ -73,7 +73,7 @@ const refreshSections = async () => {
  * Handle section deletion
  */
 const handleDelete = async (id: string, title: string) => {
-  if (!confirm(`Are you sure you want to delete "${title}"? This will also delete its image.`)) {
+  if (!confirm(`Êtes-vous sûr de vouloir supprimer "${title}" ? L'image associée sera aussi supprimée.`)) {
     return
   }
 
@@ -138,7 +138,7 @@ const truncateText = (text: string, maxLength: number): string => {
  * Format date helper
  */
 const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('en-US', {
+  return new Date(dateString).toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -160,9 +160,9 @@ const getSectionImage = (image?: string): string => {
       <!-- Header Section -->
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-3xl font-bold tracking-tight">About Sections</h2>
+          <h2 class="text-3xl font-bold tracking-tight">Sections À propos</h2>
           <p class="text-muted-foreground">
-            Manage the sections displayed on the About page
+            Gérez les sections affichées sur la page À propos
           </p>
         </div>
         <div class="flex gap-2">
@@ -176,13 +176,13 @@ const getSectionImage = (image?: string): string => {
               class="mr-2 h-4 w-4"
               :class="{ 'animate-spin': loading }"
             />
-            Refresh
+            Actualiser
           </Button>
           <Sheet v-model:open="isFormOpen">
             <SheetTrigger as-child>
               <Button @click="openCreateForm">
                 <Plus class="mr-2 h-4 w-4" />
-                Add Section
+                Ajouter une section
               </Button>
             </SheetTrigger>
             <SheetContent class="w-full sm:max-w-2xl">
@@ -201,13 +201,13 @@ const getSectionImage = (image?: string): string => {
       <div class="grid gap-4 md:grid-cols-3">
         <div class="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
           <div class="text-sm font-medium text-muted-foreground">
-            Total Sections
+            Total sections
           </div>
           <div class="text-2xl font-bold">{{ totalSections }}</div>
         </div>
         <div class="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
           <div class="text-sm font-medium text-muted-foreground">
-            Published
+            Publiées
           </div>
           <div class="text-2xl font-bold text-green-600">
             {{ publishedSections }}
@@ -215,7 +215,7 @@ const getSectionImage = (image?: string): string => {
         </div>
         <div class="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
           <div class="text-sm font-medium text-muted-foreground">
-            Draft
+            Brouillon
           </div>
           <div class="text-2xl font-bold text-yellow-600">
             {{ draftSections }}
@@ -230,11 +230,11 @@ const getSectionImage = (image?: string): string => {
       >
         <div class="flex items-start justify-between">
           <div>
-            <h3 class="font-semibold">Error Loading Sections</h3>
+            <h3 class="font-semibold">Erreur de chargement des sections</h3>
             <p class="text-sm">{{ error.message }}</p>
           </div>
           <Button variant="ghost" size="sm" @click="clearError">
-            Dismiss
+            Fermer
           </Button>
         </div>
       </div>
@@ -249,7 +249,7 @@ const getSectionImage = (image?: string): string => {
           <div class="text-center">
             <RefreshCw class="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
             <p class="mt-2 text-sm text-muted-foreground">
-              Loading sections...
+              Chargement des sections...
             </p>
           </div>
         </div>
@@ -260,13 +260,13 @@ const getSectionImage = (image?: string): string => {
           class="flex flex-col items-center justify-center p-12"
         >
           <div class="text-center">
-            <h3 class="text-lg font-semibold">No sections found</h3>
+            <h3 class="text-lg font-semibold">Aucune section trouvée</h3>
             <p class="mt-1 text-sm text-muted-foreground">
-              Get started by creating your first about section
+              Commencez par créer votre première section
             </p>
             <Button class="mt-4" @click="openCreateForm">
               <Plus class="mr-2 h-4 w-4" />
-              Add Section
+              Ajouter une section
             </Button>
           </div>
         </div>
@@ -308,7 +308,7 @@ const getSectionImage = (image?: string): string => {
                 >
                   <Eye v-if="section.isPublished" class="h-3 w-3" />
                   <EyeOff v-else class="h-3 w-3" />
-                  {{ section.isPublished ? 'Published' : 'Draft' }}
+                  {{ section.isPublished ? 'Publiée' : 'Brouillon' }}
                 </span>
               </div>
 
@@ -322,8 +322,8 @@ const getSectionImage = (image?: string): string => {
 
               <!-- Meta info -->
               <div class="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
-                <span>{{ section.paragraphs?.length || 0 }} paragraph{{ (section.paragraphs?.length || 0) !== 1 ? 's' : '' }}</span>
-                <span>Created {{ formatDate(section.createdAt) }}</span>
+                <span>{{ section.paragraphs?.length || 0 }} paragraphe{{ (section.paragraphs?.length || 0) !== 1 ? 's' : '' }}</span>
+                <span>Créée le {{ formatDate(section.createdAt) }}</span>
               </div>
             </div>
 
@@ -332,7 +332,7 @@ const getSectionImage = (image?: string): string => {
               <Button
                 variant="ghost"
                 size="sm"
-                title="Edit section"
+                title="Modifier la section"
                 @click="openEditForm(section)"
               >
                 <Pencil class="h-4 w-4" />
@@ -340,7 +340,7 @@ const getSectionImage = (image?: string): string => {
               <Button
                 variant="ghost"
                 size="sm"
-                title="Delete section"
+                title="Supprimer la section"
                 @click="handleDelete(section.id, section.title)"
               >
                 <Trash2 class="h-4 w-4 text-red-600" />
@@ -353,7 +353,7 @@ const getSectionImage = (image?: string): string => {
             class="flex items-center justify-between border-t px-4 py-4"
           >
             <div class="text-sm text-muted-foreground">
-              Showing <strong>{{ sortedSections.length }}</strong> section{{ sortedSections.length !== 1 ? 's' : '' }}
+              Affichage de <strong>{{ sortedSections.length }}</strong> section{{ sortedSections.length !== 1 ? 's' : '' }}
             </div>
           </div>
         </div>

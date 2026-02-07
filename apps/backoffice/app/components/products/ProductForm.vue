@@ -134,46 +134,46 @@ const validateForm = (): boolean => {
 
   // Required field: name
   if (!formData.value.name.trim()) {
-    validationErrors.value.name = 'Product name is required'
+    validationErrors.value.name = 'Le nom du produit est requis'
     isValid = false
   } else if (formData.value.name.length > 255) {
-    validationErrors.value.name = 'Product name must be less than 255 characters'
+    validationErrors.value.name = 'Le nom doit contenir moins de 255 caractères'
     isValid = false
   }
 
   // Optional field: description
   if (formData.value.description && formData.value.description.length > 500) {
-    validationErrors.value.description = 'Description must be less than 500 characters'
+    validationErrors.value.description = 'La description doit contenir moins de 500 caractères'
     isValid = false
   }
 
   // Required field: price
   if (formData.value.price <= 0) {
-    validationErrors.value.price = 'Price must be greater than 0'
+    validationErrors.value.price = 'Le prix doit être supérieur à 0'
     isValid = false
   }
 
   // Stock quantity validation
   if (formData.value.stockQuantity !== undefined && formData.value.stockQuantity < 0) {
-    validationErrors.value.stockQuantity = 'Stock quantity cannot be negative'
+    validationErrors.value.stockQuantity = 'La quantité en stock ne peut pas être négative'
     isValid = false
   }
 
   // Dimensions validation (if enabled)
   if (dimensionsEnabled.value) {
     if (dimensionsData.value.width <= 0) {
-      validationErrors.value.dimensions = 'Width must be greater than 0'
+      validationErrors.value.dimensions = 'La largeur doit être supérieure à 0'
       isValid = false
     }
     if (dimensionsData.value.height <= 0) {
-      validationErrors.value.dimensions = 'Height must be greater than 0'
+      validationErrors.value.dimensions = 'La hauteur doit être supérieure à 0'
       isValid = false
     }
   }
 
   // Image validation - in edit mode, existing images count too
   if (imageFiles.value.length === 0 && existingImages.value.length === 0) {
-    validationErrors.value.images = 'At least one product image is required'
+    validationErrors.value.images = 'Au moins une image est requise'
     isValid = false
   }
 
@@ -187,12 +187,12 @@ const validateForm = (): boolean => {
 const validateFile = (file: File): string | null => {
   // Check file type
   if (!ALLOWED_TYPES.includes(file.type)) {
-    return `Invalid file type. Allowed: JPEG, PNG, WebP`
+    return `Type de fichier invalide. Formats acceptés : JPEG, PNG, WebP`
   }
 
   // Check file size
   if (file.size > MAX_FILE_SIZE) {
-    return `File size exceeds 5MB limit`
+    return `La taille du fichier dépasse la limite de 5 Mo`
   }
 
   return null
@@ -217,7 +217,7 @@ const handleFileChange = (event: Event) => {
   // Check total number of images (including existing images in edit mode)
   const totalImages = imageFiles.value.length + existingImages.value.length + newFiles.length
   if (totalImages > MAX_IMAGES) {
-    validationErrors.value.images = `Maximum ${MAX_IMAGES} images allowed. You've selected ${totalImages} images.`
+    validationErrors.value.images = `Maximum ${MAX_IMAGES} images autorisées. Vous en avez sélectionné ${totalImages}.`
     input.value = '' // Reset input
     return
   }
@@ -496,9 +496,9 @@ watch(
   <div class="flex h-full flex-col">
     <!-- Header -->
     <div class="border-b px-6 py-4">
-      <h2 class="text-lg font-semibold">{{ isEditMode ? 'Edit Product' : 'Add New Product' }}</h2>
+      <h2 class="text-lg font-semibold">{{ isEditMode ? 'Modifier le produit' : 'Ajouter un produit' }}</h2>
       <p class="text-muted-foreground text-sm">
-        {{ isEditMode ? 'Update product details' : 'Create a new product for your catalog' }}
+        {{ isEditMode ? 'Modifier les détails du produit' : 'Créer un nouveau produit pour votre catalogue' }}
       </p>
     </div>
 
@@ -509,8 +509,8 @@ watch(
     >
       <CheckCircle2 class="h-5 w-5 flex-shrink-0" />
       <div>
-        <p class="font-semibold">{{ isEditMode ? 'Product updated successfully!' : 'Product created successfully!' }}</p>
-        <p class="text-sm">Redirecting...</p>
+        <p class="font-semibold">{{ isEditMode ? 'Produit mis à jour avec succès !' : 'Produit créé avec succès !' }}</p>
+        <p class="text-sm">Redirection...</p>
       </div>
     </div>
 
@@ -521,7 +521,7 @@ watch(
     >
       <AlertCircle class="mt-0.5 h-5 w-5 flex-shrink-0" />
       <div class="flex-1">
-        <p class="font-semibold">{{ isEditMode ? 'Error updating product' : 'Error creating product' }}</p>
+        <p class="font-semibold">{{ isEditMode ? 'Erreur lors de la mise à jour' : 'Erreur lors de la création' }}</p>
         <p class="text-sm">{{ error.message }}</p>
       </div>
       <button
@@ -537,12 +537,12 @@ watch(
       <form @submit.prevent="handleSubmit" class="space-y-6">
         <!-- Product Name -->
         <div class="space-y-2">
-          <Label for="name" required>Product Name</Label>
+          <Label for="name" required>Nom du produit</Label>
           <Input
             id="name"
             v-model="formData.name"
             type="text"
-            placeholder="e.g., Handwoven Wall Hanging"
+            placeholder="ex. Suspension murale tissée main"
             :aria-invalid="!!validationErrors.name"
             :disabled="loading"
           />
@@ -557,7 +557,7 @@ watch(
           <Textarea
             id="description"
             v-model="formData.description"
-            placeholder="Describe your product..."
+            placeholder="Décrivez votre produit..."
             rows="4"
             :aria-invalid="!!validationErrors.description"
             :disabled="loading"
@@ -566,22 +566,22 @@ watch(
             {{ validationErrors.description }}
           </p>
           <p class="text-muted-foreground text-xs">
-            {{ formData.description?.length || 0 }} / 500 characters
+            {{ formData.description?.length || 0 }} / 500 caractères
           </p>
         </div>
 
         <!-- Category -->
         <div class="space-y-2">
-          <Label for="category" required>Category</Label>
+          <Label for="category" required>Catégorie</Label>
           <Select id="category" v-model="formData.category" :disabled="loading">
-            <option value="wall-hanging">Wall Hanging</option>
-            <option value="rug">Rug</option>
+            <option value="wall-hanging">Suspension murale</option>
+            <option value="rug">Tapis</option>
           </Select>
         </div>
 
         <!-- Price -->
         <div class="space-y-2">
-          <Label for="price" required>Price (EUR)</Label>
+          <Label for="price" required>Prix (EUR)</Label>
           <Input
             id="price"
             v-model.number="formData.price"
@@ -599,17 +599,17 @@ watch(
 
         <!-- Status -->
         <div class="space-y-2">
-          <Label for="status">Status</Label>
+          <Label for="status">Statut</Label>
           <Select id="status" v-model="formData.status" :disabled="loading">
-            <option value="draft">Draft</option>
-            <option value="available">Available</option>
-            <option value="sold">Sold</option>
+            <option value="draft">Brouillon</option>
+            <option value="available">Disponible</option>
+            <option value="sold">Vendu</option>
           </Select>
         </div>
 
         <!-- Stock Quantity -->
         <div class="space-y-2">
-          <Label for="stockQuantity">Stock Quantity</Label>
+          <Label for="stockQuantity">Quantité en stock</Label>
           <Input
             id="stockQuantity"
             v-model.number="formData.stockQuantity"
@@ -626,12 +626,12 @@ watch(
 
         <!-- Materials -->
         <div class="space-y-2">
-          <Label for="materials">Materials</Label>
+          <Label for="materials">Matériaux</Label>
           <Input
             id="materials"
             v-model="formData.materials"
             type="text"
-            placeholder="e.g., Cotton, wool, natural dyes"
+            placeholder="ex. Coton, laine, teintures naturelles"
             :disabled="loading"
           />
         </div>
@@ -647,7 +647,7 @@ watch(
               :disabled="loading"
             />
             <Label for="dimensionsEnabled" class="cursor-pointer">
-              Add Dimensions
+              Ajouter les dimensions
             </Label>
           </div>
 
@@ -655,7 +655,7 @@ watch(
           <div v-if="dimensionsEnabled" class="space-y-4 rounded-md border p-4">
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-2">
-                <Label for="width">Width</Label>
+                <Label for="width">Largeur</Label>
                 <Input
                   id="width"
                   v-model.number="dimensionsData.width"
@@ -667,7 +667,7 @@ watch(
                 />
               </div>
               <div class="space-y-2">
-                <Label for="height">Height</Label>
+                <Label for="height">Hauteur</Label>
                 <Input
                   id="height"
                   v-model.number="dimensionsData.height"
@@ -680,10 +680,10 @@ watch(
               </div>
             </div>
             <div class="space-y-2">
-              <Label for="unit">Unit</Label>
+              <Label for="unit">Unité</Label>
               <Select id="unit" v-model="dimensionsData.unit" :disabled="loading">
-                <option value="cm">Centimeters (cm)</option>
-                <option value="inch">Inches (inch)</option>
+                <option value="cm">Centimètres (cm)</option>
+                <option value="inch">Pouces (inch)</option>
               </Select>
             </div>
             <p v-if="validationErrors.dimensions" class="text-sm text-red-600">
@@ -694,7 +694,7 @@ watch(
 
         <!-- Existing Images (Edit Mode) -->
         <div v-if="isEditMode && existingImages.length > 0" class="space-y-2">
-          <Label>Current Images</Label>
+          <Label>Images actuelles</Label>
           <div class="grid grid-cols-2 gap-3 rounded-md border p-3">
             <div
               v-for="img in existingImages"
@@ -728,7 +728,7 @@ watch(
                     class="h-3 w-3 rounded"
                     :disabled="loading"
                   />
-                  Home
+                  Accueil
                 </label>
               </div>
             </div>
@@ -738,7 +738,7 @@ watch(
         <!-- Image Upload -->
         <div class="space-y-3">
           <Label for="images" :required="!isEditMode || existingImages.length === 0">
-            {{ isEditMode ? 'Add New Images' : 'Product Images' }}
+            {{ isEditMode ? 'Ajouter de nouvelles images' : 'Images du produit' }}
           </Label>
 
           <!-- File Input (hidden) -->
@@ -764,13 +764,13 @@ watch(
               <Upload class="h-4 w-4" />
               {{
                 imageFiles.length === 0
-                  ? 'Upload Images'
-                  : `Add More Images (${imageFiles.length + existingImages.length}/${MAX_IMAGES})`
+                  ? 'Téléverser des images'
+                  : `Ajouter des images (${imageFiles.length + existingImages.length}/${MAX_IMAGES})`
               }}
             </Button>
 
             <p class="text-muted-foreground text-xs">
-              Upload up to {{ MAX_IMAGES }} images. Formats: JPEG, PNG, WebP. Max size: 5MB per image.
+              Téléversez jusqu'à {{ MAX_IMAGES }} images. Formats : JPEG, PNG, WebP. Taille max : 5 Mo par image.
             </p>
           </div>
 
@@ -815,7 +815,7 @@ watch(
                       class="h-3 w-3 rounded"
                       :disabled="loading"
                     />
-                    Home
+                    Accueil
                   </label>
                 </div>
               </div>
@@ -836,7 +836,7 @@ watch(
                 v-if="index === 0 && existingImages.length === 0"
                 class="absolute left-1 top-1 rounded-full bg-blue-600 px-2 py-0.5 text-xs font-semibold text-white"
               >
-                Primary
+                Principale
               </div>
             </div>
 
@@ -856,9 +856,9 @@ watch(
             class="flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-gray-300 bg-gray-50 p-8 dark:border-gray-700 dark:bg-gray-900"
           >
             <ImageIcon class="h-12 w-12 text-gray-400" />
-            <p class="text-muted-foreground text-sm font-medium">No images uploaded</p>
+            <p class="text-muted-foreground text-sm font-medium">Aucune image téléversée</p>
             <p class="text-muted-foreground text-xs text-center">
-              Click the button above to upload product images
+              Cliquez sur le bouton ci-dessus pour téléverser des images
             </p>
           </div>
         </div>
@@ -874,7 +874,7 @@ watch(
           @click="handleClose"
           :disabled="loading"
         >
-          Cancel
+          Annuler
         </Button>
         <Button
           type="submit"
@@ -882,7 +882,7 @@ watch(
           :disabled="loading || showSuccess"
         >
           <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
-          {{ loading ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save Changes' : 'Create Product') }}
+          {{ loading ? (isEditMode ? 'Enregistrement...' : 'Création...') : (isEditMode ? 'Enregistrer' : 'Créer le produit') }}
         </Button>
       </div>
     </div>

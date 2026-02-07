@@ -19,8 +19,8 @@ import { Label } from "@/components/ui/label";
  * SEO Metadata
  */
 useSeoMeta({
-  title: "Modify Credentials - Atelier Kaisla Backoffice",
-  description: "Update your login credentials securely",
+  title: "Modifier les identifiants - Atelier Kaisla Backoffice",
+  description: "Mettez à jour vos identifiants de connexion en toute sécurité",
   robots: "noindex, nofollow",
 });
 
@@ -87,27 +87,27 @@ const errorMessage = ref<string | null>(null);
  * Pattern: Chain of Responsibility for validation
  */
 const currentPasswordError = computed(() => {
-  if (!form.value.currentPassword) return "Current password is required";
+  if (!form.value.currentPassword) return "Le mot de passe actuel est requis";
   return null;
 });
 
 const usernameError = computed(() => {
   if (form.value.username && form.value.username.length < 3) {
-    return "Username must be at least 3 characters";
+    return "Le nom d'utilisateur doit contenir au moins 3 caractères";
   }
   return null;
 });
 
 const newPasswordError = computed(() => {
   if (form.value.newPassword && form.value.newPassword.length < 6) {
-    return "New password must be at least 6 characters";
+    return "Le nouveau mot de passe doit contenir au moins 6 caractères";
   }
   return null;
 });
 
 const confirmPasswordError = computed(() => {
   if (form.value.confirmPassword && form.value.newPassword !== form.value.confirmPassword) {
-    return "Passwords do not match";
+    return "Les mots de passe ne correspondent pas";
   }
   return null;
 });
@@ -155,7 +155,7 @@ const handleSubmit = async () => {
 
   // Validate form
   if (!isFormValid.value) {
-    errorMessage.value = "Please fix the errors before submitting";
+    errorMessage.value = "Veuillez corriger les erreurs avant de soumettre";
     return;
   }
 
@@ -212,7 +212,7 @@ const handleSubmit = async () => {
     console.log("[credentials] Update successful:", response);
 
     // Show success message
-    successMessage.value = "Credentials updated successfully";
+    successMessage.value = "Identifiants mis à jour avec succès";
 
     // Clear form
     form.value.currentPassword = "";
@@ -229,7 +229,7 @@ const handleSubmit = async () => {
     const errorMsg =
       err.data?.message ||
       (Array.isArray(err.message) ? err.message.join(", ") : err.message) ||
-      "Failed to update credentials";
+      "Échec de la mise à jour des identifiants";
 
     errorMessage.value = errorMsg;
 
@@ -255,10 +255,10 @@ const handleKeyPress = (event: KeyboardEvent) => {
     <!-- Page Header -->
     <div class="mb-8">
       <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-        Modify Credentials
+        Modifier les identifiants
       </h1>
       <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
-        Update your login username and password securely
+        Mettez à jour votre nom d'utilisateur et mot de passe en toute sécurité
       </p>
     </div>
 
@@ -319,7 +319,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
         <!-- Current Password Field (Always Required) -->
         <div class="space-y-2">
           <Label for="currentPassword" class="text-sm font-medium">
-            Current Password
+            Mot de passe actuel
             <span class="text-red-500">*</span>
           </Label>
           <div class="relative">
@@ -328,7 +328,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
               v-model="form.currentPassword"
               :type="showCurrentPassword ? 'text' : 'password'"
               autocomplete="current-password"
-              placeholder="Enter your current password"
+              placeholder="Entrez votre mot de passe actuel"
               :disabled="loading"
               :class="{
                 'border-red-500 dark:border-red-500':
@@ -343,7 +343,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
               class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-xs"
               tabindex="-1"
             >
-              {{ showCurrentPassword ? "Hide" : "Show" }}
+              {{ showCurrentPassword ? "Masquer" : "Afficher" }}
             </button>
           </div>
           <p
@@ -353,7 +353,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
             {{ currentPasswordError }}
           </p>
           <p class="text-xs text-slate-500 dark:text-slate-400">
-            Required to confirm your identity before making changes
+            Requis pour confirmer votre identité avant toute modification
           </p>
         </div>
 
@@ -363,15 +363,15 @@ const handleKeyPress = (event: KeyboardEvent) => {
         <!-- Username Field (Optional) -->
         <div class="space-y-2">
           <Label for="username" class="text-sm font-medium">
-            Username
-            <span class="text-slate-500 text-xs font-normal">(optional)</span>
+            Nom d'utilisateur
+            <span class="text-slate-500 text-xs font-normal">(optionnel)</span>
           </Label>
           <Input
             id="username"
             v-model="form.username"
             type="text"
             autocomplete="username"
-            placeholder="Enter new username"
+            placeholder="Entrez un nouveau nom d'utilisateur"
             :disabled="loading"
             :class="{ 'border-red-500 dark:border-red-500': usernameError && form.username }"
             class="w-full"
@@ -380,15 +380,15 @@ const handleKeyPress = (event: KeyboardEvent) => {
             {{ usernameError }}
           </p>
           <p class="text-xs text-slate-500 dark:text-slate-400">
-            Current: {{ user?.username || "N/A" }}
+            Actuel : {{ user?.username || "N/A" }}
           </p>
         </div>
 
         <!-- New Password Field (Optional) -->
         <div class="space-y-2">
           <Label for="newPassword" class="text-sm font-medium">
-            New Password
-            <span class="text-slate-500 text-xs font-normal">(optional)</span>
+            Nouveau mot de passe
+            <span class="text-slate-500 text-xs font-normal">(optionnel)</span>
           </Label>
           <div class="relative">
             <Input
@@ -396,7 +396,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
               v-model="form.newPassword"
               :type="showNewPassword ? 'text' : 'password'"
               autocomplete="new-password"
-              placeholder="Enter new password"
+              placeholder="Entrez un nouveau mot de passe"
               :disabled="loading"
               :class="{
                 'border-red-500 dark:border-red-500': newPasswordError && form.newPassword,
@@ -410,7 +410,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
               class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-xs"
               tabindex="-1"
             >
-              {{ showNewPassword ? "Hide" : "Show" }}
+              {{ showNewPassword ? "Masquer" : "Afficher" }}
             </button>
           </div>
           <p
@@ -420,14 +420,14 @@ const handleKeyPress = (event: KeyboardEvent) => {
             {{ newPasswordError }}
           </p>
           <p class="text-xs text-slate-500 dark:text-slate-400">
-            Must be at least 6 characters long
+            Doit contenir au moins 6 caractères
           </p>
         </div>
 
         <!-- Confirm Password Field (Required if New Password is set) -->
         <div v-if="form.newPassword" class="space-y-2">
           <Label for="confirmPassword" class="text-sm font-medium">
-            Confirm New Password
+            Confirmer le nouveau mot de passe
             <span class="text-red-500">*</span>
           </Label>
           <div class="relative">
@@ -436,7 +436,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
               v-model="form.confirmPassword"
               :type="showConfirmPassword ? 'text' : 'password'"
               autocomplete="new-password"
-              placeholder="Confirm your new password"
+              placeholder="Confirmez votre nouveau mot de passe"
               :disabled="loading"
               :class="{
                 'border-red-500 dark:border-red-500':
@@ -451,7 +451,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
               class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-xs"
               tabindex="-1"
             >
-              {{ showConfirmPassword ? "Hide" : "Show" }}
+              {{ showConfirmPassword ? "Masquer" : "Afficher" }}
             </button>
           </div>
           <p
@@ -464,13 +464,13 @@ const handleKeyPress = (event: KeyboardEvent) => {
 
         <!-- Validation Messages -->
         <div v-if="!hasChanges && form.currentPassword" class="text-sm text-amber-600 dark:text-amber-400">
-          ⚠️ Please modify at least one field (username or password)
+          Veuillez modifier au moins un champ (nom d'utilisateur ou mot de passe)
         </div>
 
         <!-- Submit Button -->
         <div class="flex items-center gap-4 pt-4">
           <Button type="submit" :disabled="!isFormValid || loading" class="flex-1 sm:flex-none">
-            <span v-if="!loading">Update Credentials</span>
+            <span v-if="!loading">Mettre à jour</span>
             <span v-else class="flex items-center justify-center gap-2">
               <svg
                 class="animate-spin h-4 w-4"
@@ -492,7 +492,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-              Updating...
+              Mise à jour...
             </span>
           </Button>
 
@@ -500,7 +500,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
             to="/"
             class="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
           >
-            Cancel
+            Annuler
           </NuxtLink>
         </div>
       </form>
@@ -522,10 +522,10 @@ const handleKeyPress = (event: KeyboardEvent) => {
             />
           </svg>
           <div>
-            <p class="text-xs font-medium text-slate-700 dark:text-slate-300">Security Notice</p>
+            <p class="text-xs font-medium text-slate-700 dark:text-slate-300">Avis de sécurité</p>
             <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">
-              Your current password is always required to make changes. If you change your
-              password, you will need to use the new one for your next login.
+              Votre mot de passe actuel est toujours requis pour effectuer des modifications.
+              Si vous changez votre mot de passe, vous devrez utiliser le nouveau lors de votre prochaine connexion.
             </p>
           </div>
         </div>
