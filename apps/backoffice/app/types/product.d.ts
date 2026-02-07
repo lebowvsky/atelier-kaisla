@@ -29,6 +29,18 @@ export interface ProductDimensions {
 }
 
 /**
+ * Product image entity (aligned with backend ProductImage entity)
+ */
+export interface ProductImage {
+  id: string
+  url: string
+  showOnHome: boolean
+  sortOrder: number
+  productId: string
+  createdAt: string
+}
+
+/**
  * Product entity (aligned with backend Product entity)
  * Note: price is returned as string from PostgreSQL decimal type
  */
@@ -40,7 +52,7 @@ export interface Product {
   price: number | string // Backend returns decimal as string
   status: ProductStatus
   stockQuantity: number
-  images?: string[]
+  productImages?: ProductImage[]
   dimensions?: ProductDimensions
   materials?: string
   createdAt: string
@@ -57,7 +69,6 @@ export interface CreateProductDto {
   price: number
   status?: ProductStatus
   stockQuantity?: number
-  images?: string[]
   dimensions?: ProductDimensions
   materials?: string
 }
@@ -72,7 +83,6 @@ export interface UpdateProductDto {
   price?: number
   status?: ProductStatus
   stockQuantity?: number
-  images?: string[]
   dimensions?: ProductDimensions
   materials?: string
 }

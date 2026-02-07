@@ -48,8 +48,8 @@ export function adaptProductToArtwork(product: Product): Artwork {
   return {
     id: product.id,
     title: product.name,
-    // Use first image or fallback to placeholder
-    imageSrc: product.images?.[0] || `/placeholder-${product.category}.jpg`,
+    // Use first product image URL or fallback to placeholder
+    imageSrc: product.productImages?.[0]?.url || `/placeholder-${product.category}.jpg`,
     imageAlt: `${product.name} - Handcrafted ${product.category}`,
     dimensions: product.dimensions
       ? {

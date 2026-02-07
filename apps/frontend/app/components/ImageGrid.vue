@@ -101,21 +101,18 @@ const getGridItemClasses = (image: GalleryImage): string => {
         @click="handleImageClick(index)"
         @keydown="(event) => handleKeyPress(event, index)"
       >
-        <!-- Image placeholder (will be replaced with actual images later) -->
-        <div class="grid-item__placeholder">
-          <span class="grid-item__placeholder-text">
-            {{ image.alt }}
-          </span>
-        </div>
-
-        <!-- Future: Actual image implementation
         <img
+          v-if="image.src && !image.src.startsWith('/placeholder')"
           :src="image.src"
           :alt="image.alt"
           class="grid-item__image"
           loading="lazy"
         />
-        -->
+        <div v-else class="grid-item__placeholder">
+          <span class="grid-item__placeholder-text">
+            {{ image.alt }}
+          </span>
+        </div>
       </div>
     </div>
 
@@ -197,7 +194,6 @@ const getGridItemClasses = (image: GalleryImage): string => {
   }
 }
 
-// Future: Actual image styles
 .grid-item__image {
   width: 100%;
   height: 100%;

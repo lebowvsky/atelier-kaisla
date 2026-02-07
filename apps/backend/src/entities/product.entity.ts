@@ -5,7 +5,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  OneToMany,
 } from 'typeorm';
+import { ProductImage } from './product-image.entity';
 
 /**
  * Product entity
@@ -47,8 +49,11 @@ export class Product {
   @Column({ type: 'int', default: 0 })
   stockQuantity: number;
 
-  @Column({ type: 'simple-array', nullable: true })
-  images?: string[];
+  @OneToMany(() => ProductImage, (img) => img.product, {
+    cascade: true,
+    eager: true,
+  })
+  productImages: ProductImage[];
 
   @Column({ type: 'json', nullable: true })
   dimensions?: {

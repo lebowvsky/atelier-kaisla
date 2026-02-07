@@ -160,14 +160,6 @@ export class EnhancedProductSeeder {
       }
     }
 
-    // Compare images array
-    if (
-      JSON.stringify(existing.images || []) !==
-      JSON.stringify(newData.images || [])
-    ) {
-      return true;
-    }
-
     // Compare dimensions
     if (
       JSON.stringify(existing.dimensions || {}) !==

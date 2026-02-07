@@ -31,6 +31,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductQueryDto } from './dto/product-query.dto';
 import { CreateProductWithUploadDto } from './dto/create-product-with-upload.dto';
+import { UpdateProductImageDto } from './dto/update-product-image.dto';
 import { Public } from '../auth/decorators/public.decorator';
 
 /**
@@ -111,6 +112,12 @@ export class ProductsController {
           type: 'string',
           example: 'Cotton, wool, natural dyes',
         },
+        showOnHome: {
+          type: 'string',
+          description:
+            'JSON string array of booleans indicating which images to show on home page',
+          example: '[true, false, true]',
+        },
         images: {
           type: 'array',
           items: {
@@ -141,9 +148,7 @@ export class ProductsController {
   ) {
     this.logger.log('POST /api/products/with-upload - Request received');
     this.logger.debug(`Body: ${JSON.stringify(createDto, null, 2)}`);
-    this.logger.debug(
-      `Files: ${files ? files.length : 0} file(s) received`,
-    );
+    this.logger.debug(`Files: ${files ? files.length : 0} file(s) received`);
 
     // Validate that at least one image is uploaded
     if (!files || files.length === 0) {
@@ -211,6 +216,21 @@ export class ProductsController {
   })
   async getStatistics() {
     return await this.productsService.getStatistics();
+  }
+
+  /**
+   * Get images flagged for home page grid
+   * IMPORTANT: This route must be defined BEFORE the :id route to avoid conflicts
+   */
+  @Public()
+  @Get('home-grid')
+  @ApiOperation({ summary: 'Get images flagged for home page grid' })
+  @ApiResponse({
+    status: 200,
+    description: 'Home grid images retrieved',
+  })
+  async getHomeGridImages() {
+    return await this.productsService.findHomeGridImages();
   }
 
   /**
@@ -289,5 +309,120 @@ export class ProductsController {
   })
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     await this.productsService.remove(id);
+  }
+
+  /**
+   * Add images to an existing product
+   */
+  @Post(':id/images')
+  @UseInterceptors(FilesInterceptor('images', 5))
+  @ApiOperation({ summary: 'Add images to an existing product' })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        showOnHome: {
+          type: 'string',
+          description:
+            'JSON string array of booleans indicating which images to show on home page',
+          example: '[true, false]',
+        },
+        images: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+          description: 'Product images (max 5, max 5MB each, JPEG/PNG/WebP)',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Images added successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'No images provided',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Product not found',
+  })
+  async addImages(
+    @Param('id', ParseUUIDPipe) id: string,
+    @UploadedFiles() files: Express.Multer.File[],
+    @Req() request: Request,
+    @Body('showOnHome') showOnHomeRaw?: string,
+  ) {
+    if (!files || files.length === 0) {
+      throw new BadRequestException('At least one image is required');
+    }
+
+    const baseUrl = `${request.protocol}://${request.get('host')}`;
+    let showOnHomeFlags: boolean[] = [];
+    if (showOnHomeRaw) {
+      try {
+        showOnHomeFlags = JSON.parse(showOnHomeRaw);
+      } catch {
+        // ignore parse errors
+      }
+    }
+
+    return await this.productsService.addImagesToProduct(
+      id,
+      files,
+      baseUrl,
+      showOnHomeFlags,
+    );
+  }
+
+  /**
+   * Update image metadata (showOnHome, sortOrder)
+   */
+  @Patch(':id/images/:imageId')
+  @ApiOperation({ summary: 'Update image metadata (showOnHome, sortOrder)' })
+  @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
+  @ApiParam({ name: 'imageId', type: 'string', format: 'uuid' })
+  @ApiResponse({
+    status: 200,
+    description: 'Image metadata updated successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Product image not found',
+  })
+  async updateImage(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('imageId', ParseUUIDPipe) imageId: string,
+    @Body() dto: UpdateProductImageDto,
+  ) {
+    return await this.productsService.updateProductImage(imageId, dto);
+  }
+
+  /**
+   * Remove an image from a product
+   */
+  @Delete(':id/images/:imageId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Remove an image from a product' })
+  @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
+  @ApiParam({ name: 'imageId', type: 'string', format: 'uuid' })
+  @ApiResponse({
+    status: 204,
+    description: 'Image removed successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Product image not found',
+  })
+  async removeImage(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('imageId', ParseUUIDPipe) imageId: string,
+  ) {
+    await this.productsService.removeProductImage(imageId);
   }
 }

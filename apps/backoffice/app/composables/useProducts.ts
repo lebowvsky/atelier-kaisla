@@ -17,6 +17,7 @@
 
 import type {
   Product,
+  ProductImage,
   CreateProductDto,
   UpdateProductDto,
   ProductQueryParams,
@@ -195,7 +196,8 @@ export function useProducts() {
    */
   const createProductWithImages = async (
     dto: Omit<CreateProductDto, 'images'>,
-    imageFiles: File[]
+    imageFiles: File[],
+    showOnHome: boolean[] = []
   ): Promise<Product | null> => {
     const result = await executeApiCall(async () => {
       // Pattern: Builder Pattern - Progressive FormData construction
@@ -215,6 +217,11 @@ export function useProducts() {
       // Add dimensions as JSON string if provided
       if (dto.dimensions) {
         formData.append('dimensions', JSON.stringify(dto.dimensions))
+      }
+
+      // Add showOnHome flags as JSON string
+      if (showOnHome.length > 0) {
+        formData.append('showOnHome', JSON.stringify(showOnHome))
       }
 
       // Add image files
@@ -300,6 +307,116 @@ export function useProducts() {
     }
 
     return result
+  }
+
+  /**
+   * Add images to an existing product
+   * Pattern: Adapter Pattern - Converts files to multipart/form-data format
+   *
+   * @param productId - Product ID to add images to
+   * @param imageFiles - Array of image files to upload
+   * @param showOnHome - Array of booleans indicating which images should show on home
+   * @returns Array of created ProductImage entities or null on error
+   */
+  const addProductImages = async (
+    productId: string,
+    imageFiles: File[],
+    showOnHome: boolean[] = []
+  ): Promise<ProductImage[] | null> => {
+    const result = await executeApiCall(async () => {
+      const formData = new FormData()
+
+      imageFiles.forEach((file) => {
+        formData.append('images', file)
+      })
+
+      if (showOnHome.length > 0) {
+        formData.append('showOnHome', JSON.stringify(showOnHome))
+      }
+
+      const apiUrl = getApiUrl()
+      const url = `${apiUrl}/products/${productId}/images`
+
+      console.log('[useProducts] Adding images to product at:', url)
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: getAuthHeadersForFormData(),
+        body: formData,
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: 'Failed to add images',
+          statusCode: response.status,
+        }))
+        throw {
+          statusCode: response.status,
+          message: errorData.message || 'Failed to add images',
+          data: errorData,
+        }
+      }
+
+      return await response.json()
+    })
+
+    return result
+  }
+
+  /**
+   * Update image metadata (showOnHome, sortOrder)
+   *
+   * @param productId - Product ID
+   * @param imageId - Image ID to update
+   * @param data - Metadata to update
+   * @returns Updated ProductImage or null on error
+   */
+  const updateProductImage = async (
+    productId: string,
+    imageId: string,
+    data: { showOnHome?: boolean; sortOrder?: number }
+  ): Promise<ProductImage | null> => {
+    const result = await executeApiCall(async () => {
+      const apiUrl = getApiUrl()
+      const url = `${apiUrl}/products/${productId}/images/${imageId}`
+
+      console.log('[useProducts] Updating product image at:', url)
+
+      return await $fetch<ProductImage>(url, {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: data,
+      })
+    })
+
+    return result
+  }
+
+  /**
+   * Remove an image from a product
+   *
+   * @param productId - Product ID
+   * @param imageId - Image ID to remove
+   * @returns true if successful, false otherwise
+   */
+  const removeProductImage = async (
+    productId: string,
+    imageId: string
+  ): Promise<boolean> => {
+    const result = await executeApiCall(async () => {
+      const apiUrl = getApiUrl()
+      const url = `${apiUrl}/products/${productId}/images/${imageId}`
+
+      console.log('[useProducts] Removing product image at:', url)
+
+      await $fetch(url, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      })
+      return true
+    })
+
+    return result || false
   }
 
   /**
@@ -409,6 +526,9 @@ export function useProducts() {
     createProductWithImages,
     updateProduct,
     deleteProduct,
+    addProductImages,
+    updateProductImage,
+    removeProductImage,
     fetchStatistics,
     clearError,
     clearCurrentProduct,

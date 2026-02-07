@@ -113,15 +113,15 @@ export class CreateProductWithUploadDto {
         try {
           const parsed = JSON.parse(value);
           // Use plainToClass to properly convert the plain object to DimensionsDto
-          return plainToClass(DimensionsDto, parsed);
-        } catch (error) {
+          return plainToClass(DimensionsDto, parsed as Record<string, unknown>);
+        } catch {
           // If parsing fails, return undefined (will be handled by validation)
           return undefined;
         }
       }
 
       // If value is already an object, convert to DimensionsDto using plainToClass
-      return plainToClass(DimensionsDto, value);
+      return plainToClass(DimensionsDto, value as Record<string, unknown>);
     },
     { toClassOnly: true },
   )
@@ -136,4 +136,23 @@ export class CreateProductWithUploadDto {
   @IsString()
   @IsOptional()
   materials?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'JSON string array of booleans indicating which images to show on home page',
+    example: '[true, false, true]',
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (!value) return undefined;
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value) as boolean[];
+      } catch {
+        return undefined;
+      }
+    }
+    return value as boolean[];
+  })
+  showOnHome?: boolean[];
 }

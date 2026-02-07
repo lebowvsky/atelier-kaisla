@@ -5,10 +5,17 @@
  * Main landing page for Atelier Kaisla.
  * SEO optimized with proper meta tags and semantic structure.
  * Features an interactive image gallery with lightbox functionality.
+ *
+ * Uses the home grid API to display product images flagged for the home page.
  */
 
-// Gallery data composable
-const { galleryImages } = useGalleryData();
+// Home grid composable - fetches images flagged for home page display
+const { images: homeGridImages, loading: gridLoading, error: gridError, fetchHomeGrid } = useHomeGrid()
+
+// Fetch home grid images on mount (client-side)
+onMounted(async () => {
+  await fetchHomeGrid()
+})
 
 // Page-specific SEO meta tags
 useHead({
@@ -40,7 +47,7 @@ useSeoMeta({
     </section>
 
     <!-- Gallery Section -->
-    <section class="gallery-section">
+    <section v-if="homeGridImages.length > 0 || gridLoading" class="gallery-section">
       <div class="container">
         <header class="gallery-section__header">
           <h2 class="gallery-section__title">Our Collection</h2>
@@ -49,7 +56,13 @@ useSeoMeta({
           </p>
         </header>
 
-        <ImageGrid :images="galleryImages" />
+        <!-- Loading State -->
+        <div v-if="gridLoading" class="gallery-section__loading">
+          <p>Loading...</p>
+        </div>
+
+        <!-- Grid -->
+        <ImageGrid v-else :images="homeGridImages" />
       </div>
     </section>
 
@@ -187,6 +200,12 @@ useSeoMeta({
   @include tablet {
     font-size: $font-size-lg;
   }
+}
+
+.gallery-section__loading {
+  text-align: center;
+  padding: $spacing-2xl 0;
+  color: $color-gray-600;
 }
 
 .container {

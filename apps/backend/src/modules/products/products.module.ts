@@ -4,6 +4,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
 import { Product } from '../../entities/product.entity';
+import { ProductImage } from '../../entities/product-image.entity';
 import { UploadModule } from '../upload/upload.module';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -18,7 +19,7 @@ const logger = new Logger('ProductsModule');
 @Module({
   imports: [
     // Import the Product entity for this module
-    TypeOrmModule.forFeature([Product]),
+    TypeOrmModule.forFeature([Product, ProductImage]),
     // Import upload module for file handling
     UploadModule,
     // Configure multer for this module

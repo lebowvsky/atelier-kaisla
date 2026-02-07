@@ -4,8 +4,10 @@ import { Repository } from 'typeorm';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Product } from '../../entities/product.entity';
+import { ProductImage } from '../../entities/product-image.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { UploadService } from '../upload/upload.service';
 
 /**
  * Unit tests for ProductsService
@@ -24,7 +26,7 @@ describe('ProductsService', () => {
     price: 149.99,
     status: 'available',
     stockQuantity: 1,
-    images: [],
+    productImages: [],
     dimensions: { width: 60, height: 90, unit: 'cm' },
     materials: 'Cotton',
     createdAt: new Date(),
@@ -42,6 +44,23 @@ describe('ProductsService', () => {
     createQueryBuilder: jest.fn(),
   };
 
+  // Mock ProductImage repository
+  const mockProductImageRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    find: jest.fn(),
+    findOne: jest.fn(),
+    remove: jest.fn(),
+  };
+
+  // Mock UploadService
+  const mockUploadService = {
+    ensureUploadDir: jest.fn(),
+    getFileUrl: jest.fn(),
+    deleteFile: jest.fn(),
+    deleteFiles: jest.fn(),
+  };
+
   beforeEach(async () => {
     // Create testing module with mocked dependencies
     const module: TestingModule = await Test.createTestingModule({
@@ -50,6 +69,14 @@ describe('ProductsService', () => {
         {
           provide: getRepositoryToken(Product),
           useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(ProductImage),
+          useValue: mockProductImageRepository,
+        },
+        {
+          provide: UploadService,
+          useValue: mockUploadService,
         },
       ],
     }).compile();
@@ -145,6 +172,7 @@ describe('ProductsService', () => {
       // Arrange
       const query = { page: 1, limit: 10 };
       const mockQueryBuilder = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
         skip: jest.fn().mockReturnThis(),
         take: jest.fn().mockReturnThis(),
@@ -165,6 +193,10 @@ describe('ProductsService', () => {
         limit: 10,
         totalPages: 1,
       });
+      expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith(
+        'product.productImages',
+        'productImages',
+      );
       expect(mockQueryBuilder.skip).toHaveBeenCalledWith(0);
       expect(mockQueryBuilder.take).toHaveBeenCalledWith(10);
     });
@@ -173,6 +205,7 @@ describe('ProductsService', () => {
       // Arrange
       const query = { category: 'wall-hanging' as const, page: 1, limit: 10 };
       const mockQueryBuilder = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
         skip: jest.fn().mockReturnThis(),
         take: jest.fn().mockReturnThis(),
@@ -232,20 +265,40 @@ describe('ProductsService', () => {
   });
 
   describe('remove', () => {
-    it('should delete a product', async () => {
+    it('should delete a product and its image files', async () => {
       // Arrange
+      const productWithImages = {
+        ...mockProduct,
+        productImages: [
+          {
+            id: 'img-1',
+            url: 'http://localhost:4000/uploads/products/test.jpg',
+            showOnHome: false,
+            sortOrder: 0,
+            productId: mockProduct.id,
+            createdAt: new Date(),
+          },
+        ],
+      };
+      mockRepository.findOne.mockResolvedValue(productWithImages);
       mockRepository.delete.mockResolvedValue({ affected: 1, raw: {} });
+      mockUploadService.deleteFile.mockResolvedValue(undefined);
 
       // Act
       await service.remove(mockProduct.id);
 
       // Assert
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { id: mockProduct.id },
+        relations: ['productImages'],
+      });
+      expect(mockUploadService.deleteFile).toHaveBeenCalledWith('test.jpg');
       expect(mockRepository.delete).toHaveBeenCalledWith(mockProduct.id);
     });
 
     it('should throw NotFoundException when product not found', async () => {
       // Arrange
-      mockRepository.delete.mockResolvedValue({ affected: 0, raw: {} });
+      mockRepository.findOne.mockResolvedValue(null);
 
       // Act & Assert
       await expect(service.remove('non-existent-id')).rejects.toThrow(
@@ -305,6 +358,70 @@ describe('ProductsService', () => {
         },
       });
       expect(result).toEqual([mockProduct]);
+    });
+  });
+
+  describe('findHomeGridImages', () => {
+    it('should return images flagged for home page', async () => {
+      // Arrange
+      const mockImages = [
+        {
+          id: 'img-1',
+          url: 'http://localhost:4000/uploads/products/test.jpg',
+          showOnHome: true,
+          sortOrder: 0,
+          productId: mockProduct.id,
+          product: mockProduct,
+          createdAt: new Date(),
+        },
+      ];
+      mockProductImageRepository.find.mockResolvedValue(mockImages);
+
+      // Act
+      const result = await service.findHomeGridImages();
+
+      // Assert
+      expect(mockProductImageRepository.find).toHaveBeenCalledWith({
+        where: { showOnHome: true },
+        relations: ['product'],
+        order: { sortOrder: 'ASC', createdAt: 'DESC' },
+      });
+      expect(result).toEqual(mockImages);
+    });
+  });
+
+  describe('updateProductImage', () => {
+    it('should update image metadata', async () => {
+      // Arrange
+      const mockImage = {
+        id: 'img-1',
+        url: 'http://localhost:4000/uploads/products/test.jpg',
+        showOnHome: false,
+        sortOrder: 0,
+        productId: mockProduct.id,
+        createdAt: new Date(),
+      };
+      const updatedImage = { ...mockImage, showOnHome: true };
+      mockProductImageRepository.findOne.mockResolvedValue(mockImage);
+      mockProductImageRepository.save.mockResolvedValue(updatedImage);
+
+      // Act
+      const result = await service.updateProductImage('img-1', {
+        showOnHome: true,
+      });
+
+      // Assert
+      expect(result.showOnHome).toBe(true);
+    });
+
+    it('should throw NotFoundException when image not found', async () => {
+      // Arrange
+      mockProductImageRepository.findOne.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(
+        service.updateProductImage('non-existent', { showOnHome: true }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

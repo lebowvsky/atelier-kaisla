@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import ProductForm from '@/components/products/ProductForm.vue'
 import { Plus, Search, Eye, Pencil, Trash2, Filter, RefreshCw } from 'lucide-vue-next'
-import type { ProductCategory, ProductStatus } from '@/types/product'
+import type { Product, ProductCategory, ProductStatus } from '@/types/product'
 
 /**
  * SEO Configuration
@@ -182,23 +182,50 @@ const toggleSortOrder = () => {
 /**
  * Get first image URL or placeholder
  */
-const getProductImage = (images?: string[]): string => {
-  if (images && images.length > 0) {
-    return images[0]
+const getProductImage = (product: Product): string => {
+  if (product.productImages && product.productImages.length > 0) {
+    return product.productImages[0].url
   }
   return 'https://placehold.co/60x60/e2e8f0/64748b?text=No+Image'
 }
 
 /**
- * Sheet state for product form
+ * Sheet state for product form (create mode)
  */
 const isFormOpen = ref(false)
 
 /**
- * Handle form success
+ * Handle form success (create mode)
  */
 const handleFormSuccess = async () => {
   isFormOpen.value = false
+  await refreshProducts()
+}
+
+/**
+ * Edit mode state
+ */
+const editingProduct = ref<Product | null>(null)
+const isEditFormOpen = ref(false)
+
+/**
+ * Handle edit button click
+ */
+const handleEdit = async (id: string) => {
+  const { fetchProductById } = useProducts()
+  const product = await fetchProductById(id)
+  if (product) {
+    editingProduct.value = product
+    isEditFormOpen.value = true
+  }
+}
+
+/**
+ * Handle edit form success
+ */
+const handleEditFormSuccess = async () => {
+  isEditFormOpen.value = false
+  editingProduct.value = null
   await refreshProducts()
 }
 </script>
@@ -444,7 +471,7 @@ const handleFormSuccess = async () => {
                 <!-- Image -->
                 <td class="p-4 align-middle">
                   <img
-                    :src="getProductImage(product.images)"
+                    :src="getProductImage(product)"
                     :alt="product.name"
                     class="h-12 w-12 rounded-md object-cover"
                   />
@@ -494,7 +521,7 @@ const handleFormSuccess = async () => {
                     <Button variant="ghost" size="sm" title="View details">
                       <Eye class="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" title="Edit product">
+                    <Button variant="ghost" size="sm" title="Edit product" @click="handleEdit(product.id)">
                       <Pencil class="h-4 w-4" />
                     </Button>
                     <Button
@@ -526,6 +553,17 @@ const handleFormSuccess = async () => {
           </div>
         </div>
       </div>
+      <!-- Edit Product Sheet -->
+      <Sheet v-model:open="isEditFormOpen">
+        <SheetContent class="w-full sm:max-w-2xl">
+          <ProductForm
+            :open="isEditFormOpen"
+            :product="editingProduct ?? undefined"
+            @close="isEditFormOpen = false; editingProduct = null"
+            @success="handleEditFormSuccess"
+          />
+        </SheetContent>
+      </Sheet>
     </div>
   </NuxtLayout>
 </template>

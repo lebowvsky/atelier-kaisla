@@ -38,6 +38,51 @@ export type ProductStatus = 'available' | 'sold' | 'draft'
 export type ProductCategory = 'wall-hanging' | 'rug'
 
 /**
+ * Product image with metadata
+ *
+ * Represents a single image associated with a product,
+ * including display flags for home page grid visibility.
+ *
+ * @see apps/backend/src/entities/product-image.entity.ts
+ */
+export interface ProductImage {
+  /**
+   * Unique identifier (UUID)
+   */
+  id: string
+
+  /**
+   * Full URL to the image file
+   */
+  url: string
+
+  /**
+   * Whether this image should be displayed on the home page grid
+   */
+  showOnHome: boolean
+
+  /**
+   * Sort order for display positioning
+   */
+  sortOrder: number
+
+  /**
+   * ID of the parent product
+   */
+  productId: string
+
+  /**
+   * Creation timestamp
+   */
+  createdAt: string
+
+  /**
+   * Associated product (included when fetching from home-grid endpoint)
+   */
+  product?: Product
+}
+
+/**
  * Product entity as returned by the backend API
  */
 export interface Product {
@@ -77,9 +122,9 @@ export interface Product {
   stockQuantity: number
 
   /**
-   * Array of image URLs
+   * Product images with metadata
    */
-  images?: string[]
+  productImages?: ProductImage[]
 
   /**
    * Product dimensions

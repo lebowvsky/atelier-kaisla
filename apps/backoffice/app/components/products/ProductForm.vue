@@ -1,11 +1,12 @@
 <!--
   @pattern Builder + Chain of Responsibility + Decorator Patterns
-  @purpose Product creation form with comprehensive validation and API integration
+  @purpose Product creation/editing form with comprehensive validation and API integration
 
   Patterns Applied:
   - Builder Pattern: Progressive form data construction
   - Chain of Responsibility: Validation pipeline
   - Decorator Pattern: Loading/error state management (via useProducts composable)
+  - Mediator Pattern: Centralized form field management for create/edit modes
 -->
 
 <script setup lang="ts">
@@ -15,13 +16,14 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select } from '@/components/ui/select'
 import { X, Loader2, CheckCircle2, AlertCircle, Upload, Image as ImageIcon } from 'lucide-vue-next'
-import type { CreateProductDto, ProductDimensions } from '@/types/product'
+import type { Product, ProductImage, CreateProductDto, UpdateProductDto, ProductDimensions } from '@/types/product'
 
 /**
  * Component Props
  */
 interface Props {
   open: boolean
+  product?: Product // If provided, form is in edit mode
 }
 
 /**
@@ -38,7 +40,21 @@ const emit = defineEmits<Emits>()
 /**
  * Pattern: Facade Pattern - Centralized product management
  */
-const { createProductWithImages, loading, error, clearError } = useProducts()
+const {
+  createProductWithImages,
+  updateProduct,
+  addProductImages,
+  updateProductImage: updateProductImageMeta,
+  removeProductImage,
+  loading,
+  error,
+  clearError,
+} = useProducts()
+
+/**
+ * Computed: Whether the form is in edit mode
+ */
+const isEditMode = computed(() => !!props.product)
 
 /**
  * Form state (Builder Pattern)
@@ -50,7 +66,6 @@ const formData = ref<CreateProductDto>({
   price: 0,
   status: 'draft',
   stockQuantity: 0,
-  images: [],
   materials: '',
   dimensions: undefined,
 })
@@ -71,6 +86,26 @@ const dimensionsData = ref<ProductDimensions>({
 const imageFiles = ref<File[]>([])
 const imagePreviews = ref<string[]>([])
 const fileInputRef = ref<HTMLInputElement | null>(null)
+
+/**
+ * Show on home flags for new image uploads
+ */
+const imageShowOnHome = ref<boolean[]>([])
+
+/**
+ * Track existing images (edit mode)
+ */
+const existingImages = ref<ProductImage[]>([])
+
+/**
+ * Track images to delete
+ */
+const imagesToDelete = ref<string[]>([])
+
+/**
+ * Track changed showOnHome states for existing images
+ */
+const changedShowOnHome = ref<Map<string, boolean>>(new Map())
 
 /**
  * Image validation constants
@@ -136,8 +171,8 @@ const validateForm = (): boolean => {
     }
   }
 
-  // Image validation
-  if (imageFiles.value.length === 0) {
+  // Image validation - in edit mode, existing images count too
+  if (imageFiles.value.length === 0 && existingImages.value.length === 0) {
     validationErrors.value.images = 'At least one product image is required'
     isValid = false
   }
@@ -179,8 +214,8 @@ const handleFileChange = (event: Event) => {
   // Convert FileList to Array
   const newFiles = Array.from(files)
 
-  // Check total number of images
-  const totalImages = imageFiles.value.length + newFiles.length
+  // Check total number of images (including existing images in edit mode)
+  const totalImages = imageFiles.value.length + existingImages.value.length + newFiles.length
   if (totalImages > MAX_IMAGES) {
     validationErrors.value.images = `Maximum ${MAX_IMAGES} images allowed. You've selected ${totalImages} images.`
     input.value = '' // Reset input
@@ -201,6 +236,11 @@ const handleFileChange = (event: Event) => {
 
   // Add valid files to state
   imageFiles.value.push(...validFiles)
+
+  // Add default showOnHome flags for new files
+  validFiles.forEach(() => {
+    imageShowOnHome.value.push(false)
+  })
 
   // Generate previews for new files
   validFiles.forEach((file) => {
@@ -224,11 +264,38 @@ const handleFileChange = (event: Event) => {
 const removeImage = (index: number) => {
   imageFiles.value.splice(index, 1)
   imagePreviews.value.splice(index, 1)
+  imageShowOnHome.value.splice(index, 1)
 
   // Clear validation error if images exist
-  if (imageFiles.value.length > 0) {
+  if (imageFiles.value.length > 0 || existingImages.value.length > 0) {
     validationErrors.value.images = ''
   }
+}
+
+/**
+ * Mark an existing image for deletion (edit mode)
+ */
+const markImageForDeletion = (imageId: string) => {
+  existingImages.value = existingImages.value.filter(img => img.id !== imageId)
+  imagesToDelete.value.push(imageId)
+}
+
+/**
+ * Get the effective showOnHome value for an existing image
+ * (checks local overrides first, then falls back to server value)
+ */
+const getExistingImageShowOnHome = (img: ProductImage): boolean => {
+  if (changedShowOnHome.value.has(img.id)) {
+    return changedShowOnHome.value.get(img.id)!
+  }
+  return img.showOnHome
+}
+
+/**
+ * Toggle showOnHome for an existing image (edit mode)
+ */
+const toggleExistingShowOnHome = (imageId: string, value: boolean) => {
+  changedShowOnHome.value.set(imageId, value)
 }
 
 /**
@@ -262,36 +329,85 @@ const handleSubmit = async () => {
     return
   }
 
-  // Prepare product DTO (without images field)
-  const productDto: Omit<CreateProductDto, 'images'> = {
-    name: formData.value.name,
-    description: formData.value.description,
-    category: formData.value.category,
-    price: formData.value.price,
-    status: formData.value.status,
-    stockQuantity: formData.value.stockQuantity,
-    materials: formData.value.materials,
-  }
+  if (isEditMode.value && props.product) {
+    // === EDIT MODE ===
 
-  // Add dimensions if enabled
-  if (dimensionsEnabled.value) {
-    productDto.dimensions = { ...dimensionsData.value }
-  }
+    // 1. Update product fields
+    const productDto: UpdateProductDto = {
+      name: formData.value.name,
+      description: formData.value.description,
+      category: formData.value.category,
+      price: formData.value.price,
+      status: formData.value.status,
+      stockQuantity: formData.value.stockQuantity,
+      materials: formData.value.materials,
+    }
+    if (dimensionsEnabled.value) {
+      productDto.dimensions = { ...dimensionsData.value }
+    }
 
-  // Create product with image uploads via API
-  const result = await createProductWithImages(productDto, imageFiles.value)
+    const updated = await updateProduct(props.product.id, productDto)
+    if (!updated) return
 
-  if (result) {
-    // Show success message
+    // 2. Delete removed images
+    for (const imageId of imagesToDelete.value) {
+      await removeProductImage(props.product.id, imageId)
+    }
+
+    // 3. Update changed showOnHome flags
+    for (const [imageId, showOnHome] of changedShowOnHome.value) {
+      const origImage = props.product.productImages?.find(i => i.id === imageId)
+      if (origImage && origImage.showOnHome !== showOnHome) {
+        await updateProductImageMeta(props.product.id, imageId, { showOnHome })
+      }
+    }
+
+    // 4. Upload new images
+    if (imageFiles.value.length > 0) {
+      await addProductImages(props.product.id, imageFiles.value, imageShowOnHome.value)
+    }
+
     showSuccess.value = true
-
-    // Emit success event after a short delay
     setTimeout(() => {
       showSuccess.value = false
       resetForm()
       emit('success')
       emit('close')
     }, 1500)
+  } else {
+    // === CREATE MODE ===
+
+    // Prepare product DTO
+    const productDto: Omit<CreateProductDto, 'images'> = {
+      name: formData.value.name,
+      description: formData.value.description,
+      category: formData.value.category,
+      price: formData.value.price,
+      status: formData.value.status,
+      stockQuantity: formData.value.stockQuantity,
+      materials: formData.value.materials,
+    }
+
+    // Add dimensions if enabled
+    if (dimensionsEnabled.value) {
+      productDto.dimensions = { ...dimensionsData.value }
+    }
+
+    // Create product with image uploads via API
+    const result = await createProductWithImages(productDto, imageFiles.value, imageShowOnHome.value)
+
+    if (result) {
+      // Show success message
+      showSuccess.value = true
+
+      // Emit success event after a short delay
+      setTimeout(() => {
+        showSuccess.value = false
+        resetForm()
+        emit('success')
+        emit('close')
+      }, 1500)
+    }
   }
 }
 
@@ -306,7 +422,6 @@ const resetForm = () => {
     price: 0,
     status: 'draft',
     stockQuantity: 0,
-    images: [],
     materials: '',
     dimensions: undefined,
   }
@@ -320,6 +435,12 @@ const resetForm = () => {
   // Clear image files and previews
   imageFiles.value = []
   imagePreviews.value = []
+  imageShowOnHome.value = []
+
+  // Clear edit mode state
+  existingImages.value = []
+  imagesToDelete.value = []
+  changedShowOnHome.value = new Map()
 
   validationErrors.value = {}
   clearError()
@@ -337,13 +458,34 @@ const handleClose = () => {
 }
 
 /**
- * Watch open prop to reset form when sheet opens
+ * Watch open prop to reset form or populate for edit
  */
 watch(
   () => props.open,
   (isOpen) => {
     if (isOpen) {
-      resetForm()
+      if (props.product) {
+        // Pre-populate form with product data (edit mode)
+        formData.value = {
+          name: props.product.name,
+          description: props.product.description || '',
+          category: props.product.category,
+          price: typeof props.product.price === 'string' ? parseFloat(props.product.price) : props.product.price,
+          status: props.product.status,
+          stockQuantity: props.product.stockQuantity,
+          materials: props.product.materials || '',
+          dimensions: undefined,
+        }
+        if (props.product.dimensions) {
+          dimensionsEnabled.value = true
+          dimensionsData.value = { ...props.product.dimensions }
+        }
+        existingImages.value = [...(props.product.productImages || [])]
+        changedShowOnHome.value = new Map()
+        imagesToDelete.value = []
+      } else {
+        resetForm()
+      }
     }
   },
 )
@@ -353,9 +495,9 @@ watch(
   <div class="flex h-full flex-col">
     <!-- Header -->
     <div class="border-b px-6 py-4">
-      <h2 class="text-lg font-semibold">Add New Product</h2>
+      <h2 class="text-lg font-semibold">{{ isEditMode ? 'Edit Product' : 'Add New Product' }}</h2>
       <p class="text-muted-foreground text-sm">
-        Create a new product for your catalog
+        {{ isEditMode ? 'Update product details' : 'Create a new product for your catalog' }}
       </p>
     </div>
 
@@ -366,7 +508,7 @@ watch(
     >
       <CheckCircle2 class="h-5 w-5 flex-shrink-0" />
       <div>
-        <p class="font-semibold">Product created successfully!</p>
+        <p class="font-semibold">{{ isEditMode ? 'Product updated successfully!' : 'Product created successfully!' }}</p>
         <p class="text-sm">Redirecting...</p>
       </div>
     </div>
@@ -378,7 +520,7 @@ watch(
     >
       <AlertCircle class="mt-0.5 h-5 w-5 flex-shrink-0" />
       <div class="flex-1">
-        <p class="font-semibold">Error creating product</p>
+        <p class="font-semibold">{{ isEditMode ? 'Error updating product' : 'Error creating product' }}</p>
         <p class="text-sm">{{ error.message }}</p>
       </div>
       <button
@@ -549,9 +691,54 @@ watch(
           </div>
         </div>
 
+        <!-- Existing Images (Edit Mode) -->
+        <div v-if="isEditMode && existingImages.length > 0" class="space-y-2">
+          <Label>Current Images</Label>
+          <div class="grid grid-cols-2 gap-3 rounded-md border p-3">
+            <div
+              v-for="img in existingImages"
+              :key="img.id"
+              class="group relative aspect-square overflow-hidden rounded-md border bg-gray-50 dark:bg-gray-900"
+            >
+              <img
+                :src="img.url"
+                alt="Product image"
+                class="h-full w-full object-cover"
+              />
+
+              <!-- Remove Button -->
+              <button
+                type="button"
+                @click="markImageForDeletion(img.id)"
+                :disabled="loading"
+                class="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-white opacity-0 transition-opacity hover:bg-red-700 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Remove image"
+              >
+                <X class="h-4 w-4" />
+              </button>
+
+              <!-- Show on Home checkbox overlay -->
+              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
+                <label class="flex items-center gap-1 text-xs text-white cursor-pointer">
+                  <input
+                    type="checkbox"
+                    :checked="getExistingImageShowOnHome(img)"
+                    @change="toggleExistingShowOnHome(img.id, ($event.target as HTMLInputElement).checked)"
+                    class="h-3 w-3 rounded"
+                    :disabled="loading"
+                  />
+                  Home
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Image Upload -->
         <div class="space-y-3">
-          <Label for="images" required>Product Images</Label>
+          <Label for="images" :required="!isEditMode || existingImages.length === 0">
+            {{ isEditMode ? 'Add New Images' : 'Product Images' }}
+          </Label>
 
           <!-- File Input (hidden) -->
           <input
@@ -561,7 +748,7 @@ watch(
             multiple
             class="hidden"
             @change="handleFileChange"
-            :disabled="loading || imageFiles.length >= MAX_IMAGES"
+            :disabled="loading || (imageFiles.length + existingImages.length) >= MAX_IMAGES"
           />
 
           <!-- Upload Button -->
@@ -570,14 +757,14 @@ watch(
               type="button"
               variant="outline"
               @click="triggerFileInput"
-              :disabled="loading || imageFiles.length >= MAX_IMAGES"
+              :disabled="loading || (imageFiles.length + existingImages.length) >= MAX_IMAGES"
               class="w-full justify-center gap-2"
             >
               <Upload class="h-4 w-4" />
               {{
                 imageFiles.length === 0
                   ? 'Upload Images'
-                  : `Add More Images (${imageFiles.length}/${MAX_IMAGES})`
+                  : `Add More Images (${imageFiles.length + existingImages.length}/${MAX_IMAGES})`
               }}
             </Button>
 
@@ -591,7 +778,7 @@ watch(
             {{ validationErrors.images }}
           </p>
 
-          <!-- Image Previews Grid -->
+          <!-- Image Previews Grid (new uploads) -->
           <div
             v-if="imagePreviews.length > 0"
             class="grid grid-cols-2 gap-3 rounded-md border p-3"
@@ -615,9 +802,21 @@ watch(
                 <p class="truncate text-xs font-medium">
                   {{ imageFiles[index]?.name }}
                 </p>
-                <p class="text-xs opacity-90">
-                  {{ formatFileSize(imageFiles[index]?.size || 0) }}
-                </p>
+                <div class="flex items-center justify-between">
+                  <p class="text-xs opacity-90">
+                    {{ formatFileSize(imageFiles[index]?.size || 0) }}
+                  </p>
+                  <label class="flex items-center gap-1 text-xs cursor-pointer">
+                    <input
+                      type="checkbox"
+                      :checked="imageShowOnHome[index]"
+                      @change="imageShowOnHome[index] = ($event.target as HTMLInputElement).checked"
+                      class="h-3 w-3 rounded"
+                      :disabled="loading"
+                    />
+                    Home
+                  </label>
+                </div>
               </div>
 
               <!-- Remove Button -->
@@ -631,9 +830,9 @@ watch(
                 <X class="h-4 w-4" />
               </button>
 
-              <!-- Primary Badge (for first image) -->
+              <!-- Primary Badge (for first image when no existing images) -->
               <div
-                v-if="index === 0"
+                v-if="index === 0 && existingImages.length === 0"
                 class="absolute left-1 top-1 rounded-full bg-blue-600 px-2 py-0.5 text-xs font-semibold text-white"
               >
                 Primary
@@ -642,7 +841,7 @@ watch(
 
             <!-- Empty Slots (show how many more can be added) -->
             <div
-              v-for="n in Math.max(0, MAX_IMAGES - imagePreviews.length)"
+              v-for="n in Math.max(0, MAX_IMAGES - imagePreviews.length - existingImages.length)"
               :key="`empty-${n}`"
               class="flex aspect-square items-center justify-center rounded-md border-2 border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-900"
             >
@@ -650,9 +849,9 @@ watch(
             </div>
           </div>
 
-          <!-- Empty State (no images uploaded) -->
+          <!-- Empty State (no images uploaded and no existing images) -->
           <div
-            v-else
+            v-else-if="existingImages.length === 0"
             class="flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-gray-300 bg-gray-50 p-8 dark:border-gray-700 dark:bg-gray-900"
           >
             <ImageIcon class="h-12 w-12 text-gray-400" />
@@ -682,7 +881,7 @@ watch(
           :disabled="loading || showSuccess"
         >
           <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
-          {{ loading ? 'Creating...' : 'Create Product' }}
+          {{ loading ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save Changes' : 'Create Product') }}
         </Button>
       </div>
     </div>
