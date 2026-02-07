@@ -9,7 +9,7 @@
  * @purpose Backend AboutSection entities are adapted to frontend Story interface
  *
  * @pattern Facade Pattern
- * @purpose useAboutSections composable simplifies API interaction
+ * @purpose useAsyncData with $fetch simplifies API interaction
  *
  * @pattern Strategy Pattern
  * @purpose Alternating image positions for visual rhythm
@@ -38,11 +38,48 @@
  * - Efficient data fetching with composables
  */
 
-// Fetch about sections from backend API (Adapter + Facade patterns)
-const { stories, loading, error, fetchAboutSections } = useAboutSections()
+import type { AboutSection } from '~/types/about-section'
+import type { Story } from '~/types/story'
 
-// Fetch data on component setup (SSR-compatible)
-await fetchAboutSections()
+// Fetch about sections from backend API using useAsyncData for proper SSR hydration.
+// useAsyncData transfers fetched data from server to client via Nuxt payload,
+// preventing hydration mismatches caused by re-fetching on client with different URLs.
+const config = useRuntimeConfig()
+
+const getApiUrl = (): string => {
+  if (import.meta.client) {
+    if (process.env.NODE_ENV === 'production') {
+      return config.public.apiUrl
+    }
+    return 'http://localhost:4000/api'
+  }
+  return config.public.apiUrl
+}
+
+const { data: aboutSectionsData, pending: loading, error: fetchError } = await useAsyncData(
+  'about-sections',
+  () => $fetch<AboutSection[]>(`${getApiUrl()}/about-sections`, { timeout: 10000 }),
+  { server: true }
+)
+
+const error = computed(() => fetchError.value ? new Error(fetchError.value.message || 'Failed to load sections') : null)
+
+// Adapter Pattern: Convert backend AboutSection to frontend Story
+const stories = computed<Story[]>(() => {
+  if (!aboutSectionsData.value || !Array.isArray(aboutSectionsData.value)) {
+    return []
+  }
+  return aboutSectionsData.value.map((section: AboutSection, index: number) => ({
+    id: section.id,
+    title: section.title,
+    image: {
+      src: section.image,
+      alt: section.imageAlt,
+    },
+    content: section.paragraphs.join('\n\n'),
+    imagePosition: index % 2 === 0 ? 'left' as const : 'right' as const,
+  }))
+})
 
 // Page-specific SEO meta tags
 useHead({
@@ -94,7 +131,7 @@ useSeoMeta({
         <p class="about-error__text">
           Impossible de charger les sections. Veuillez r&eacute;essayer plus tard.
         </p>
-        <button class="about-error__button" @click="fetchAboutSections">
+        <button class="about-error__button" @click="() => refreshNuxtData('about-sections')">
           R&eacute;essayer
         </button>
       </div>

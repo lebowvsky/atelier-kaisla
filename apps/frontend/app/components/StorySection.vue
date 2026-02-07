@@ -57,7 +57,7 @@
  * ```
  */
 
-import type { Story, ImagePosition } from '~/types/story'
+import type { ImagePosition } from '~/types/story'
 
 interface Props {
   /**
@@ -152,7 +152,7 @@ const sectionId = computed(() => {
 </script>
 
 <template>
-  <section :id="sectionId" :class="sectionClasses" aria-labelledby="`${sectionId}-title`">
+  <section :id="sectionId" :class="sectionClasses" :aria-labelledby="`${sectionId}-title`">
     <div class="story-section__container">
       <!-- Image Column -->
       <div :class="imageClasses">

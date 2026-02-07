@@ -10,7 +10,7 @@
  * It runs before every route navigation
  */
 
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware((to, _from) => {
   // Only run on client-side (auth state is stored in localStorage)
   if (import.meta.server) {
     console.log('[auth middleware] Skipping on server-side')

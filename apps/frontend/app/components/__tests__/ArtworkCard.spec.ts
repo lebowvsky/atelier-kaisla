@@ -184,7 +184,7 @@ describe('ArtworkCard - Design Pattern Implementation Tests', () => {
       })
 
       const imageContainer = wrapper.find('.artwork-card__image-container')
-      expect(imageContainer.attributes('style')).toContain('aspect-ratio: 16/9')
+      expect(imageContainer.attributes('style')).toMatch(/aspect-ratio:\s*16\s*\/\s*9/)
     })
   })
 
@@ -435,7 +435,7 @@ describe('ArtworkCard - Design Pattern Implementation Tests', () => {
 
       // Default aspect ratio: 4/3
       const imageContainer = wrapper.find('.artwork-card__image-container')
-      expect(imageContainer.attributes('style')).toContain('aspect-ratio: 4/3')
+      expect(imageContainer.attributes('style')).toMatch(/aspect-ratio:\s*4\s*\/\s*3/)
     })
   })
 })

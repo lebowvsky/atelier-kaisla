@@ -45,15 +45,18 @@ export function useHomeGrid() {
     return config.public.apiUrl
   }
 
-  const images = ref<GalleryImage[]>([])
-  const loading = ref(false)
-  const error = ref<Error | null>(null)
+  // Use Nuxt's useState for SSR-safe shared state.
+  // useState serializes state from server to client via Nuxt payload,
+  // preventing hydration mismatches when data is fetched during SSR.
+  const images = useState<GalleryImage[]>('home-grid-images', () => [])
+  const loading = useState<boolean>('home-grid-loading', () => false)
+  const error = useState<Error | null>('home-grid-error', () => null)
 
   /**
    * Fetch images flagged for the home page grid.
    * Maps each ProductImage to GalleryImage format for the ImageGrid component.
    */
-  const fetchHomeGrid = async () => {
+  const fetchHomeGrid = async (): Promise<GalleryImage[]> => {
     loading.value = true
     error.value = null
 
@@ -81,13 +84,15 @@ export function useHomeGrid() {
       } else {
         images.value = []
       }
-    } catch (e: any) {
-      console.error('[useHomeGrid] Error fetching home grid:', e.message || e)
+    } catch (e: unknown) {
+      console.error('[useHomeGrid] Error fetching home grid:', e instanceof Error ? e.message : e)
       error.value = e as Error
       images.value = []
     } finally {
       loading.value = false
     }
+
+    return images.value
   }
 
   return {

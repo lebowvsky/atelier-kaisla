@@ -113,7 +113,7 @@ const changedShowOnHome = ref<Map<string, boolean>>(new Map())
 const MAX_IMAGES = 5
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB in bytes
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
-const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp']
+const _ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp']
 
 /**
  * Validation errors (Chain of Responsibility Pattern)

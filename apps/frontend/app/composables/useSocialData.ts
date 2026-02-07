@@ -108,10 +108,13 @@ export function useSocialData() {
 
   /**
    * Fetch social data from the API
-   * Should be called with await in components for SSR compatibility
+   * Should be called with await in components for SSR compatibility.
+   * Returns the fetched data so useAsyncData/useLazyAsyncData can
+   * transfer it via the Nuxt payload (handler must not return undefined).
    */
-  const fetchSocialData = async (): Promise<void> => {
+  const fetchSocialData = async () => {
     await fetchContactLinks()
+    return { socialLinks: socialLinks.value, contactInfo: contactInfo.value }
   }
 
   /**

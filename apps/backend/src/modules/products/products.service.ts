@@ -68,7 +68,7 @@ export class ProductsService {
       const showOnHomeFlags = createDto.showOnHome || [];
 
       // Create the product first (without showOnHome metadata)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
       const { showOnHome: _showOnHome, ...productData } = createDto;
       const product = this.productRepository.create(productData);
       const savedProduct = await this.productRepository.save(product);

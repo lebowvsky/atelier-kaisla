@@ -20,7 +20,7 @@
 import type { ArtworkCardConfig } from '~/types/artwork'
 
 // Composable for artwork data management
-const { filterByCategory, sortByPrice, sortByTitle, getCountByCategory } = useArtworks()
+const { filterByCategory, getCountByCategory } = useArtworks()
 
 // Filter wall hangings
 const wallHangings = computed(() => filterByCategory('wall-hanging'))

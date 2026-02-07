@@ -61,12 +61,16 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 // Fetch social media data using composable (Facade + Adapter pattern)
+// useContactLinks now uses Nuxt's useState internally, ensuring state
+// is transferred from server to client via Nuxt payload (no hydration mismatch).
 const { socialLinks, contactInfo, fetchSocialData } = useSocialData()
 
-// Fetch data using useLazyAsyncData for non-blocking SSR compatibility
-// Renders immediately with fallback data, then updates when API responds
-// Nuxt deduplicates this call across components using the same key
-useLazyAsyncData('contact-links', () => fetchSocialData(), {
+// Fetch data using useAsyncData for SSR compatibility.
+// useAsyncData blocks SSR rendering until data is available, ensuring the
+// server and client render with the same data (preventing hydration mismatches).
+// The handler returns a value so Nuxt can transfer the payload to the client.
+// Nuxt deduplicates this call across components using the same key.
+useAsyncData('contact-links', () => fetchSocialData(), {
   dedupe: 'defer',
   server: true,
 })

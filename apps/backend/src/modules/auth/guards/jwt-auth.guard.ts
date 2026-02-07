@@ -57,6 +57,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     this.logger.debug(
       `Authentication successful for ${method} ${url} - User: ${user.username}`,
     );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return user;
   }
 }

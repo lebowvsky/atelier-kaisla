@@ -40,7 +40,7 @@ interface Props {
   config?: GalleryConfig;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   config: () => ({
     columns: 4,
     imageSize: 220,
@@ -81,7 +81,7 @@ const handleKeyPress = (event: KeyboardEvent, index: number): void => {
  *
  * @param image - Gallery image object
  */
-const getGridItemClasses = (image: GalleryImage): string => {
+const getGridItemClasses = (_image: GalleryImage): string => {
   const baseClass = "grid-item";
   // Future enhancement: could add classes based on image loading state
   return baseClass;

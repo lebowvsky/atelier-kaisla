@@ -271,8 +271,8 @@ export function useArtworks() {
    * @param apiData - Raw data from API
    * @returns Artwork object
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const adaptApiToArtwork = (apiData: any): Artwork => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const _adaptApiToArtwork = (apiData: any): Artwork => {
     return createArtwork({
       id: apiData.id,
       title: apiData.title,

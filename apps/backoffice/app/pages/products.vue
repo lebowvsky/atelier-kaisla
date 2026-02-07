@@ -12,7 +12,7 @@
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import ProductForm from '@/components/products/ProductForm.vue'
-import { Plus, Search, Eye, Pencil, Trash2, Filter, RefreshCw } from 'lucide-vue-next'
+import { Plus, Search, Eye, Pencil, Trash2, RefreshCw } from 'lucide-vue-next'
 import type { Product, ProductCategory, ProductStatus } from '@/types/product'
 
 /**

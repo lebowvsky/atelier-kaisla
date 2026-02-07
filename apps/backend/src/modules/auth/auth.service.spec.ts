@@ -15,8 +15,8 @@ import { UpdateCredentialsDto } from './dto/update-credentials.dto';
 
 describe('AuthService - updateCredentials', () => {
   let service: AuthService;
-  let userRepository: Repository<User>;
-  let jwtService: JwtService;
+  let _userRepository: Repository<User>;
+  let _jwtService: JwtService;
 
   const mockUser: User = {
     id: '550e8400-e29b-41d4-a716-446655440000',
@@ -52,8 +52,8 @@ describe('AuthService - updateCredentials', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
-    jwtService = module.get<JwtService>(JwtService);
+    _userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    _jwtService = module.get<JwtService>(JwtService);
   });
 
   beforeEach(() => {

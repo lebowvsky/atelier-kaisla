@@ -148,8 +148,8 @@ export function useProducts() {
         products.value = []
         artworks.value = []
       }
-    } catch (e: any) {
-      console.error('[useProducts] Error fetching products:', e.message || e)
+    } catch (e: unknown) {
+      console.error('[useProducts] Error fetching products:', e instanceof Error ? e.message : e)
       error.value = e as Error
       products.value = []
       artworks.value = []

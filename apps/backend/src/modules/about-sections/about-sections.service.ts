@@ -127,9 +127,10 @@ export class AboutSectionsService {
     const section = await this.findById(id);
 
     // Exclude image field - image updates go through updateImage
-    const { image, ...safeUpdate } = updateDto as UpdateAboutSectionDto & {
-      image?: string;
-    };
+    const { image: _image, ...safeUpdate } =
+      updateDto as UpdateAboutSectionDto & {
+        image?: string;
+      };
     Object.assign(section, safeUpdate);
 
     try {

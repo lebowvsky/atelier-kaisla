@@ -157,7 +157,7 @@ export class AuthService {
     const updatedUser = await this.userRepository.save(user);
 
     // Return user without password
-    const { password: _, ...userWithoutPassword } = updatedUser;
+    const { password: _password, ...userWithoutPassword } = updatedUser;
     return userWithoutPassword;
   }
 }

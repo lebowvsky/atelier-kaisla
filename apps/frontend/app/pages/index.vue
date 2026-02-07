@@ -9,12 +9,16 @@
  * Uses the home grid API to display product images flagged for the home page.
  */
 
-// Home grid composable - fetches images flagged for home page display
-const { images: homeGridImages, loading: gridLoading, error: gridError, fetchHomeGrid } = useHomeGrid()
+// Home grid composable - fetches images flagged for home page display.
+// useHomeGrid uses useState internally for SSR-safe state transfer.
+const { images: homeGridImages, loading: gridLoading, fetchHomeGrid } = useHomeGrid()
 
-// Fetch home grid images on mount (client-side)
-onMounted(async () => {
-  await fetchHomeGrid()
+// Fetch home grid images using useAsyncData for SSR support.
+// useAsyncData blocks SSR rendering until data is available,
+// ensuring consistent server/client markup and preventing hydration mismatches.
+// The handler must return a value to transfer the payload to the client.
+useAsyncData('home-grid', () => fetchHomeGrid(), {
+  server: true,
 })
 
 // Page-specific SEO meta tags

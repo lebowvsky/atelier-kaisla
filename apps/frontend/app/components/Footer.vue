@@ -40,10 +40,11 @@ import type { NavigationItem } from '~/types/navigation'
 const { navigationItems } = useNavigation()
 
 /**
- * Compute current year for copyright
- * Pure function - updates reactively
+ * Current year for copyright - uses useState for SSR-safe value.
+ * The year is computed once on the server and transferred to the client
+ * via Nuxt payload to prevent any potential hydration mismatch.
  */
-const currentYear = computed(() => new Date().getFullYear())
+const currentYear = useState<number>('footer-current-year', () => new Date().getFullYear())
 
 /**
  * Footer sections configuration using Composite pattern
@@ -171,13 +172,12 @@ const legalLinks = computed<NavigationItem[]>(() => [
               :key="link.path"
               class="footer__legal-item"
             >
-              <NuxtLink
-                :to="link.path"
+              <span
                 :aria-label="link.ariaLabel"
                 class="footer__legal-link"
               >
                 {{ link.label }}
-              </NuxtLink>
+              </span>
             </li>
           </ul>
         </nav>
@@ -438,14 +438,8 @@ const legalLinks = computed<NavigationItem[]>(() => [
   font-size: 0.875rem;
   color: $color-gray-600;
   text-decoration: none;
-  transition: color $transition-base;
   white-space: nowrap;
-
-  &:hover {
-    color: $color-black;
-  }
-
-  @include focus-visible;
+  cursor: default;
 }
 
 // ==========================================

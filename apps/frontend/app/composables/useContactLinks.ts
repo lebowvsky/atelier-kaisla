@@ -152,10 +152,13 @@ export function useContactLinks() {
     return config.public.apiUrl
   }
 
-  const contactLinks = ref<ContactLink[]>([])
-  const loading = ref(false)
-  const error = ref<Error | null>(null)
-  const hasFetched = ref(false)
+  // Use Nuxt's useState for SSR-safe shared state.
+  // useState serializes state from server to client via Nuxt payload,
+  // preventing hydration mismatches when the composable is used across components.
+  const contactLinks = useState<ContactLink[]>('contact-links-data', () => [])
+  const loading = useState<boolean>('contact-links-loading', () => false)
+  const error = useState<Error | null>('contact-links-error', () => null)
+  const hasFetched = useState<boolean>('contact-links-has-fetched', () => false)
 
   /**
    * Fetch active contact links from the API
