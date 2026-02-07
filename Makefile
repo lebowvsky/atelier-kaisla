@@ -171,6 +171,18 @@ seed-prod-clean: ## Exécuter les seeders en mode clean en production (DANGER!)
 		echo "$(YELLOW)Confirmation incorrecte. Opération annulée.$(NC)"; \
 	fi
 
+seed-auth-prod: ## Créer l'utilisateur admin en production (lit ADMIN_USERNAME et ADMIN_PASSWORD)
+	@echo "$(YELLOW)⚠️  Création de l'utilisateur admin en PRODUCTION$(NC)"
+	@echo "$(YELLOW)Variables d'env utilisées : ADMIN_USERNAME, ADMIN_PASSWORD$(NC)"
+	@read -p "Êtes-vous sûr de vouloir continuer? [y/N] " -n 1 -r; \
+	echo; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		echo "$(GREEN)Création de l'utilisateur admin...$(NC)"; \
+		sudo docker exec atelier-kaisla-backend-prod npm run seed:auth:prod; \
+	else \
+		echo "$(YELLOW)Opération annulée.$(NC)"; \
+	fi
+
 seed-enhanced-prod: ## Exécuter le seeder amélioré en production (évite les doublons)
 	@echo "$(YELLOW)⚠️  ATTENTION: Seeding en PRODUCTION avec prévention des doublons$(NC)"
 	@read -p "Êtes-vous sûr de vouloir continuer? [y/N] " -n 1 -r; \

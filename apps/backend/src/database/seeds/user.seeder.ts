@@ -29,22 +29,26 @@ export class UserSeeder {
         this.logger.log('All existing users removed');
       }
 
+      // Read credentials from environment variables (with defaults for dev)
+      const adminUsername = process.env.ADMIN_USERNAME || 'admin';
+      const adminPassword = process.env.ADMIN_PASSWORD || 'k4sla1!';
+
       // Check if admin user already exists
       const adminExists = await userRepository.findOne({
-        where: { username: 'admin' },
+        where: { username: adminUsername },
       });
 
       if (adminExists) {
-        this.logger.log('Admin user already exists, skipping creation');
+        this.logger.log(`User "${adminUsername}" already exists, skipping creation`);
         return;
       }
 
-      // Hash the default password
-      const hashedPassword = await bcrypt.hash('k4sla1!', 10);
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
       // Create admin user
       const adminUser = userRepository.create({
-        username: 'admin',
+        username: adminUsername,
         password: hashedPassword,
         role: 'admin',
       });
@@ -54,8 +58,8 @@ export class UserSeeder {
       this.logger.log('\n========================================');
       this.logger.log('User Seeding Statistics:');
       this.logger.log('✓ Admin user created successfully');
-      this.logger.log('  Username: admin');
-      this.logger.log('  Password: k4sla1!');
+      this.logger.log(`  Username: ${adminUsername}`);
+      this.logger.log('  Password: ********');
       this.logger.log('  Role: admin');
       this.logger.log('========================================');
 

@@ -39,6 +39,8 @@ services:
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
       FRONTEND_URL: https://kaisla.lebowvsky.com
       BACKOFFICE_URL: https://bokaisla.lebowvsky.com
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
     volumes:
       # Persist uploaded files
       - uploads_prod:/app/uploads

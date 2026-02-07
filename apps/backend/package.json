@@ -33,7 +33,9 @@
     "seed:enhanced": "ts-node -r tsconfig-paths/register src/database/seeds/seed-enhanced.ts",
     "seed:enhanced:clean": "ts-node -r tsconfig-paths/register src/database/seeds/seed-enhanced.ts --clean",
     "seed:auth": "ts-node -r tsconfig-paths/register src/database/seeds/seed-auth.ts",
-    "seed:auth:clean": "ts-node -r tsconfig-paths/register src/database/seeds/seed-auth.ts --clean"
+    "seed:auth:clean": "ts-node -r tsconfig-paths/register src/database/seeds/seed-auth.ts --clean",
+    "seed:auth:prod": "node dist/database/seeds/seed-auth.js",
+    "seed:auth:prod:clean": "node dist/database/seeds/seed-auth.js --clean"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
