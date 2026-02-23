@@ -10,7 +10,7 @@
  */
 
 import { computed } from 'vue'
-import { Home, Package, Info, Link, Settings } from 'lucide-vue-next'
+import { Home, Package, FileText, Info, Link, Settings } from 'lucide-vue-next'
 import type { NavigationItem } from '~/types/navigation'
 
 /**
@@ -35,6 +35,12 @@ export function useNavigation() {
       path: '/products',
       icon: Package,
       isActive: route.path === '/products'
+    },
+    {
+      title: 'Pages',
+      path: '/pages',
+      icon: FileText,
+      isActive: route.path === '/pages'
     },
     {
       title: 'À propos',

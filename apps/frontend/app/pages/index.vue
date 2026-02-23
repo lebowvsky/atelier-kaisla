@@ -13,10 +13,37 @@
 // useHomeGrid uses useState internally for SSR-safe state transfer.
 const { images: homeGridImages, loading: gridLoading, fetchHomeGrid } = useHomeGrid()
 
-// Fetch home grid images using useAsyncData for SSR support.
+// Page content composable - fetches CMS content for the hero section.
+const { content: heroContent, fetchSection: fetchHero } = usePageContent('home', 'hero')
+
+// Hero computed values with static fallback if API returns nothing.
+const heroTitle = computed(() => heroContent.value?.title || 'Welcome to Atelier Kaisla')
+const heroSubtitle = computed(
+  () => heroContent.value?.content || 'Handcrafted wall art and rugs, designed with passion',
+)
+
+// Hero background image from API (full URL stored in DB).
+// When an image is available, it is used as a CSS background-image with
+// a dark overlay for text readability. Without an image the default
+// gradient is preserved via the CSS fallback class.
+const heroImageUrl = computed(() => heroContent.value?.image || null)
+const heroImageAlt = computed(() => heroContent.value?.imageAlt || '')
+
+const heroStyle = computed(() => {
+  if (!heroImageUrl.value) return {}
+  return {
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url(${heroImageUrl.value})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  }
+})
+
+// Fetch home grid images and hero content using useAsyncData for SSR support.
 // useAsyncData blocks SSR rendering until data is available,
 // ensuring consistent server/client markup and preventing hydration mismatches.
 // The handler must return a value to transfer the payload to the client.
+useAsyncData('home-hero', () => fetchHero(), { server: true })
 useAsyncData('home-grid', () => fetchHomeGrid(), {
   server: true,
 })
@@ -43,10 +70,15 @@ useSeoMeta({
 
 <template>
   <div class="home-page">
-    <section class="hero">
+    <section
+      :class="['hero', { 'hero--with-image': heroImageUrl }]"
+      :style="heroStyle"
+      :aria-label="heroImageAlt || undefined"
+      role="img"
+    >
       <div class="hero__content">
-        <h1 class="hero__title">Welcome to Atelier Kaisla</h1>
-        <p class="hero__subtitle">Handcrafted wall art and rugs, designed with passion</p>
+        <h1 class="hero__title">{{ heroTitle }}</h1>
+        <p class="hero__subtitle">{{ heroSubtitle }}</p>
       </div>
     </section>
 
@@ -135,6 +167,32 @@ useSeoMeta({
 
   @include tablet {
     padding: $spacing-3xl $spacing-lg;
+  }
+
+  // Variant with background image from API
+  &--with-image {
+    // Background properties are set via inline style (backgroundImage, backgroundSize, etc.)
+    // The overlay is baked into the linear-gradient layer of the background-image.
+    padding: $spacing-3xl $spacing-md;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @include tablet {
+      padding: calc($spacing-3xl + $spacing-xl) $spacing-lg;
+      min-height: 500px;
+    }
+
+    .hero__title {
+      color: $color-white;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero__subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
   }
 }
 

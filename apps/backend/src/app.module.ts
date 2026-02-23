@@ -9,6 +9,7 @@ import { validationSchema } from './config/environment.validation';
 import { ProductsModule } from './modules/products/products.module';
 import { AboutSectionsModule } from './modules/about-sections/about-sections.module';
 import { ContactLinksModule } from './modules/contact-links/contact-links.module';
+import { PageContentModule } from './modules/page-content/page-content.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
@@ -37,6 +38,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
     ProductsModule,
     AboutSectionsModule,
     ContactLinksModule,
+    PageContentModule,
     AuthModule,
   ],
   controllers: [AppController],
