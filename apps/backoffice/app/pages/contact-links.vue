@@ -185,8 +185,8 @@ const formatDate = (dateString: string): string => {
           <Button
             variant="outline"
             size="sm"
-            @click="refreshContactLinks"
             :disabled="loading"
+            @click="refreshContactLinks"
           >
             <RefreshCw
               class="mr-2 h-4 w-4"

@@ -245,8 +245,8 @@ const handleEditFormSuccess = async () => {
           <Button
             variant="outline"
             size="sm"
-            @click="refreshProducts"
             :disabled="loading"
+            @click="refreshProducts"
           >
             <RefreshCw
               class="mr-2 h-4 w-4"
@@ -327,7 +327,7 @@ const handleEditFormSuccess = async () => {
               type="text"
               placeholder="Rechercher des produits..."
               class="w-full rounded-md border border-input bg-background px-10 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            />
+            >
           </div>
 
           <!-- Category Filter -->
@@ -474,7 +474,7 @@ const handleEditFormSuccess = async () => {
                     :src="getProductImage(product)"
                     :alt="product.name"
                     class="h-12 w-12 rounded-md object-cover"
-                  />
+                  >
                 </td>
 
                 <!-- Product Name & Description -->

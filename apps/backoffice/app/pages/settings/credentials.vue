@@ -315,7 +315,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
     <div
       class="rounded-lg border border-slate-200 bg-white p-6 shadow-lg dark:border-slate-700 dark:bg-slate-800"
     >
-      <form @submit.prevent="handleSubmit" @keypress="handleKeyPress" class="space-y-6">
+      <form class="space-y-6" @submit.prevent="handleSubmit" @keypress="handleKeyPress">
         <!-- Current Password Field (Always Required) -->
         <div class="space-y-2">
           <Label for="currentPassword" class="text-sm font-medium">
@@ -338,10 +338,10 @@ const handleKeyPress = (event: KeyboardEvent) => {
             />
             <button
               type="button"
-              @click="showCurrentPassword = !showCurrentPassword"
               :disabled="loading"
               class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-xs"
               tabindex="-1"
+              @click="showCurrentPassword = !showCurrentPassword"
             >
               {{ showCurrentPassword ? "Masquer" : "Afficher" }}
             </button>
@@ -358,7 +358,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
         </div>
 
         <!-- Divider -->
-        <div class="border-t border-slate-200 dark:border-slate-700"></div>
+        <div class="border-t border-slate-200 dark:border-slate-700"/>
 
         <!-- Username Field (Optional) -->
         <div class="space-y-2">
@@ -405,10 +405,10 @@ const handleKeyPress = (event: KeyboardEvent) => {
             />
             <button
               type="button"
-              @click="showNewPassword = !showNewPassword"
               :disabled="loading"
               class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-xs"
               tabindex="-1"
+              @click="showNewPassword = !showNewPassword"
             >
               {{ showNewPassword ? "Masquer" : "Afficher" }}
             </button>
@@ -446,10 +446,10 @@ const handleKeyPress = (event: KeyboardEvent) => {
             />
             <button
               type="button"
-              @click="showConfirmPassword = !showConfirmPassword"
               :disabled="loading"
               class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-xs"
               tabindex="-1"
+              @click="showConfirmPassword = !showConfirmPassword"
             >
               {{ showConfirmPassword ? "Masquer" : "Afficher" }}
             </button>
@@ -485,12 +485,12 @@ const handleKeyPress = (event: KeyboardEvent) => {
                   r="10"
                   stroke="currentColor"
                   stroke-width="4"
-                ></circle>
+                />
                 <path
                   class="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                />
               </svg>
               Mise à jour...
             </span>

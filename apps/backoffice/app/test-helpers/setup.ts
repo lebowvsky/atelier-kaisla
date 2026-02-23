@@ -8,28 +8,31 @@ import { ref, computed, readonly, watch, onMounted, reactive, toRef, toRefs, nex
 import type { Ref } from 'vue'
 import { vi } from 'vitest'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const g = globalThis as Record<string, any>
+
 // --- Vue reactivity globals (Nuxt auto-imports these) ---
-;(globalThis as any).ref = ref
-;(globalThis as any).computed = computed
-;(globalThis as any).readonly = readonly
-;(globalThis as any).watch = watch
-;(globalThis as any).onMounted = onMounted
-;(globalThis as any).reactive = reactive
-;(globalThis as any).toRef = toRef
-;(globalThis as any).toRefs = toRefs
-;(globalThis as any).nextTick = nextTick
+g.ref = ref
+g.computed = computed
+g.readonly = readonly
+g.watch = watch
+g.onMounted = onMounted
+g.reactive = reactive
+g.toRef = toRef
+g.toRefs = toRefs
+g.nextTick = nextTick
 
 // Make the Ref type available (used in type annotations)
-;(globalThis as any).Ref = undefined // Type-only, not needed at runtime
+g.Ref = undefined // Type-only, not needed at runtime
 
 // --- Nuxt-specific globals ---
-;(globalThis as any).useRuntimeConfig = () => ({
+g.useRuntimeConfig = () => ({
   public: { apiUrl: 'http://localhost:4000/api' },
 })
-;(globalThis as any).navigateTo = vi.fn()
-;(globalThis as any).useSeoMeta = vi.fn()
-;(globalThis as any).useHead = vi.fn()
-;(globalThis as any).definePageMeta = vi.fn()
+g.navigateTo = vi.fn()
+g.useSeoMeta = vi.fn()
+g.useHead = vi.fn()
+g.definePageMeta = vi.fn()
 
 // --- import.meta stubs ---
 // import.meta.client and import.meta.server are Nuxt-specific

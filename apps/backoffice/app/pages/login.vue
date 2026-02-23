@@ -137,7 +137,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
     <div
       class="rounded-lg border border-slate-200 bg-white p-8 shadow-lg dark:border-slate-700 dark:bg-slate-800"
     >
-      <form @submit.prevent="handleSubmit" @keypress="handleKeyPress" class="space-y-6">
+      <form class="space-y-6" @submit.prevent="handleSubmit" @keypress="handleKeyPress">
         <!-- Username Field -->
         <div class="space-y-2">
           <Label for="username" class="text-sm font-medium"> Quel est ton nom Combinita ? </Label>
@@ -172,10 +172,10 @@ const handleKeyPress = (event: KeyboardEvent) => {
             />
             <button
               type="button"
-              @click="showPassword = !showPassword"
               :disabled="authLoading"
               class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
               tabindex="-1"
+              @click="showPassword = !showPassword"
             >
               <span v-if="showPassword" class="text-xs">Tu me vois</span>
               <span v-else class="text-xs">Tu me vois pas</span>
@@ -248,12 +248,12 @@ const handleKeyPress = (event: KeyboardEvent) => {
                 r="10"
                 stroke="currentColor"
                 stroke-width="4"
-              ></circle>
+              />
               <path
                 class="opacity-75"
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
+              />
             </svg>
             Un peu de patience Combinita...
           </span>

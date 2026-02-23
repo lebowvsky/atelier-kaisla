@@ -12,7 +12,7 @@ useSeoMeta({
 })
 
 const {
-  contents,
+  contents: _contents,
   loading,
   error,
   hasContents,
@@ -112,8 +112,8 @@ const getContentImage = (image?: string): string => {
           <Button
             variant="outline"
             size="sm"
-            @click="refreshContents"
             :disabled="loading"
+            @click="refreshContents"
           >
             <RefreshCw
               class="mr-2 h-4 w-4"
@@ -243,7 +243,7 @@ const getContentImage = (image?: string): string => {
                     :src="getContentImage(item.image)"
                     :alt="item.imageAlt || item.section"
                     class="h-20 w-32 rounded-md object-cover border"
-                  />
+                  >
                 </div>
 
                 <!-- Content Info -->

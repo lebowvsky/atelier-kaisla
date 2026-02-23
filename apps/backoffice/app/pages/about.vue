@@ -169,8 +169,8 @@ const getSectionImage = (image?: string): string => {
           <Button
             variant="outline"
             size="sm"
-            @click="refreshSections"
             :disabled="loading"
+            @click="refreshSections"
           >
             <RefreshCw
               class="mr-2 h-4 w-4"
@@ -284,7 +284,7 @@ const getSectionImage = (image?: string): string => {
                 :src="getSectionImage(section.image)"
                 :alt="section.imageAlt || section.title"
                 class="h-20 w-32 rounded-md object-cover border"
-              />
+              >
             </div>
 
             <!-- Section Info -->
