@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import { X, Loader2, CheckCircle2, AlertCircle, Upload, Image as ImageIcon } from 'lucide-vue-next'
 import type { PageContent, CreatePageContentDto, UpdatePageContentDto } from '@/types/page-content'
 
@@ -364,6 +365,9 @@ watch(
           <p v-if="validationErrors.section" class="text-sm text-red-600">
             {{ validationErrors.section }}
           </p>
+          <p class="text-muted-foreground text-xs">
+            Identifiant de la section (sans le nom de la page). Ex : pour la page "home", utilisez "hero", "intro", etc.
+          </p>
         </div>
 
         <!-- Title -->
@@ -389,13 +393,22 @@ watch(
         <!-- Content -->
         <div class="space-y-2">
           <Label for="content">Contenu</Label>
-          <Textarea
-            id="content"
-            v-model="formData.content"
-            placeholder="Texte du contenu de la section..."
-            rows="4"
-            :disabled="loading"
-          />
+          <ClientOnly>
+            <RichTextEditor
+              v-model="formData.content"
+              placeholder="Texte du contenu de la section..."
+              :disabled="loading"
+            />
+            <template #fallback>
+              <Textarea
+                id="content"
+                v-model="formData.content"
+                placeholder="Texte du contenu de la section..."
+                rows="4"
+                :disabled="loading"
+              />
+            </template>
+          </ClientOnly>
         </div>
 
         <!-- Image Upload -->

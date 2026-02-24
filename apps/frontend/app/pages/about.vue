@@ -41,6 +41,19 @@
 import type { AboutSection } from '~/types/about-section'
 import type { Story } from '~/types/story'
 
+// Page content composable - fetches CMS content for the hero section.
+const { content: heroContent, fetchSection: fetchHero } = usePageContent('about', 'hero')
+
+// Hero computed values with static fallback if API returns nothing.
+const heroTitle = computed(() => heroContent.value?.title || "À Propos d'Atelier Kaisla")
+
+const defaultHeroSubtitle = "<p>Découvrez l'histoire d'un atelier artisanal dédié à la création de pièces textiles uniques, où tradition et modernité se rencontrent pour donner vie à des œuvres authentiques.</p>"
+
+const heroSubtitle = computed(() => {
+  const raw = heroContent.value?.content
+  return sanitizeHtml(raw || defaultHeroSubtitle)
+})
+
 // Fetch about sections from backend API using useAsyncData for proper SSR hydration.
 // useAsyncData transfers fetched data from server to client via Nuxt payload,
 // preventing hydration mismatches caused by re-fetching on client with different URLs.
@@ -55,6 +68,8 @@ const getApiUrl = (): string => {
   }
   return config.public.apiUrl
 }
+
+useAsyncData('about-hero', () => fetchHero(), { server: true })
 
 const { data: aboutSectionsData, pending: loading, error: fetchError } = await useAsyncData(
   'about-sections',
@@ -107,12 +122,8 @@ useSeoMeta({
     <section class="about-hero" aria-labelledby="about-hero-title">
       <div class="container">
         <div class="about-hero__content">
-          <h1 id="about-hero-title" class="about-hero__title">À Propos d'Atelier Kaisla</h1>
-          <p class="about-hero__subtitle">
-            Découvrez l'histoire d'un atelier artisanal dédié à la création de pièces textiles
-            uniques, où tradition et modernité se rencontrent pour donner vie à des œuvres
-            authentiques.
-          </p>
+          <h1 id="about-hero-title" class="about-hero__title">{{ heroTitle }}</h1>
+          <div class="about-hero__subtitle" v-html="heroSubtitle" />
         </div>
       </div>
     </section>
@@ -228,10 +239,25 @@ useSeoMeta({
   color: $color-gray-600;
   line-height: $line-height-base;
   font-weight: 400;
-  margin: 0;
 
   @include tablet {
     font-size: $font-size-xl;
+  }
+
+  :deep(p) {
+    margin: 0 0 $spacing-sm;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  :deep(strong) {
+    font-weight: 700;
+  }
+
+  :deep(em) {
+    font-style: italic;
   }
 }
 

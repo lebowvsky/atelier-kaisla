@@ -6,11 +6,17 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as sanitizeHtml from 'sanitize-html';
 import { PageContent } from '../../entities/page-content.entity';
 import { CreatePageContentDto } from './dto/create-page-content.dto';
 import { CreatePageContentWithUploadDto } from './dto/create-page-content-with-upload.dto';
 import { UpdatePageContentDto } from './dto/update-page-content.dto';
 import { UploadService } from '../upload/upload.service';
+
+const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
+  allowedTags: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'h2', 'h3', 'hr'],
+  allowedAttributes: {},
+};
 
 /**
  * PageContent service - handles business logic for CMS page content
@@ -24,6 +30,14 @@ export class PageContentService {
     private readonly pageContentRepository: Repository<PageContent>,
     private readonly uploadService: UploadService,
   ) {}
+
+  /**
+   * Sanitize HTML content to allow only safe TipTap tags
+   */
+  private sanitizeContent(content?: string): string | undefined {
+    if (!content) return content;
+    return sanitizeHtml(content, SANITIZE_OPTIONS);
+  }
 
   /**
    * Create a new page content entry with uploaded image
@@ -48,6 +62,7 @@ export class PageContentService {
 
       const contentData = {
         ...createDto,
+        content: this.sanitizeContent(createDto.content),
         image: imageUrl,
       };
 
@@ -77,7 +92,10 @@ export class PageContentService {
     this.logger.debug(`Received DTO: ${JSON.stringify(createDto, null, 2)}`);
 
     try {
-      const entry = this.pageContentRepository.create(createDto);
+      const entry = this.pageContentRepository.create({
+        ...createDto,
+        content: this.sanitizeContent(createDto.content),
+      });
       const saved = await this.pageContentRepository.save(entry);
 
       this.logger.log(`Page content created successfully: ${saved.id}`);
@@ -154,6 +172,9 @@ export class PageContentService {
     // Exclude image field - image updates go through updateImage
     const { image: _image, ...safeUpdate } =
       updateDto as UpdatePageContentDto & { image?: string };
+    if (safeUpdate.content) {
+      safeUpdate.content = this.sanitizeContent(safeUpdate.content);
+    }
     Object.assign(entry, safeUpdate);
 
     try {

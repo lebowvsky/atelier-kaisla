@@ -16,11 +16,35 @@ const { images: homeGridImages, loading: gridLoading, fetchHomeGrid } = useHomeG
 // Page content composable - fetches CMS content for the hero section.
 const { content: heroContent, fetchSection: fetchHero } = usePageContent('home', 'hero')
 
+// Page content composable - fetches CMS content for the intro section.
+const { content: introContent, fetchSection: fetchIntro } = usePageContent('home', 'intro')
+
 // Hero computed values with static fallback if API returns nothing.
 const heroTitle = computed(() => heroContent.value?.title || 'Welcome to Atelier Kaisla')
 const heroSubtitle = computed(
   () => heroContent.value?.content || 'Handcrafted wall art and rugs, designed with passion',
 )
+
+const sanitizedHeroSubtitle = computed(() => {
+  const raw = heroSubtitle.value
+  return isHtmlContent(raw) ? sanitizeHtml(raw) : `<p>${raw}</p>`
+})
+
+// Intro computed values with static fallback if API returns nothing.
+const introTitle = computed(() => introContent.value?.title || "Qu'est-ce que Kaisla ?")
+
+const defaultIntroHtml = `<ul>
+  <li>Un atelier artisanal dédié à la création de pièces murales uniques</li>
+  <li>Chaque création est pensée et réalisée à la main avec soin</li>
+  <li>Des matériaux naturels et durables pour un artisanat responsable</li>
+  <li>Un style contemporain inspiré par la nature et les formes organiques</li>
+  <li>Des œuvres qui transforment votre intérieur en un espace chaleureux et authentique</li>
+</ul>`
+
+const introHtml = computed(() => {
+  const raw = introContent.value?.content
+  return sanitizeHtml(raw || defaultIntroHtml)
+})
 
 // Hero background image from API (full URL stored in DB).
 // When an image is available, it is used as a CSS background-image with
@@ -44,6 +68,7 @@ const heroStyle = computed(() => {
 // ensuring consistent server/client markup and preventing hydration mismatches.
 // The handler must return a value to transfer the payload to the client.
 useAsyncData('home-hero', () => fetchHero(), { server: true })
+useAsyncData('home-intro', () => fetchIntro(), { server: true })
 useAsyncData('home-grid', () => fetchHomeGrid(), {
   server: true,
 })
@@ -78,7 +103,7 @@ useSeoMeta({
     >
       <div class="hero__content">
         <h1 class="hero__title">{{ heroTitle }}</h1>
-        <p class="hero__subtitle">{{ heroSubtitle }}</p>
+        <div class="hero__subtitle" v-html="sanitizedHeroSubtitle" />
       </div>
     </section>
 
@@ -124,24 +149,8 @@ useSeoMeta({
     <!-- What is Kaisla Section -->
     <section class="kaisla-intro" aria-labelledby="kaisla-intro-title">
       <div class="container">
-        <h2 id="kaisla-intro-title" class="visually-hidden">Qu'est-ce que Kaisla ?</h2>
-        <ul class="kaisla-intro__list">
-          <li class="kaisla-intro__item kaisla-intro__item--large">
-            Un atelier artisanal dédié à la création de pièces murales uniques
-          </li>
-          <li class="kaisla-intro__item kaisla-intro__item--medium">
-            Chaque création est pensée et réalisée à la main avec soin
-          </li>
-          <li class="kaisla-intro__item kaisla-intro__item--small">
-            Des matériaux naturels et durables pour un artisanat responsable
-          </li>
-          <li class="kaisla-intro__item kaisla-intro__item--medium">
-            Un style contemporain inspiré par la nature et les formes organiques
-          </li>
-          <li class="kaisla-intro__item kaisla-intro__item--large">
-            Des œuvres qui transforment votre intérieur en un espace chaleureux et authentique
-          </li>
-        </ul>
+        <h2 id="kaisla-intro-title" class="visually-hidden">{{ introTitle }}</h2>
+        <div class="kaisla-intro__content" v-html="introHtml" />
       </div>
     </section>
 
@@ -220,6 +229,18 @@ useSeoMeta({
 
   @include tablet {
     font-size: $font-size-xl;
+  }
+
+  :deep(p) {
+    margin: 0;
+  }
+
+  :deep(strong) {
+    font-weight: 700;
+  }
+
+  :deep(em) {
+    font-style: italic;
   }
 }
 
@@ -324,55 +345,91 @@ useSeoMeta({
   }
 }
 
-.kaisla-intro__list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.kaisla-intro__content {
   max-width: 900px;
   margin-left: auto;
   margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-lg;
 
-  @include tablet {
-    gap: $spacing-xl;
+  :deep(ul),
+  :deep(ol) {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+
+    @include tablet {
+      gap: $spacing-xl;
+    }
   }
-}
 
-.kaisla-intro__item {
-  color: $color-gray-600;
-  line-height: $line-height-base;
-  font-weight: 400;
-  transition: color 0.3s ease;
-
-  &:hover {
-    color: $color-black;
-  }
-}
-
-.kaisla-intro__item--large {
-  font-size: $font-size-xl;
-  font-weight: 500;
-
-  @include tablet {
-    font-size: $font-size-2xl;
-  }
-}
-
-.kaisla-intro__item--medium {
-  font-size: $font-size-lg;
-
-  @include tablet {
-    font-size: $font-size-xl;
-  }
-}
-
-.kaisla-intro__item--small {
-  font-size: $font-size-base;
-
-  @include tablet {
+  :deep(li) {
+    color: $color-gray-600;
     font-size: $font-size-lg;
+    line-height: $line-height-base;
+    font-weight: 400;
+    transition: color 0.3s ease;
+
+    @include tablet {
+      font-size: $font-size-xl;
+    }
+
+    &:hover {
+      color: $color-black;
+    }
+  }
+
+  :deep(p) {
+    color: $color-gray-600;
+    font-size: $font-size-lg;
+    line-height: $line-height-base;
+    margin: 0 0 $spacing-md;
+
+    @include tablet {
+      font-size: $font-size-xl;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  :deep(strong) {
+    font-weight: 700;
+  }
+
+  :deep(em) {
+    font-style: italic;
+  }
+
+  :deep(h2),
+  :deep(h3) {
+    color: $color-black;
+    font-weight: 700;
+    margin: 0 0 $spacing-md;
+  }
+
+  :deep(h2) {
+    font-size: $font-size-xl;
+
+    @include tablet {
+      font-size: $font-size-2xl;
+    }
+  }
+
+  :deep(h3) {
+    font-size: $font-size-lg;
+
+    @include tablet {
+      font-size: $font-size-xl;
+    }
+  }
+
+  :deep(hr) {
+    border: none;
+    border-top: 1px solid $color-gray-300;
+    margin: $spacing-lg 0;
   }
 }
 

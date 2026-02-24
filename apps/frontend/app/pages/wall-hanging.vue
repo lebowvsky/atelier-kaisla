@@ -38,6 +38,19 @@ import type { ArtworkCardConfig } from '~/types/artwork'
 import type { Product } from '~/types/product'
 import { adaptProductToArtwork } from '~/composables/useProducts'
 
+// Page content composable - fetches CMS content for the intro section.
+const { content: introContent, fetchSection: fetchIntro } = usePageContent('wall-hanging', 'intro')
+
+// Intro computed values with static fallback if API returns nothing.
+const introTitle = computed(() => introContent.value?.title || 'Wall Hanging Collection')
+
+const defaultIntroDescription = '<p>Each wall hanging is thoughtfully designed and handwoven using traditional techniques. Natural materials, contemporary aesthetics, and timeless craftsmanship come together to create pieces that transform your space into a warm, welcoming sanctuary.</p>'
+
+const introDescription = computed(() => {
+  const raw = introContent.value?.content
+  return sanitizeHtml(raw || defaultIntroDescription)
+})
+
 /**
  * Card configuration for wall hanging display
  * Strategy Pattern: Define display behavior for all cards
@@ -84,6 +97,8 @@ const getApiUrl = (): string => {
   return config.public.apiUrl
 }
 
+useAsyncData('wall-hanging-intro', () => fetchIntro(), { server: true })
+
 const { data: products, error, pending: loading } = await useAsyncData(
   'wall-hanging-products',
   () => {
@@ -128,12 +143,8 @@ useSeoMeta({
     <div class="container">
       <!-- Page Header -->
       <header class="page-header">
-        <h1 class="page-header__title">Wall Hanging Collection</h1>
-        <p class="page-header__description">
-          Each wall hanging is thoughtfully designed and handwoven using traditional techniques.
-          Natural materials, contemporary aesthetics, and timeless craftsmanship come together
-          to create pieces that transform your space into a warm, welcoming sanctuary.
-        </p>
+        <h1 class="page-header__title">{{ introTitle }}</h1>
+        <div class="page-header__description" v-html="introDescription" />
       </header>
 
       <!-- Artwork Grid -->
@@ -264,10 +275,25 @@ useSeoMeta({
   font-size: $font-size-base;
   color: $color-gray-600;
   line-height: $line-height-base;
-  margin: 0;
 
   @include tablet {
     font-size: $font-size-lg;
+  }
+
+  :deep(p) {
+    margin: 0 0 $spacing-sm;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  :deep(strong) {
+    font-weight: 700;
+  }
+
+  :deep(em) {
+    font-style: italic;
   }
 }
 

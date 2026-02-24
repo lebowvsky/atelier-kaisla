@@ -105,10 +105,18 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 /**
- * Split content into paragraphs
+ * Detect whether content is HTML or plain text
+ */
+const contentIsHtml = computed(() => isHtmlContent(props.content))
+
+/**
+ * Sanitized HTML content for rich text rendering
+ */
+const sanitizedContent = computed(() => sanitizeHtml(props.content))
+
+/**
+ * Split content into paragraphs (plain text fallback)
  * Handles multi-paragraph content separated by double newlines
- *
- * Pure function for content transformation
  */
 const paragraphs = computed(() => {
   return props.content
@@ -173,10 +181,18 @@ const sectionId = computed(() => {
         </h2>
 
         <div class="story-section__text">
-          <!-- Multi-paragraph support -->
-          <p v-for="(paragraph, index) in paragraphs" :key="index" class="story-section__paragraph">
-            {{ paragraph }}
-          </p>
+          <!-- Rich HTML content -->
+          <div
+            v-if="contentIsHtml"
+            class="story-section__rich-content"
+            v-html="sanitizedContent"
+          />
+          <!-- Plain text fallback (retrocompatibility) -->
+          <template v-else>
+            <p v-for="(paragraph, index) in paragraphs" :key="index" class="story-section__paragraph">
+              {{ paragraph }}
+            </p>
+          </template>
         </div>
       </div>
     </div>
@@ -353,6 +369,85 @@ const sectionId = computed(() => {
     &:first-child {
       color: $color-gray-900;
     }
+  }
+}
+
+.story-section__rich-content {
+  :deep(p) {
+    font-size: $font-size-base;
+    color: $color-gray-600;
+    line-height: $line-height-base;
+    margin: 0 0 $spacing-sm;
+
+    @include tablet {
+      font-size: $font-size-lg;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  :deep(h2) {
+    font-size: $font-size-xl;
+    font-weight: 700;
+    color: $color-black;
+    margin: $spacing-md 0 $spacing-sm;
+    line-height: $line-height-tight;
+
+    @include tablet {
+      font-size: $font-size-2xl;
+    }
+  }
+
+  :deep(h3) {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    color: $color-black;
+    margin: $spacing-sm 0 $spacing-xs;
+    line-height: $line-height-tight;
+
+    @include tablet {
+      font-size: $font-size-xl;
+    }
+  }
+
+  :deep(ul) {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin: $spacing-sm 0;
+    color: $color-gray-600;
+  }
+
+  :deep(ol) {
+    list-style-type: decimal;
+    padding-left: 1.5rem;
+    margin: $spacing-sm 0;
+    color: $color-gray-600;
+  }
+
+  :deep(li) {
+    font-size: $font-size-base;
+    line-height: $line-height-base;
+    margin: 0.25rem 0;
+
+    @include tablet {
+      font-size: $font-size-lg;
+    }
+  }
+
+  :deep(strong) {
+    font-weight: 700;
+  }
+
+  :deep(em) {
+    font-style: italic;
+  }
+
+  :deep(hr) {
+    border: none;
+    border-top: 1px solid $color-gray-200;
+    margin: $spacing-md 0;
   }
 }
 

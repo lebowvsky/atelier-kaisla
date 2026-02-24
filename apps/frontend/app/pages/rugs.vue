@@ -38,6 +38,19 @@ import type { ArtworkCardConfig } from '~/types/artwork'
 import type { Product } from '~/types/product'
 import { adaptProductToArtwork } from '~/composables/useProducts'
 
+// Page content composable - fetches CMS content for the intro section.
+const { content: introContent, fetchSection: fetchIntro } = usePageContent('rugs', 'intro')
+
+// Intro computed values with static fallback if API returns nothing.
+const introTitle = computed(() => introContent.value?.title || 'Rugs Collection')
+
+const defaultIntroDescription = '<p>Each rug is meticulously hand-knotted using traditional weaving techniques passed down through generations. Premium natural fibers, timeless patterns, and exceptional craftsmanship come together to create pieces that bring warmth, comfort, and enduring beauty to your living space.</p>'
+
+const introDescription = computed(() => {
+  const raw = introContent.value?.content
+  return sanitizeHtml(raw || defaultIntroDescription)
+})
+
 /**
  * Card configuration for rug display
  * Strategy Pattern: Define display behavior for all cards
@@ -84,6 +97,8 @@ const getApiUrl = (): string => {
   return config.public.apiUrl
 }
 
+useAsyncData('rugs-intro', () => fetchIntro(), { server: true })
+
 const { data: products, error, pending: loading } = await useAsyncData(
   'rug-products',
   () => {
@@ -128,13 +143,8 @@ useSeoMeta({
     <div class="container">
       <!-- Page Header -->
       <header class="page-header">
-        <h1 class="page-header__title">Rugs Collection</h1>
-        <p class="page-header__description">
-          Each rug is meticulously hand-knotted using traditional weaving techniques passed down
-          through generations. Premium natural fibers, timeless patterns, and exceptional
-          craftsmanship come together to create pieces that bring warmth, comfort, and enduring
-          beauty to your living space.
-        </p>
+        <h1 class="page-header__title">{{ introTitle }}</h1>
+        <div class="page-header__description" v-html="introDescription" />
       </header>
 
       <!-- Artwork Grid -->
@@ -267,10 +277,25 @@ useSeoMeta({
   font-size: $font-size-base;
   color: $color-gray-600;
   line-height: $line-height-base;
-  margin: 0;
 
   @include tablet {
     font-size: $font-size-lg;
+  }
+
+  :deep(p) {
+    margin: 0 0 $spacing-sm;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  :deep(strong) {
+    font-weight: 700;
+  }
+
+  :deep(em) {
+    font-style: italic;
   }
 }
 

@@ -78,6 +78,8 @@ const handleFormClose = () => {
   editingContent.value = null
 }
 
+const stripHtml = (html: string): string => html.replace(/<[^>]*>/g, '')
+
 const truncateText = (text: string, maxLength: number): string => {
   if (text.length <= maxLength) return text
   return text.substring(0, maxLength) + '...'
@@ -284,7 +286,7 @@ const getContentImage = (image?: string): string => {
                     v-if="item.content"
                     class="mt-1 text-sm text-muted-foreground line-clamp-2"
                   >
-                    {{ truncateText(item.content, 150) }}
+                    {{ truncateText(stripHtml(item.content), 150) }}
                   </p>
 
                   <!-- Meta info -->

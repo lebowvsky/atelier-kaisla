@@ -29,7 +29,7 @@ export function usePageContent(page: string, section: string) {
   const stateKey = `page-content-${page}-${section}`
   const content = useState<PageContent | null>(`${stateKey}`, () => null)
   const loading = useState<boolean>(`${stateKey}-loading`, () => false)
-  const error = useState<Error | null>(`${stateKey}-error`, () => null)
+  const error = useState<string | null>(`${stateKey}-error`, () => null)
 
   const fetchSection = async (): Promise<PageContent | null> => {
     loading.value = true
@@ -51,7 +51,7 @@ export function usePageContent(page: string, section: string) {
         `[usePageContent] Error fetching ${page}/${section}:`,
         e instanceof Error ? e.message : e,
       )
-      error.value = e as Error
+      error.value = e instanceof Error ? e.message : String(e)
       content.value = null
     } finally {
       loading.value = false
