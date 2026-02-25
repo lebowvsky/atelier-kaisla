@@ -469,9 +469,7 @@ describe('BlogService', () => {
       // Arrange
       mockArticleRepository.findOne.mockResolvedValue(mockArticle);
       mockUploadService.ensureUploadDir.mockResolvedValue(undefined);
-      mockArticleImageRepository.find.mockResolvedValue([
-        { sortOrder: 2 },
-      ]);
+      mockArticleImageRepository.find.mockResolvedValue([{ sortOrder: 2 }]);
       mockUploadService.getFileUrl.mockReturnValue(
         'http://localhost:4000/uploads/blog/new-image.jpg',
       );
@@ -542,11 +540,9 @@ describe('BlogService', () => {
       mockArticleImageRepository.save.mockResolvedValue(updatedImage);
 
       // Act
-      const result = await service.updateImage(
-        mockArticle.id,
-        mockImage.id,
-        { altText: 'New alt text' },
-      );
+      const result = await service.updateImage(mockArticle.id, mockImage.id, {
+        altText: 'New alt text',
+      });
 
       // Assert
       expect(result.altText).toBe('New alt text');
@@ -583,9 +579,7 @@ describe('BlogService', () => {
         'test-image.jpg',
         'blog',
       );
-      expect(mockArticleImageRepository.remove).toHaveBeenCalledWith(
-        mockImage,
-      );
+      expect(mockArticleImageRepository.remove).toHaveBeenCalledWith(mockImage);
     });
 
     it('should still remove image record if file deletion fails', async () => {
@@ -600,9 +594,7 @@ describe('BlogService', () => {
       await service.removeImage(mockArticle.id, mockImage.id);
 
       // Assert - should still remove from DB
-      expect(mockArticleImageRepository.remove).toHaveBeenCalledWith(
-        mockImage,
-      );
+      expect(mockArticleImageRepository.remove).toHaveBeenCalledWith(mockImage);
     });
 
     it('should throw NotFoundException when image not found', async () => {
