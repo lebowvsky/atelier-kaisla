@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
+import Link from '@tiptap/extension-link'
+import { TextStyle } from '@tiptap/extension-text-style'
+import Color from '@tiptap/extension-color'
 import {
   Bold,
   Italic,
@@ -11,6 +14,9 @@ import {
   Minus,
   Undo2,
   Redo2,
+  Link2,
+  Unlink,
+  Palette,
 } from 'lucide-vue-next'
 
 interface Props {
@@ -36,6 +42,12 @@ const editor = useEditor({
     StarterKit.configure({
       heading: { levels: [2, 3] },
     }),
+    Link.configure({
+      openOnClick: false,
+      HTMLAttributes: { class: 'text-blue-600 underline' },
+    }),
+    TextStyle,
+    Color,
   ],
   onUpdate: ({ editor }) => {
     emit('update:modelValue', editor.getHTML())
@@ -48,7 +60,7 @@ watch(
     if (!editor.value) return
     const currentHtml = editor.value.getHTML()
     if (currentHtml !== value) {
-      editor.value.commands.setContent(value || '', false)
+      editor.value.commands.setContent(value || '')
     }
   },
 )
@@ -63,6 +75,38 @@ watch(
 onBeforeUnmount(() => {
   editor.value?.destroy()
 })
+
+/**
+ * Color input ref for programmatic triggering
+ */
+const colorInputRef = ref<HTMLInputElement | null>(null)
+
+/**
+ * Set link on selected text - prompts for URL
+ */
+const setLink = () => {
+  if (!editor.value) return
+  const previousUrl = editor.value.getAttributes('link').href
+  const url = window.prompt('URL du lien :', previousUrl || 'https://')
+
+  if (url === null) return // cancelled
+
+  if (url === '') {
+    editor.value.chain().focus().extendMarkRange('link').unsetLink().run()
+    return
+  }
+
+  editor.value.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+}
+
+/**
+ * Handle color change from native input
+ */
+const handleColorChange = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  if (!editor.value) return
+  editor.value.chain().focus().setColor(input.value).run()
+}
 
 interface ToolbarAction {
   icon: typeof Bold
@@ -112,6 +156,18 @@ const toolbarActions = computed((): ToolbarAction[] => {
       isActive: () => e.isActive('orderedList'),
     },
     {
+      icon: Link2,
+      label: 'Lien',
+      action: () => setLink(),
+      isActive: () => e.isActive('link'),
+    },
+    {
+      icon: Unlink,
+      label: 'Supprimer le lien',
+      action: () => e.chain().focus().unsetLink().run(),
+      isActive: () => false,
+    },
+    {
       icon: Minus,
       label: 'Ligne horizontale',
       action: () => e.chain().focus().setHorizontalRule().run(),
@@ -155,6 +211,26 @@ const toolbarActions = computed((): ToolbarAction[] => {
       >
         <component :is="btn.icon" class="h-4 w-4" />
       </button>
+
+      <!-- Color Picker -->
+      <div class="relative flex h-8 w-8 items-center justify-center">
+        <button
+          type="button"
+          title="Couleur du texte"
+          :disabled="disabled"
+          class="flex h-8 w-8 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+          @click="colorInputRef?.click()"
+        >
+          <Palette class="h-4 w-4" />
+        </button>
+        <input
+          ref="colorInputRef"
+          type="color"
+          class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+          :disabled="disabled"
+          @input="handleColorChange"
+        />
+      </div>
     </div>
 
     <!-- Editor -->
@@ -225,5 +301,15 @@ const toolbarActions = computed((): ToolbarAction[] => {
 
 .rich-text-editor .tiptap em {
   font-style: italic;
+}
+
+.rich-text-editor .tiptap a {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.rich-text-editor .tiptap a:hover {
+  color: #1d4ed8;
 }
 </style>
