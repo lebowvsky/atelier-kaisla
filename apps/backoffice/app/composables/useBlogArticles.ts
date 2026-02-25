@@ -83,7 +83,7 @@ export function useBlogArticles() {
   const createArticleWithImages = async (
     dto: CreateBlogArticleDto,
     imageFiles: File[],
-    coverIndex?: number
+    _coverIndex?: number
   ): Promise<BlogArticle | null> => {
     const result = await executeApiCall(async () => {
       // Pattern: Builder Pattern - Progressive FormData construction

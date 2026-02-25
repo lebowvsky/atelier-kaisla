@@ -61,7 +61,7 @@ export interface CreateBlogArticleDto {
 /**
  * DTO for updating an existing blog article (all fields optional)
  */
-export interface UpdateBlogArticleDto extends Partial<CreateBlogArticleDto> {}
+export type UpdateBlogArticleDto = Partial<CreateBlogArticleDto>
 
 /**
  * DTO for creating a new blog tag
@@ -73,4 +73,4 @@ export interface CreateBlogTagDto {
 /**
  * DTO for updating an existing blog tag (all fields optional)
  */
-export interface UpdateBlogTagDto extends Partial<CreateBlogTagDto> {}
+export type UpdateBlogTagDto = Partial<CreateBlogTagDto>

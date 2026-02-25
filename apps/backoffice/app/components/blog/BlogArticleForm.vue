@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import { Textarea } from '@/components/ui/textarea'
-import { X, Loader2, CheckCircle2, AlertCircle, Upload, Image as ImageIcon, Star } from 'lucide-vue-next'
+import { X, Loader2, CheckCircle2, AlertCircle, Upload, Image as ImageIcon } from 'lucide-vue-next'
 import type { BlogArticle, BlogArticleImage, BlogTag, CreateBlogArticleDto, UpdateBlogArticleDto } from '@/types/blog'
 
 /**
