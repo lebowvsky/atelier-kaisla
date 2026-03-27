@@ -37,8 +37,8 @@ services:
       DATABASE_NAME: ${POSTGRES_DB:-atelier_kaisla_prod}
       DATABASE_USER: ${POSTGRES_USER:-postgres}
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
-      FRONTEND_URL: https://kaisla.lebowvsky.com
-      BACKOFFICE_URL: https://bokaisla.lebowvsky.com
+      FRONTEND_URL: ${FRONTEND_URL}
+      BACKOFFICE_URL: ${BACKOFFICE_URL}
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
     volumes:
@@ -56,11 +56,11 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=dokploy-network"
       # HTTP router (redirect to HTTPS)
-      - "traefik.http.routers.backend-api.rule=Host(`api.lebowvsky.com`)"
+      - "traefik.http.routers.backend-api.rule=Host(`${API_DOMAIN}`)"
       - "traefik.http.routers.backend-api.entrypoints=web"
       - "traefik.http.routers.backend-api.middlewares=redirect-to-https@file"
       # HTTPS router
-      - "traefik.http.routers.backend-api-secure.rule=Host(`api.lebowvsky.com`)"
+      - "traefik.http.routers.backend-api-secure.rule=Host(`${API_DOMAIN}`)"
       - "traefik.http.routers.backend-api-secure.entrypoints=websecure"
       - "traefik.http.routers.backend-api-secure.tls=true"
       - "traefik.http.routers.backend-api-secure.tls.certresolver=letsencrypt"
@@ -85,7 +85,7 @@ services:
       NODE_ENV: production
       NUXT_HOST: 0.0.0.0
       NUXT_PORT: 3000
-      NUXT_PUBLIC_API_URL: https://api.lebowvsky.com/api
+      NUXT_PUBLIC_API_URL: ${NUXT_PUBLIC_API_URL}
     expose:
       - "3000"
     networks:
@@ -109,7 +109,7 @@ services:
       NODE_ENV: production
       NUXT_HOST: 0.0.0.0
       NUXT_PORT: 3000
-      NUXT_PUBLIC_API_URL: https://api.lebowvsky.com/api
+      NUXT_PUBLIC_API_URL: ${NUXT_PUBLIC_API_URL}
     expose:
       - "3000"
     networks:
@@ -142,11 +142,11 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=dokploy-network"
       # HTTP router (redirect to HTTPS)
-      - "traefik.http.routers.pgadmin.rule=Host(`pgadminkaisla.lebowvsky.com`)"
+      - "traefik.http.routers.pgadmin.rule=Host(`${PGADMIN_DOMAIN}`)"
       - "traefik.http.routers.pgadmin.entrypoints=web"
       - "traefik.http.routers.pgadmin.middlewares=redirect-to-https@file"
       # HTTPS router
-      - "traefik.http.routers.pgadmin-secure.rule=Host(`pgadminkaisla.lebowvsky.com`)"
+      - "traefik.http.routers.pgadmin-secure.rule=Host(`${PGADMIN_DOMAIN}`)"
       - "traefik.http.routers.pgadmin-secure.entrypoints=websecure"
       - "traefik.http.routers.pgadmin-secure.tls=true"
       - "traefik.http.routers.pgadmin-secure.tls.certresolver=letsencrypt"
