@@ -12,14 +12,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   private readonly logger = new Logger(JwtStrategy.name);
 
   constructor(private readonly authService: AuthService) {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET environment variable is required');
+    }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'dev-secret-change-in-production',
+      secretOrKey: secret,
     });
-    this.logger.log(
-      `JWT Strategy initialized with secret: ${process.env.JWT_SECRET ? '***' : 'USING DEFAULT'}`,
-    );
   }
 
   /**

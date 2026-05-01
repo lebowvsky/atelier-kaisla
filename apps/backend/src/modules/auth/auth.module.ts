@@ -15,10 +15,18 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   imports: [
     TypeOrmModule.forFeature([User]),
     PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'dev-secret-change-in-production',
-      signOptions: {
-        expiresIn: (process.env.JWT_EXPIRATION || '1h') as any,
+    JwtModule.registerAsync({
+      useFactory: () => {
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+          throw new Error('JWT_SECRET environment variable is required');
+        }
+        return {
+          secret,
+          signOptions: {
+            expiresIn: (process.env.JWT_EXPIRATION || '1h') as any,
+          },
+        };
       },
     }),
   ],

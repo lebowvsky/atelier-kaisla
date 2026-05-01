@@ -5,8 +5,18 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 import { setupSwagger } from './config/swagger.config';
 
+function assertRequiredEnv(name: string): void {
+  if (!process.env[name]) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+}
+
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
+
+  if (process.env.NODE_ENV === 'production') {
+    assertRequiredEnv('JWT_SECRET');
+  }
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 

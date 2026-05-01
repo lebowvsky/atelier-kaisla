@@ -37,10 +37,12 @@ services:
       DATABASE_NAME: ${POSTGRES_DB:-atelier_kaisla_prod}
       DATABASE_USER: ${POSTGRES_USER:-postgres}
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
-      FRONTEND_URL: ${FRONTEND_URL}
-      BACKOFFICE_URL: ${BACKOFFICE_URL}
+      FRONTEND_URL: https://${FRONTEND_DOMAIN}
+      BACKOFFICE_URL: https://${BACKOFFICE_DOMAIN}
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-1h}
     volumes:
       # Persist uploaded files
       - uploads_prod:/app/uploads
@@ -85,11 +87,26 @@ services:
       NODE_ENV: production
       NUXT_HOST: 0.0.0.0
       NUXT_PORT: 3000
-      NUXT_PUBLIC_API_URL: ${NUXT_PUBLIC_API_URL}
+      NUXT_PUBLIC_API_URL: https://${API_DOMAIN}/api
     expose:
       - "3000"
     networks:
       - atelier-network
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+      # HTTP router (redirect to HTTPS)
+      - "traefik.http.routers.kaisla-frontend.rule=Host(`${FRONTEND_DOMAIN}`)"
+      - "traefik.http.routers.kaisla-frontend.entrypoints=web"
+      - "traefik.http.routers.kaisla-frontend.middlewares=redirect-to-https@file"
+      # HTTPS router
+      - "traefik.http.routers.kaisla-frontend-secure.rule=Host(`${FRONTEND_DOMAIN}`)"
+      - "traefik.http.routers.kaisla-frontend-secure.entrypoints=websecure"
+      - "traefik.http.routers.kaisla-frontend-secure.tls=true"
+      - "traefik.http.routers.kaisla-frontend-secure.tls.certresolver=letsencrypt"
+      # Service configuration
+      - "traefik.http.services.kaisla-frontend.loadbalancer.server.port=3000"
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
       interval: 30s
@@ -109,11 +126,26 @@ services:
       NODE_ENV: production
       NUXT_HOST: 0.0.0.0
       NUXT_PORT: 3000
-      NUXT_PUBLIC_API_URL: ${NUXT_PUBLIC_API_URL}
+      NUXT_PUBLIC_API_URL: https://${API_DOMAIN}/api
     expose:
       - "3000"
     networks:
       - atelier-network
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+      # HTTP router (redirect to HTTPS)
+      - "traefik.http.routers.kaisla-backoffice.rule=Host(`${BACKOFFICE_DOMAIN}`)"
+      - "traefik.http.routers.kaisla-backoffice.entrypoints=web"
+      - "traefik.http.routers.kaisla-backoffice.middlewares=redirect-to-https@file"
+      # HTTPS router
+      - "traefik.http.routers.kaisla-backoffice-secure.rule=Host(`${BACKOFFICE_DOMAIN}`)"
+      - "traefik.http.routers.kaisla-backoffice-secure.entrypoints=websecure"
+      - "traefik.http.routers.kaisla-backoffice-secure.tls=true"
+      - "traefik.http.routers.kaisla-backoffice-secure.tls.certresolver=letsencrypt"
+      # Service configuration
+      - "traefik.http.services.kaisla-backoffice.loadbalancer.server.port=3000"
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
       interval: 30s
