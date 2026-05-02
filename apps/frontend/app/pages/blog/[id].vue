@@ -49,38 +49,28 @@ const sanitizedContent = computed(() => {
   return sanitizeHtml(article.value.content)
 })
 
-useHead({
-  title: () => article.value?.title || 'Article',
+useSeo({
+  title: () => article.value?.title ?? 'Article',
+  description: () => {
+    const raw = article.value?.content ?? ''
+    const stripped = raw.replace(/<[^>]*>/g, '').trim()
+    return stripped.substring(0, 160).trimEnd()
+  },
+  image: () => coverImage.value?.url ?? '/logo-kaisla.png',
+  type: 'article'
 })
 
-useSeoMeta({
-  title: () => `${article.value?.title || 'Article'} | Atelier Kaisla`,
-  description: () => {
-    if (!article.value) return ''
-    const stripped = article.value.content.replace(/<[^>]*>/g, '')
-    return stripped.substring(0, 160).trimEnd()
-  },
-  ogTitle: () => `${article.value?.title || 'Article'} | Atelier Kaisla`,
-  ogDescription: () => {
-    if (!article.value) return ''
-    const stripped = article.value.content.replace(/<[^>]*>/g, '')
-    return stripped.substring(0, 160).trimEnd()
-  },
-  ogImage: () => coverImage.value?.url || '/logo-kaisla.png',
-  ogUrl: () => `https://atelier-kaisla.com/blog/${articleId}`,
-  twitterTitle: () => `${article.value?.title || 'Article'} | Atelier Kaisla`,
-  twitterDescription: () => {
-    if (!article.value) return ''
-    const stripped = article.value.content.replace(/<[^>]*>/g, '')
-    return stripped.substring(0, 160).trimEnd()
-  },
-  twitterImage: () => coverImage.value?.url || '/logo-kaisla.png',
-  twitterCard: 'summary_large_image',
-})
+useArticleSchema(article)
+
+const breadcrumbItems = computed(() => [
+  { name: 'Journal', url: '/blog' },
+  { name: article.value?.title ?? 'Article' }
+])
 </script>
 
 <template>
   <div class="blog-detail">
+    <Breadcrumbs :items="breadcrumbItems" />
     <!-- Loading State -->
     <div
       v-if="loading"

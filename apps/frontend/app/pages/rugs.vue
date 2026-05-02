@@ -117,29 +117,20 @@ const artworks = computed(() => {
 })
 
 // Page-specific SEO meta tags
-useHead({
-  title: 'Rugs Collection',
+useSeo({
+  title: 'Tapis artisanaux',
+  description:
+    "Tapis faits main par Atelier Kaisla. Nouage traditionnel, fibres naturelles d'exception et design contemporain pour habiller durablement votre intérieur.",
+  image: '/logo-kaisla.png',
+  type: 'website'
 })
 
-useSeoMeta({
-  title: 'Rugs Collection | Atelier Kaisla',
-  description:
-    'Explore our collection of handcrafted rugs. Each piece is hand-knotted with premium materials to bring lasting beauty, warmth, and character to your home.',
-  ogTitle: 'Rugs Collection | Atelier Kaisla',
-  ogDescription:
-    'Discover unique handwoven rugs. Premium natural materials, traditional knotting techniques, timeless designs.',
-  ogImage: '/logo-kaisla.png',
-  ogUrl: 'https://atelier-kaisla.com/rugs',
-  twitterTitle: 'Rugs Collection | Atelier Kaisla',
-  twitterDescription:
-    'Explore our collection of handcrafted rugs made with premium natural materials.',
-  twitterImage: '/logo-kaisla.png',
-  twitterCard: 'summary_large_image',
-})
+useCollectionPageSchema('Tapis')
 </script>
 
 <template>
   <div class="rugs-page">
+    <Breadcrumbs :items="[{ name: 'Tapis' }]" />
     <div class="container">
       <!-- Page Header -->
       <header class="page-header">

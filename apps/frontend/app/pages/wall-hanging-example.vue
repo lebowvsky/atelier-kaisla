@@ -63,17 +63,12 @@ const displayedArtworks = computed(() => {
 })
 
 // SEO metadata
-useHead({
-  title: 'Wall Hanging Collection'
-})
-
-useSeoMeta({
-  title: 'Wall Hanging Collection | Atelier Kaisla',
-  description: `Discover ${counts.value['wall-hanging']} unique handcrafted wall hangings. Each piece is woven with care using traditional techniques and sustainable materials.`,
-  ogTitle: 'Wall Hanging Collection | Atelier Kaisla',
-  ogDescription: 'Discover unique handcrafted wall hangings. Each piece is woven with care using traditional techniques.',
-  ogImage: '/images/og-wall-hanging-collection.jpg',
-  ogType: 'website'
+useSeo({
+  title: 'Wall Hanging Collection (Example)',
+  description: () => `Discover ${counts.value['wall-hanging']} unique handcrafted wall hangings. Each piece is woven with care using traditional techniques and sustainable materials.`,
+  image: '/images/og-wall-hanging-collection.jpg',
+  type: 'website',
+  noindex: true
 })
 </script>
 

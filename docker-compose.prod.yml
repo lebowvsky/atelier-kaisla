@@ -88,6 +88,7 @@ services:
       NUXT_HOST: 0.0.0.0
       NUXT_PORT: 3000
       NUXT_PUBLIC_API_URL: https://${API_DOMAIN}/api
+      NUXT_PUBLIC_SITE_URL: https://${FRONTEND_DOMAIN}
     expose:
       - "3000"
     networks:

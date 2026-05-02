@@ -6,14 +6,10 @@
  * with different variations and themes.
  */
 
-useHead({
-  title: 'Social Share Demo'
-})
-
-useSeoMeta({
-  title: 'Social Share Component Demo - Atelier Kaisla',
+useSeo({
+  title: 'Social Share Component Demo',
   description: 'Demonstration of the SocialShare component with various configurations',
-  robots: 'noindex, nofollow' // Demo page, don't index
+  noindex: true
 })
 </script>
 

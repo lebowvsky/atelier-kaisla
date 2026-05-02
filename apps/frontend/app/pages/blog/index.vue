@@ -19,29 +19,20 @@ const { data: articles, error, pending: loading } = await useAsyncData(
   { server: true }
 )
 
-useHead({
-  title: 'Blog',
+useSeo({
+  title: 'Journal',
+  description:
+    "Actualités, savoir-faire et coulisses de l'Atelier Kaisla : articles dédiés au tissage, aux matériaux naturels et au processus créatif derrière chaque pièce.",
+  image: '/logo-kaisla.png',
+  type: 'website'
 })
 
-useSeoMeta({
-  title: 'Journal | Atelier Kaisla',
-  description:
-    'Découvrez nos articles sur l\'artisanat textile, les techniques de tissage, et l\'inspiration créative derrière chaque pièce Atelier Kaisla.',
-  ogTitle: 'Journal | Atelier Kaisla',
-  ogDescription:
-    'Articles et inspirations autour de l\'artisanat textile et du tissage contemporain.',
-  ogImage: '/logo-kaisla.png',
-  ogUrl: 'https://atelier-kaisla.com/blog',
-  twitterTitle: 'Journal | Atelier Kaisla',
-  twitterDescription:
-    'Découvrez nos articles sur l\'artisanat textile et le tissage.',
-  twitterImage: '/logo-kaisla.png',
-  twitterCard: 'summary_large_image',
-})
+useCollectionPageSchema('Journal')
 </script>
 
 <template>
   <div class="blog-page">
+    <Breadcrumbs :items="[{ name: 'Journal' }]" />
     <!-- Hero Section -->
     <section
       class="blog-hero"

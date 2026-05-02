@@ -74,23 +74,13 @@ useAsyncData('home-grid', () => fetchHomeGrid(), {
 })
 
 // Page-specific SEO meta tags
-useHead({
-  title: "Home",
-});
-
-useSeoMeta({
-  title: "Atelier Kaisla - Handcrafted Wall Art & Rugs",
+useSeo({
+  title: 'Tentures murales et tapis faits main — accueil',
   description:
-    "Discover unique handcrafted wall hangings and rugs at Atelier Kaisla. Each piece is thoughtfully designed and crafted with care.",
-  ogTitle: "Atelier Kaisla - Handcrafted Wall Art & Rugs",
-  ogDescription:
-    "Discover unique handcrafted wall hangings and rugs at Atelier Kaisla. Each piece is thoughtfully designed and crafted with care.",
-  ogImage: "/logo-kaisla.png",
-  ogUrl: "https://atelier-kaisla.com",
-  twitterTitle: "Atelier Kaisla - Handcrafted Wall Art & Rugs",
-  twitterDescription: "Discover unique handcrafted wall hangings and rugs at Atelier Kaisla.",
-  twitterImage: "/logo-kaisla.png",
-});
+    "Découvrez les tentures murales et tapis artisanaux d'Atelier Kaisla, façonnés à la main avec des matériaux naturels et un design contemporain.",
+  image: '/logo-kaisla.png',
+  type: 'website'
+})
 </script>
 
 <template>

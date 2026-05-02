@@ -97,27 +97,18 @@ const stories = computed<Story[]>(() => {
 })
 
 // Page-specific SEO meta tags
-useHead({
-  title: 'About'
-})
-
-useSeoMeta({
-  title: 'À Propos | Atelier Kaisla',
+useSeo({
+  title: 'À propos de l\'Atelier',
   description:
-    'Découvrez l\'histoire d\'Atelier Kaisla : la créatrice passionnée, le projet artisanal, et le livre qui partage notre savoir-faire textile.',
-  ogTitle: 'À Propos | Atelier Kaisla',
-  ogDescription:
-    'Découvrez l\'histoire d\'Atelier Kaisla : la créatrice passionnée, le projet artisanal, et le livre qui partage notre savoir-faire textile.',
-  ogImage: '/images/about/creator.jpg',
-  ogUrl: 'https://atelier-kaisla.com/about',
-  twitterTitle: 'À Propos | Atelier Kaisla',
-  twitterDescription: 'Découvrez l\'histoire d\'Atelier Kaisla et notre passion pour l\'artisanat textile.',
-  twitterImage: '/images/about/creator.jpg'
+    "Histoire et mission d'Atelier Kaisla : un atelier textile dédié à la création de tentures murales et tapis artisanaux, façonnés à la main avec passion.",
+  image: '/images/about/creator.jpg',
+  type: 'website'
 })
 </script>
 
 <template>
   <div class="about-page">
+    <Breadcrumbs :items="[{ name: 'À propos' }]" />
     <!-- Hero Section -->
     <section class="about-hero" aria-labelledby="about-hero-title">
       <div class="container">

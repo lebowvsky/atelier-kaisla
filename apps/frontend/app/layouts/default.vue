@@ -14,16 +14,16 @@
 // Global SEO configuration for all pages using this layout
 useHead({
   htmlAttrs: {
-    lang: "en",
+    lang: "fr",
   },
   titleTemplate: (titleChunk) => {
-    return titleChunk ? `${titleChunk} | Atelier Kaisla` : "Atelier Kaisla - Handcrafted Wall Art & Rugs";
+    return titleChunk ? `${titleChunk} | Atelier Kaisla` : "Atelier Kaisla — Tentures murales et tapis faits main";
   },
 });
 
 useSeoMeta({
   ogType: "website",
-  ogLocale: "en_US",
+  ogLocale: "fr_FR",
   twitterCard: "summary_large_image",
 });
 </script>
