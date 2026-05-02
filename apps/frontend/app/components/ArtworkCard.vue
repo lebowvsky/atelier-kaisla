@@ -187,12 +187,16 @@ const ariaLabel = computed((): string => {
           class="artwork-card__image-container"
           :style="{ aspectRatio: config.imageAspectRatio }"
         >
-          <img
+          <NuxtImg
             :src="artwork.imageSrc"
             :alt="artwork.imageAlt"
             class="artwork-card__image"
             loading="lazy"
             decoding="async"
+            format="webp"
+            width="800"
+            height="600"
+            sizes="sm:100vw md:50vw lg:33vw"
           />
         </div>
       </figure>

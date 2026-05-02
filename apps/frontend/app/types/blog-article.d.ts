@@ -16,6 +16,8 @@ export interface BlogArticle {
   id: string
   title: string
   subtitle: string | null
+  excerpt: string | null
+  metaDescription: string | null
   content: string
   slug: string
   publishedAt: string | null

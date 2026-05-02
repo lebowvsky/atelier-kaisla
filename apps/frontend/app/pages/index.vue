@@ -81,6 +81,14 @@ useSeo({
   image: '/logo-kaisla.png',
   type: 'website'
 })
+
+// Preload LCP hero image (CSS background-image cannot be optimized via NuxtImg).
+// Improves LCP by hinting the browser to start fetching the hero image early.
+useHead({
+  link: () => heroImageUrl.value
+    ? [{ rel: 'preload', as: 'image', href: heroImageUrl.value, fetchpriority: 'high' }]
+    : []
+})
 </script>
 
 <template>
@@ -127,10 +135,14 @@ useSeo({
           class="badge-link"
           aria-label="Visit Atelier Kaisla on Homo Faber Guide"
         >
-          <img
+          <NuxtImg
             src="/homo-faber-logo.png"
             alt="Homo Faber Guide - Celebrating Contemporary Craftsmanship"
             class="badge-logo"
+            width="250"
+            height="100"
+            loading="lazy"
+            format="webp"
           />
         </a>
       </div>

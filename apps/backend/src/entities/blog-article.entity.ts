@@ -27,6 +27,17 @@ export class BlogArticle {
   @Column({ length: 255, nullable: true })
   subtitle?: string;
 
+  @Column({ type: 'text', nullable: true })
+  excerpt: string | null;
+
+  @Column({
+    name: 'meta_description',
+    type: 'varchar',
+    length: 320,
+    nullable: true,
+  })
+  metaDescription: string | null;
+
   @Column({ type: 'text', nullable: false })
   content: string;
 

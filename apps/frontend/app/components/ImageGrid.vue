@@ -101,12 +101,16 @@ const getGridItemClasses = (_image: GalleryImage): string => {
         @click="handleImageClick(index)"
         @keydown="(event) => handleKeyPress(event, index)"
       >
-        <img
+        <NuxtImg
           v-if="image.src && !image.src.startsWith('/placeholder')"
           :src="image.src"
           :alt="image.alt"
           class="grid-item__image"
           loading="lazy"
+          format="webp"
+          width="600"
+          height="600"
+          sizes="sm:100vw md:50vw lg:25vw"
         />
         <div v-else class="grid-item__placeholder">
           <span class="grid-item__placeholder-text">

@@ -48,6 +48,8 @@ describe('BlogService', () => {
     id: 'article-1-uuid',
     title: 'The Art of Wall Hanging',
     subtitle: 'Exploring techniques',
+    excerpt: null,
+    metaDescription: null,
     content: '<p>This is a blog article.</p>',
     slug: 'the-art-of-wall-hanging',
     publishedAt: now,
@@ -246,6 +248,32 @@ describe('BlogService', () => {
       expect(mockTagRepository.findBy).toHaveBeenCalledWith({
         id: expect.anything(),
       });
+    });
+
+    it('should propagate excerpt and metaDescription when provided', async () => {
+      // Arrange
+      const dtoWithSeo = {
+        ...createDto,
+        excerpt: 'A short editorial summary used in lists.',
+        metaDescription: 'A bespoke meta description for SEO.',
+      };
+      mockArticleRepository.findOne
+        .mockResolvedValueOnce(null) // slug uniqueness check
+        .mockResolvedValueOnce(mockArticle); // findById at the end
+      mockArticleRepository.create.mockReturnValue(mockArticle);
+      mockArticleRepository.save.mockResolvedValue(mockArticle);
+      mockUploadService.ensureUploadDir.mockResolvedValue(undefined);
+
+      // Act
+      await service.createWithImages(dtoWithSeo, [], baseUrl);
+
+      // Assert
+      expect(mockArticleRepository.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          excerpt: 'A short editorial summary used in lists.',
+          metaDescription: 'A bespoke meta description for SEO.',
+        }),
+      );
     });
   });
 

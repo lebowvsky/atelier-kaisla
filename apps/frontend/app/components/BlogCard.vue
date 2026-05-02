@@ -37,13 +37,17 @@ const formattedDate = computed(() => {
       <!-- Image -->
       <figure class="blog-card__figure">
         <div class="blog-card__image-container">
-          <img
+          <NuxtImg
             v-if="coverImage"
             :src="coverImage.url"
             :alt="coverImage.altText || article.title"
             class="blog-card__image"
             loading="lazy"
             decoding="async"
+            format="webp"
+            width="600"
+            height="400"
+            sizes="sm:100vw md:50vw lg:33vw"
           />
           <div
             v-else

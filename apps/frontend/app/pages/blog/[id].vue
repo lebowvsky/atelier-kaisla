@@ -52,9 +52,13 @@ const sanitizedContent = computed(() => {
 useSeo({
   title: () => article.value?.title ?? 'Article',
   description: () => {
+    const meta = article.value?.metaDescription
+    if (meta) return meta
+    const excerpt = article.value?.excerpt
+    if (excerpt) return excerpt
+    // Fallback : strip HTML du content
     const raw = article.value?.content ?? ''
-    const stripped = raw.replace(/<[^>]*>/g, '').trim()
-    return stripped.substring(0, 160).trimEnd()
+    return raw.replace(/<[^>]*>/g, '').trim().substring(0, 160).trimEnd()
   },
   image: () => coverImage.value?.url ?? '/logo-kaisla.png',
   type: 'article'
@@ -155,11 +159,18 @@ const breadcrumbItems = computed(() => [
       >
         <div class="container">
           <figure class="blog-detail__cover-figure">
-            <img
+            <NuxtImg
               :src="coverImage.url"
               :alt="coverImage.altText || article.title"
               class="blog-detail__cover-image"
               decoding="async"
+              loading="eager"
+              fetchpriority="high"
+              preload
+              format="webp"
+              width="1200"
+              height="675"
+              sizes="100vw md:800px lg:1200px"
             />
           </figure>
         </div>
@@ -194,12 +205,16 @@ const breadcrumbItems = computed(() => [
               :key="image.id"
               class="blog-detail__gallery-item"
             >
-              <img
+              <NuxtImg
                 :src="image.url"
                 :alt="image.altText || article.title"
                 class="blog-detail__gallery-image"
                 loading="lazy"
                 decoding="async"
+                format="webp"
+                width="800"
+                height="600"
+                sizes="sm:100vw md:50vw lg:33vw"
               />
             </figure>
           </div>

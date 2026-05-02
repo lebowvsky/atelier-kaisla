@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
-  modules: ['@nuxtjs/seo', '@nuxt/image'],
+  modules: ['@nuxtjs/seo', '@nuxt/image', '@nuxt/fonts'],
 
   css: ['~/assets/styles/main.scss'],
 
@@ -65,6 +65,11 @@ export default defineNuxtConfig({
       lg: 1024,
       xl: 1280,
       xxl: 1536
-    }
+    },
+    domains: [
+      'api.atelierkaisla.com',
+      'api.lebowvsky.com',
+      'localhost'
+    ]
   }
 })

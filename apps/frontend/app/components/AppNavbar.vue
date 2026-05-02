@@ -80,12 +80,16 @@ useSeoMeta({
           aria-label="Atelier Kaisla - Return to home page"
           @click="closeMobileMenu"
         >
-          <img
+          <NuxtImg
             src="/logo-kaisla.png"
             alt="Atelier Kaisla Logo"
             class="logo-image"
             width="180"
             height="60"
+            loading="eager"
+            fetchpriority="high"
+            preload
+            format="webp"
           />
         </NuxtLink>
       </div>

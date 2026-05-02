@@ -75,6 +75,8 @@ export function useArticleSchema(article: MaybeRefOrGetter<BlogArticle | null | 
       description: computed(() => {
         const value = toValue(article)
         if (!value) return ''
+        if (value.metaDescription) return value.metaDescription
+        if (value.excerpt) return truncate(value.excerpt)
         return truncate(stripHtml(value.content))
       }),
       image: computed(() => {

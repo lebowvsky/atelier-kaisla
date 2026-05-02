@@ -37,6 +37,30 @@ export class CreateBlogArticleWithUploadDto {
   @MaxLength(255)
   subtitle?: string;
 
+  @ApiPropertyOptional({
+    description:
+      'Short editorial excerpt shown in article lists and used as default SEO description',
+    maxLength: 1000,
+    example:
+      'Discover the millennia-old craft of wall hanging, between technique, transmission and patient gestures.',
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(1000)
+  excerpt?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Optional override for the SEO <meta description> tag. Falls back to excerpt if omitted.',
+    maxLength: 320,
+    example:
+      "Plongez dans l'art du tissage mural : techniques, traditions et patience au service d'œuvres uniques.",
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(320)
+  metaDescription?: string;
+
   @ApiProperty({
     description: 'Article HTML content (from Tiptap editor)',
     example: '<p>This is a blog article about wall hangings.</p>',

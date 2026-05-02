@@ -164,13 +164,15 @@ const sectionId = computed(() => {
     <div class="story-section__container">
       <!-- Image Column -->
       <div :class="imageClasses">
-        <img
+        <NuxtImg
           :src="image.src"
           :alt="image.alt"
-          :width="image.width"
-          :height="image.height"
+          :width="image.width || 900"
+          :height="image.height || 1200"
           class="story-section__image"
           loading="lazy"
+          format="webp"
+          sizes="sm:100vw md:50vw lg:600px"
         />
       </div>
 

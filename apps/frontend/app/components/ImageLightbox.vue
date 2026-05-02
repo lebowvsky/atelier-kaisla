@@ -167,10 +167,15 @@ onUnmounted(() => {
 
           <!-- Image Container -->
           <div class="lightbox__content">
-            <img
+            <NuxtImg
               :src="currentImage.src"
               :alt="currentImage.alt"
               class="lightbox__image"
+              format="webp"
+              width="1600"
+              height="1200"
+              sizes="100vw lg:1600px"
+              loading="eager"
             />
 
             <!-- Image Information -->
