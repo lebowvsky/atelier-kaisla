@@ -54,6 +54,10 @@ export default defineNuxtConfig({
     identity: 'Organization'
   },
 
+  ogImage: {
+    enabled: false
+  },
+
   image: {
     format: ['avif', 'webp'],
     quality: 85,
