@@ -140,7 +140,7 @@ useHead({
             alt="Homo Faber Guide - Celebrating Contemporary Craftsmanship"
             class="badge-logo"
             width="250"
-            height="100"
+            height="250"
             loading="lazy"
             format="webp"
           />

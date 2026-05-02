@@ -85,7 +85,7 @@ useSeoMeta({
             alt="Atelier Kaisla Logo"
             class="logo-image"
             width="180"
-            height="60"
+            height="240"
             loading="eager"
             fetchpriority="high"
             preload
