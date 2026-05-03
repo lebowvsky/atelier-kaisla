@@ -126,6 +126,8 @@ const getGridItemClasses = (_image: GalleryImage): string => {
 </template>
 
 <style lang="scss" scoped>
+@use 'sass:color';
+
 .image-grid {
   width: 100%;
   display: flex;
@@ -180,7 +182,7 @@ const getGridItemClasses = (_image: GalleryImage): string => {
   transition: background-color $transition-fast;
 
   .grid-item:hover & {
-    background-color: darken($color-gray-200, 5%);
+    background-color: color.adjust($color-gray-200, $lightness: -5%);
   }
 }
 

@@ -5,13 +5,14 @@ export default defineNuxtConfig({
 
   modules: ['@nuxtjs/seo', '@nuxt/image', '@nuxt/fonts'],
 
-  css: ['~/assets/styles/main.scss'],
+  css: ['~/assets/scss/main.scss'],
 
   vite: {
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: '@import "~/assets/styles/_variables.scss"; @import "~/assets/styles/_mixins.scss";'
+          api: 'modern-compiler',
+          additionalData: '@use "~/assets/scss/abstracts" as *;'
         }
       }
     }
