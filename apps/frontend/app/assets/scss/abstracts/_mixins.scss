@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 // Container mixin
 @mixin container {
   max-width: $container-max-width;
