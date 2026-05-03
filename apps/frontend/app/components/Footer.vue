@@ -252,7 +252,7 @@ const legalLinks = computed<NavigationItem[]>(() => [
 
 .footer__logo-text {
   font-size: $font-size-2xl;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   color: $color-black;
   margin: 0;
   line-height: $line-height-tight;
@@ -298,7 +298,7 @@ const legalLinks = computed<NavigationItem[]>(() => [
 
 .footer__nav-title {
   font-size: $font-size-base;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   color: $color-black;
   margin: 0;
   text-transform: uppercase;
@@ -353,7 +353,7 @@ const legalLinks = computed<NavigationItem[]>(() => [
 
 .footer__social-title {
   font-size: $font-size-base;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   color: $color-black;
   margin: 0;
   text-transform: uppercase;
@@ -435,7 +435,7 @@ const legalLinks = computed<NavigationItem[]>(() => [
 }
 
 .footer__legal-link {
-  font-size: 0.875rem;
+  font-size: $font-size-sm;
   color: $color-gray-600;
   text-decoration: none;
   white-space: nowrap;
@@ -447,7 +447,7 @@ const legalLinks = computed<NavigationItem[]>(() => [
 // ==========================================
 
 .footer__copyright {
-  font-size: 0.875rem;
+  font-size: $font-size-sm;
   color: $color-gray-600;
   margin: 0;
   text-align: center;

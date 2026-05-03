@@ -220,7 +220,7 @@ useSeoMeta({
   color: $color-gray-900;
   text-decoration: none;
   font-size: 0.9375rem;
-  font-weight: 500;
+  font-weight: $font-weight-medium;
   letter-spacing: 0.025em;
   padding: $spacing-xs 0;
   transition: color $transition-fast;
@@ -248,7 +248,7 @@ useSeoMeta({
 
   &--active {
     color: $color-black;
-    font-weight: 600;
+    font-weight: $font-weight-semibold;
 
     &::after {
       width: 100%;

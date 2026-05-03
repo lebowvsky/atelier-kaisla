@@ -166,7 +166,7 @@ useCollectionPageSchema('Journal')
 
 .blog-hero__title {
   font-size: $font-size-3xl;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   color: $color-black;
   margin-bottom: $spacing-md;
   line-height: $line-height-tight;
@@ -215,13 +215,13 @@ useCollectionPageSchema('Journal')
 .blog-error {
   text-align: center;
   padding: $spacing-2xl;
-  background-color: #fee;
-  border: 1px solid #fcc;
+  background-color: $color-danger-bg;
+  border: 1px solid $color-danger-border;
   border-radius: $border-radius-base;
 }
 
 .blog-error__text {
-  color: #c33;
+  color: $color-danger-text;
   font-size: $font-size-lg;
   margin: 0 0 $spacing-md;
 }
@@ -230,7 +230,7 @@ useCollectionPageSchema('Journal')
   display: inline-block;
   padding: $spacing-sm $spacing-xl;
   font-size: $font-size-base;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   color: $color-white;
   background-color: $color-black;
   border: none;

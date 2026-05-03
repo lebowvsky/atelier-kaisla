@@ -251,7 +251,7 @@ useSeoMeta({
 
 .page-header__title {
   font-size: $font-size-3xl;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   line-height: $line-height-tight;
   color: $color-gray-900;
   margin: 0 0 $spacing-md;
@@ -272,7 +272,7 @@ useSeoMeta({
 .page-header__count {
   font-size: $font-size-base;
   color: $color-gray-600;
-  font-weight: 500;
+  font-weight: $font-weight-medium;
   margin: $spacing-sm 0 0;
 }
 
@@ -305,7 +305,7 @@ useSeoMeta({
 
 .featured-section__title {
   font-size: $font-size-2xl;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   color: $color-gray-900;
   margin: 0 0 $spacing-xl;
   text-align: center;

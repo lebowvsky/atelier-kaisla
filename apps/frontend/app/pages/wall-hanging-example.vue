@@ -201,7 +201,7 @@ useSeo({
 
 .page-header__title {
   font-size: $font-size-3xl;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   line-height: $line-height-tight;
   color: $color-gray-900;
   margin: 0 0 $spacing-md;
@@ -243,7 +243,7 @@ useSeo({
 .controls__count {
   margin: 0;
   font-size: $font-size-base;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   color: $color-gray-900;
 }
 
@@ -313,7 +313,7 @@ useSeo({
 .empty-state__button {
   padding: $spacing-sm $spacing-md;
   font-size: $font-size-base;
-  font-weight: 500;
+  font-weight: $font-weight-medium;
   color: $color-white;
   background-color: $color-black;
   border: none;
@@ -370,7 +370,7 @@ useSeo({
 
 .info-section__title {
   font-size: $font-size-2xl;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   color: $color-gray-900;
   margin: 0 0 $spacing-md;
   text-align: center;

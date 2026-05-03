@@ -110,7 +110,7 @@ const formattedDate = computed(() => {
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: $shadow-md;
   }
 }
 
@@ -173,7 +173,7 @@ const formattedDate = computed(() => {
 .blog-card__title {
   margin: 0;
   font-size: $font-size-lg;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   line-height: $line-height-tight;
   color: $color-gray-900;
   transition: color $transition-fast;
@@ -211,20 +211,20 @@ const formattedDate = computed(() => {
 .blog-card__tag {
   display: inline-block;
   padding: 2px $spacing-xs;
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
   color: $color-gray-600;
   background-color: $color-gray-100;
-  border-radius: calc($border-radius-base / 2);
-  line-height: 1.4;
+  border-radius: $border-radius-sm;
+  line-height: $line-height-snug;
 }
 
 .blog-card__date {
   margin-top: auto;
   padding-top: $spacing-xs;
-  font-size: 0.875rem;
+  font-size: $font-size-sm;
   color: $color-gray-600;
-  font-weight: 400;
+  font-weight: $font-weight-normal;
 }
 
 // Responsive

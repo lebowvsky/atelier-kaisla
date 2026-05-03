@@ -215,7 +215,7 @@ useSeo({
 
 .about-hero__title {
   font-size: $font-size-3xl;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   color: $color-black;
   margin-bottom: $spacing-md;
   line-height: $line-height-tight;
@@ -229,7 +229,7 @@ useSeo({
   font-size: $font-size-lg;
   color: $color-gray-600;
   line-height: $line-height-base;
-  font-weight: 400;
+  font-weight: $font-weight-normal;
 
   @include tablet {
     font-size: $font-size-xl;
@@ -244,7 +244,7 @@ useSeo({
   }
 
   :deep(strong) {
-    font-weight: 700;
+    font-weight: $font-weight-bold;
   }
 
   :deep(em) {
@@ -285,7 +285,7 @@ useSeo({
   display: inline-block;
   padding: $spacing-sm $spacing-xl;
   font-size: $font-size-base;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   color: $color-white;
   background-color: $color-black;
   border: none;
@@ -330,7 +330,7 @@ useSeo({
 
 .about-cta__title {
   font-size: $font-size-2xl;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   color: $color-black;
   margin-bottom: $spacing-md;
   line-height: $line-height-tight;
@@ -368,7 +368,7 @@ useSeo({
   display: inline-block;
   padding: $spacing-md $spacing-xl;
   font-size: $font-size-base;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   text-decoration: none;
   border-radius: $border-radius-base;
   transition:

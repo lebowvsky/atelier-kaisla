@@ -290,7 +290,7 @@ const breadcrumbItems = computed(() => [
 
 .blog-detail__title {
   font-size: $font-size-2xl;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   color: $color-black;
   margin: 0 0 $spacing-sm;
   line-height: $line-height-tight;
@@ -336,11 +336,11 @@ const breadcrumbItems = computed(() => [
 .blog-detail__tag {
   display: inline-block;
   padding: 2px $spacing-xs;
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
   color: $color-gray-600;
   background-color: $color-gray-100;
-  border-radius: calc($border-radius-base / 2);
+  border-radius: $border-radius-sm;
 }
 
 // Cover Image
@@ -399,7 +399,7 @@ const breadcrumbItems = computed(() => [
 
   :deep(h2) {
     font-size: $font-size-xl;
-    font-weight: 700;
+    font-weight: $font-weight-bold;
     color: $color-black;
     margin: $spacing-xl 0 $spacing-sm;
     line-height: $line-height-tight;
@@ -411,7 +411,7 @@ const breadcrumbItems = computed(() => [
 
   :deep(h3) {
     font-size: $font-size-lg;
-    font-weight: 600;
+    font-weight: $font-weight-semibold;
     color: $color-black;
     margin: $spacing-lg 0 $spacing-xs;
     line-height: $line-height-tight;
@@ -422,7 +422,7 @@ const breadcrumbItems = computed(() => [
   }
 
   :deep(strong) {
-    font-weight: 700;
+    font-weight: $font-weight-bold;
   }
 
   :deep(em) {

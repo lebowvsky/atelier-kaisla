@@ -74,7 +74,7 @@ const handleClearError = () => clearError({ redirect: '/' })
 
 .error-page__status {
   font-size: 4rem;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   color: $color-gray-300;
   margin: 0 0 $spacing-sm;
   line-height: 1;
@@ -86,7 +86,7 @@ const handleClearError = () => clearError({ redirect: '/' })
 
 .error-page__title {
   font-size: $font-size-2xl;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   color: $color-black;
   margin: 0 0 $spacing-md;
   line-height: $line-height-tight;
@@ -150,7 +150,7 @@ const handleClearError = () => clearError({ redirect: '/' })
   text-decoration: underline;
   font-size: $font-size-base;
   padding: $spacing-sm $spacing-md;
-  transition: opacity 0.2s ease;
+  transition: opacity $transition-fast;
 
   &:hover,
   &:focus {

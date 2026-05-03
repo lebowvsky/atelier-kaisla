@@ -281,7 +281,7 @@ const sectionId = computed(() => {
   position: relative;
   overflow: hidden;
   border-radius: $border-radius-base;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: $shadow-md;
   transition: transform $transition-base, box-shadow $transition-base;
 
   // Hover effect for subtle interactivity
@@ -318,7 +318,7 @@ const sectionId = computed(() => {
 
 .story-section__title {
   font-size: $font-size-2xl;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   color: $color-black;
   line-height: $line-height-tight;
   margin: 0;
@@ -356,7 +356,7 @@ const sectionId = computed(() => {
   // First paragraph slightly larger for visual hierarchy
   &:first-child {
     font-size: $font-size-lg;
-    font-weight: 500;
+    font-weight: $font-weight-medium;
     color: $color-gray-900;
 
     @include tablet {
@@ -392,7 +392,7 @@ const sectionId = computed(() => {
 
   :deep(h2) {
     font-size: $font-size-xl;
-    font-weight: 700;
+    font-weight: $font-weight-bold;
     color: $color-black;
     margin: $spacing-md 0 $spacing-sm;
     line-height: $line-height-tight;
@@ -404,7 +404,7 @@ const sectionId = computed(() => {
 
   :deep(h3) {
     font-size: $font-size-lg;
-    font-weight: 600;
+    font-weight: $font-weight-semibold;
     color: $color-black;
     margin: $spacing-sm 0 $spacing-xs;
     line-height: $line-height-tight;
@@ -416,14 +416,14 @@ const sectionId = computed(() => {
 
   :deep(ul) {
     list-style-type: disc;
-    padding-left: 1.5rem;
+    padding-left: $spacing-md;
     margin: $spacing-sm 0;
     color: $color-gray-600;
   }
 
   :deep(ol) {
     list-style-type: decimal;
-    padding-left: 1.5rem;
+    padding-left: $spacing-md;
     margin: $spacing-sm 0;
     color: $color-gray-600;
   }
@@ -439,7 +439,7 @@ const sectionId = computed(() => {
   }
 
   :deep(strong) {
-    font-weight: 700;
+    font-weight: $font-weight-bold;
   }
 
   :deep(em) {
