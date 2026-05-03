@@ -332,7 +332,7 @@ onUnmounted(() => {
 
 .lightbox__title {
   font-size: $font-size-xl;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   margin-bottom: $spacing-xs;
   line-height: $line-height-tight;
 }
@@ -351,9 +351,9 @@ onUnmounted(() => {
   background: rgba(0, 0, 0, 0.7);
   color: $color-white;
   padding: $spacing-xs $spacing-md;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  border-radius: $border-radius-xl;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
 
   @include tablet {
     bottom: $spacing-lg;

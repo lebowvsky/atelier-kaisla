@@ -265,7 +265,7 @@ const ariaLabel = computed((): string => {
 
   // Hoverable state
   &--hoverable:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: $shadow-md;
   }
 
   // Clickable state
@@ -334,7 +334,7 @@ const ariaLabel = computed((): string => {
 .artwork-card__title {
   margin: 0;
   font-size: $font-size-xl;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   line-height: $line-height-tight;
   color: $color-gray-900;
   transition: color $transition-fast;
@@ -351,7 +351,7 @@ const ariaLabel = computed((): string => {
 .artwork-card__dimensions {
   margin: 0;
   font-size: $font-size-base;
-  font-weight: 500;
+  font-weight: $font-weight-medium;
   color: $color-gray-600;
   line-height: $line-height-base;
 }
@@ -383,13 +383,13 @@ const ariaLabel = computed((): string => {
 
 .artwork-card__price {
   font-size: $font-size-lg;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   color: $color-gray-900;
 }
 
 .artwork-card__availability {
   font-size: $font-size-base;
-  font-weight: 500;
+  font-weight: $font-weight-medium;
   padding: $spacing-xs $spacing-sm;
   border-radius: calc($border-radius-base / 2);
   transition:
@@ -397,13 +397,13 @@ const ariaLabel = computed((): string => {
     color $transition-fast;
 
   &--available {
-    background-color: rgba(34, 197, 94, 0.1);
-    color: rgb(21, 128, 61);
+    background-color: $color-success-bg;
+    color: $color-success-text;
   }
 
   &--sold {
-    background-color: rgba(239, 68, 68, 0.1);
-    color: rgb(185, 28, 28);
+    background-color: $color-danger-bg;
+    color: $color-danger-text;
   }
 }
 

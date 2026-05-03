@@ -251,7 +251,7 @@ useCollectionPageSchema('Tentures murales')
 
 .page-header__title {
   font-size: $font-size-3xl;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   color: $color-black;
   margin-bottom: $spacing-md;
   line-height: $line-height-tight;
@@ -280,7 +280,7 @@ useCollectionPageSchema('Tentures murales')
   }
 
   :deep(strong) {
-    font-weight: 700;
+    font-weight: $font-weight-bold;
   }
 
   :deep(em) {
@@ -312,7 +312,7 @@ useCollectionPageSchema('Tentures murales')
 
 .info-section__title {
   font-size: $font-size-2xl;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   color: $color-black;
   margin-bottom: $spacing-xl;
   text-align: center;
@@ -339,7 +339,7 @@ useCollectionPageSchema('Tentures murales')
   background-color: $color-white;
   padding: $spacing-lg;
   border-radius: $border-radius-base;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: $shadow-sm;
   transition:
     transform $transition-base,
     box-shadow $transition-base;
@@ -356,7 +356,7 @@ useCollectionPageSchema('Tentures murales')
 
 .info-card__title {
   font-size: $font-size-lg;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   color: $color-black;
   margin-bottom: $spacing-sm;
   line-height: $line-height-tight;
@@ -377,13 +377,13 @@ useCollectionPageSchema('Tentures murales')
 .error-message {
   text-align: center;
   padding: $spacing-2xl;
-  background-color: #fee;
-  border: 1px solid #fcc;
+  background-color: $color-danger-bg;
+  border: 1px solid $color-danger-border;
   border-radius: $border-radius-base;
   margin: $spacing-xl 0;
 
   p {
-    color: #c33;
+    color: $color-danger-text;
     font-size: $font-size-lg;
     margin-bottom: $spacing-md;
   }
@@ -396,7 +396,7 @@ useCollectionPageSchema('Tentures murales')
   border: none;
   border-radius: $border-radius-base;
   font-size: $font-size-base;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   cursor: pointer;
   transition: background-color $transition-base;
 

@@ -189,7 +189,7 @@ const getGridItemClasses = (_image: GalleryImage): string => {
 .grid-item__placeholder-text {
   color: $color-gray-600;
   font-size: $font-size-base;
-  font-weight: 500;
+  font-weight: $font-weight-medium;
   text-align: center;
   padding: $spacing-sm;
   opacity: 0.7;

@@ -131,7 +131,7 @@ useSeo({
 
 .demo-title {
   font-size: $font-size-3xl;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   color: $color-black;
   margin-bottom: $spacing-sm;
 
@@ -167,7 +167,7 @@ useSeo({
 
 .demo-section__title {
   font-size: $font-size-xl;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   color: $color-black;
   margin-bottom: $spacing-lg;
   text-align: center;
@@ -205,7 +205,7 @@ useSeo({
 
 .code-example__title {
   font-size: $font-size-base;
-  font-weight: 500;
+  font-weight: $font-weight-medium;
   color: $color-gray-300;
   margin-bottom: $spacing-xs;
 }
@@ -214,7 +214,7 @@ useSeo({
   background-color: $color-black;
   color: #a6e22e; // Green for code syntax
   padding: $spacing-md;
-  border-radius: 4px;
+  border-radius: $border-radius-sm;
   overflow-x: auto;
   font-family: 'Courier New', monospace;
   font-size: 0.9rem;
@@ -237,13 +237,13 @@ useSeo({
 .pattern-item {
   background-color: rgba(255, 255, 255, 0.1);
   padding: $spacing-md;
-  border-radius: 4px;
+  border-radius: $border-radius-sm;
   color: $color-gray-300;
   line-height: $line-height-base;
 
   strong {
     color: $color-white;
-    font-weight: 600;
+    font-weight: $font-weight-semibold;
   }
 }
 
@@ -258,7 +258,7 @@ useSeo({
   color: $color-black;
   text-decoration: none;
   font-size: $font-size-lg;
-  font-weight: 500;
+  font-weight: $font-weight-medium;
   transition: color $transition-base;
 
   @include link-underline;

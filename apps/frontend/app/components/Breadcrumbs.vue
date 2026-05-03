@@ -78,7 +78,7 @@ useBreadcrumbsSchema(allItems)
 .breadcrumbs__link {
   color: $color-gray-600;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color $transition-fast;
 
   &:hover,
   &:focus {
@@ -94,7 +94,7 @@ useBreadcrumbsSchema(allItems)
 
 .breadcrumbs__current {
   color: $color-black;
-  font-weight: 500;
+  font-weight: $font-weight-medium;
 }
 
 .breadcrumbs__separator {

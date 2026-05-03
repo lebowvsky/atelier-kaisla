@@ -291,7 +291,7 @@ const gridAriaLabel = computed((): string => {
   background-color: $color-white;
   border-radius: $border-radius-base;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: $shadow-sm;
 }
 
 .skeleton__image {
@@ -328,7 +328,7 @@ const gridAriaLabel = computed((): string => {
     $color-gray-100 100%
   );
   background-size: 200% 100%;
-  border-radius: 4px;
+  border-radius: $border-radius-sm;
   animation: skeleton-loading 1.5s ease-in-out infinite;
 
   &--title {

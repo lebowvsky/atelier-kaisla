@@ -240,8 +240,8 @@ const containerClasses = computed(() => {
     background-color: $color-black;
     color: $color-white;
     padding: $spacing-xs;
-    font-size: 0.875rem;
-    border-radius: 4px;
+    font-size: $font-size-sm;
+    border-radius: $border-radius-sm;
     margin-top: $spacing-xs;
   }
 }
@@ -258,7 +258,7 @@ const containerClasses = computed(() => {
   font-size: $font-size-base;
   color: $color-gray-900;
   margin: 0;
-  font-weight: 500;
+  font-weight: $font-weight-medium;
   line-height: $line-height-base;
 
   .social-share--light & {
@@ -270,7 +270,7 @@ const containerClasses = computed(() => {
   font-size: $font-size-lg;
   color: $color-black;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
   position: relative;
   transition: color $transition-base;
 
