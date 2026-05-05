@@ -28,8 +28,8 @@ export default defineNuxtConfig({
   site: {
     url: process.env.NUXT_PUBLIC_SITE_URL || 'https://atelierkaisla.com',
     name: 'Atelier Kaisla',
-    description: 'Atelier artisanal de tentures murales et tapis faits main, alliant matériaux naturels et design contemporain.',
-    defaultLocale: 'fr'
+    description: 'Artisan studio of handcrafted wall hangings and rugs, combining natural materials with contemporary design.',
+    defaultLocale: 'en-GB'
   },
 
   sitemap: {

@@ -8,13 +8,13 @@ useSchemaOrg([
     url: siteUrl,
     logo: `${siteUrl}/logo-kaisla.png`,
     description:
-      "Atelier artisanal de tentures murales et tapis faits main, alliant matériaux naturels et design contemporain.",
+      "Artisan studio of handcrafted wall hangings and rugs, combining natural materials with contemporary design.",
     sameAs: ['https://www.homofaber.com/']
   }),
   defineWebSite({
     name: 'Atelier Kaisla',
     url: siteUrl,
-    inLanguage: 'fr-FR'
+    inLanguage: 'en-GB'
   })
 ])
 </script>
