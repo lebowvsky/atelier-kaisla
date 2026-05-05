@@ -98,9 +98,9 @@ const stories = computed<Story[]>(() => {
 
 // Page-specific SEO meta tags
 useSeo({
-  title: 'À propos de l\'Atelier',
+  title: 'About the Studio',
   description:
-    "Histoire et mission d'Atelier Kaisla : un atelier textile dédié à la création de tentures murales et tapis artisanaux, façonnés à la main avec passion.",
+    "Story and mission of Atelier Kaisla: a textile studio dedicated to creating handcrafted wall hangings and rugs, made by hand with passion.",
   image: '/images/about/creator.jpg',
   type: 'website'
 })
@@ -108,7 +108,7 @@ useSeo({
 
 <template>
   <div class="about-page">
-    <Breadcrumbs :items="[{ name: 'À propos' }]" />
+    <Breadcrumbs :items="[{ name: 'About' }]" />
     <!-- Hero Section -->
     <section class="about-hero" aria-labelledby="about-hero-title">
       <div class="container">

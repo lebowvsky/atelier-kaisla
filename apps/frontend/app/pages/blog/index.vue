@@ -22,7 +22,7 @@ const { data: articles, error, pending: loading } = await useAsyncData(
 useSeo({
   title: 'Journal',
   description:
-    "Actualités, savoir-faire et coulisses de l'Atelier Kaisla : articles dédiés au tissage, aux matériaux naturels et au processus créatif derrière chaque pièce.",
+    "News, craft and behind the scenes of Atelier Kaisla: articles dedicated to weaving, natural materials and the creative process behind each piece.",
   image: '/logo-kaisla.png',
   type: 'website'
 })

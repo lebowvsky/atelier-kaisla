@@ -6,7 +6,7 @@ const props = defineProps<{
 }>()
 
 const allItems = computed<BreadcrumbItem[]>(() => [
-  { name: 'Accueil', url: '/' },
+  { name: 'Home', url: '/' },
   ...props.items
 ])
 
@@ -14,7 +14,7 @@ useBreadcrumbsSchema(allItems)
 </script>
 
 <template>
-  <nav class="breadcrumbs" aria-label="Fil d'ariane">
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
     <ol class="breadcrumbs__list">
       <li
         v-for="(item, index) in allItems"

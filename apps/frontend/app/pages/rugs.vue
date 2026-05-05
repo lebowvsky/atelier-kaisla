@@ -118,19 +118,19 @@ const artworks = computed(() => {
 
 // Page-specific SEO meta tags
 useSeo({
-  title: 'Tapis artisanaux',
+  title: 'Handcrafted Rugs',
   description:
-    "Tapis faits main par Atelier Kaisla. Nouage traditionnel, fibres naturelles d'exception et design contemporain pour habiller durablement votre intérieur.",
+    "Handcrafted rugs by Atelier Kaisla. Traditional knotting, exceptional natural fibres and contemporary design to dress your home with longevity.",
   image: '/logo-kaisla.png',
   type: 'website'
 })
 
-useCollectionPageSchema('Tapis')
+useCollectionPageSchema('Rugs')
 </script>
 
 <template>
   <div class="rugs-page">
-    <Breadcrumbs :items="[{ name: 'Tapis' }]" />
+    <Breadcrumbs :items="[{ name: 'Rugs' }]" />
     <div class="container">
       <!-- Page Header -->
       <header class="page-header">

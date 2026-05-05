@@ -75,9 +75,9 @@ useAsyncData('home-grid', () => fetchHomeGrid(), {
 
 // Page-specific SEO meta tags
 useSeo({
-  title: 'Tentures murales et tapis faits main — accueil',
+  title: 'Handcrafted Wall Hangings and Rugs — Home',
   description:
-    "Découvrez les tentures murales et tapis artisanaux d'Atelier Kaisla, façonnés à la main avec des matériaux naturels et un design contemporain.",
+    "Discover the handcrafted wall hangings and rugs of Atelier Kaisla, made by hand with natural materials and contemporary design.",
   image: '/logo-kaisla.png',
   type: 'website'
 })

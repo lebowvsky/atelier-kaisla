@@ -118,19 +118,19 @@ const artworks = computed(() => {
 
 // Page-specific SEO meta tags
 useSeo({
-  title: 'Tentures murales artisanales',
+  title: 'Handcrafted Wall Hangings',
   description:
-    'Collection de tentures murales faites main par Atelier Kaisla. Pièces uniques en matériaux naturels, design contemporain et inspiré des formes organiques.',
+    'Collection of handcrafted wall hangings by Atelier Kaisla. Unique pieces in natural materials, contemporary design inspired by organic forms.',
   image: '/logo-kaisla.png',
   type: 'website'
 })
 
-useCollectionPageSchema('Tentures murales')
+useCollectionPageSchema('Wall Hangings')
 </script>
 
 <template>
   <div class="wall-hanging-page">
-    <Breadcrumbs :items="[{ name: 'Tentures murales' }]" />
+    <Breadcrumbs :items="[{ name: 'Wall Hangings' }]" />
     <div class="container">
       <!-- Page Header -->
       <header class="page-header">
