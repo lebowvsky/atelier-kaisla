@@ -3,8 +3,6 @@
  * ArtworkCard Component
  *
  * A reusable card component for displaying artwork pieces (wall hangings and rugs).
- * Showcases artwork image, title, dimensions, materials, and description in a visually
- * appealing and accessible format.
  *
  * Design Patterns Applied:
  * - @pattern Strategy Pattern
@@ -19,22 +17,6 @@
  * - @category Structural
  * - @purpose Simplifies complex artwork data presentation into a single interface
  *
- * Features:
- * - Responsive image display with aspect ratio preservation
- * - Configurable pricing and availability display
- * - Optional click-to-detail navigation
- * - Keyboard accessible
- * - ARIA compliant for screen readers
- * - Lazy loading for images
- * - Hover effects for enhanced UX
- *
- * SEO & Accessibility:
- * - Semantic HTML structure (article, figure, figcaption)
- * - Proper heading hierarchy
- * - Descriptive alt text
- * - ARIA labels for interactive elements
- * - Focus-visible states
- *
  * @example
  * ```typescript
  * <ArtworkCard
@@ -47,14 +29,7 @@
 import type { Artwork, ArtworkCardConfig } from '~/types/artwork'
 
 interface Props {
-  /**
-   * Artwork data to display
-   */
   artwork: Artwork
-
-  /**
-   * Optional configuration for card behavior and display
-   */
   config?: ArtworkCardConfig
 }
 
@@ -68,12 +43,6 @@ const props = withDefaults(defineProps<Props>(), {
   }),
 })
 
-/**
- * Facade Pattern: Simplify dimension formatting
- * Adapts raw dimension data to human-readable format
- *
- * @returns Formatted dimension string (e.g., "50 × 70 cm")
- */
 const formattedDimensions = computed((): string => {
   const { width, height, depth, unit = 'cm' } = props.artwork.dimensions
 
@@ -84,22 +53,10 @@ const formattedDimensions = computed((): string => {
   return `${width} × ${height} ${unit}`
 })
 
-/**
- * Strategy Pattern: Determine card interactivity
- * Returns appropriate element tag based on configuration
- *
- * @returns HTML element tag ('a' for clickable, 'div' otherwise)
- */
 const cardElement = computed((): 'a' | 'div' => {
   return props.config.clickable && props.artwork.detailUrl ? 'a' : 'div'
 })
 
-/**
- * Adapter Pattern: Format price for display
- * Pure function - transforms number to localized currency string
- *
- * @returns Formatted price string or null
- */
 const formattedPrice = computed((): string | null => {
   if (!props.config.showPrice || !props.artwork.price) {
     return null
@@ -111,12 +68,6 @@ const formattedPrice = computed((): string | null => {
   }).format(props.artwork.price)
 })
 
-/**
- * Determine availability status display
- * Pure function - returns availability label or null
- *
- * @returns Availability status string or null
- */
 const availabilityStatus = computed((): string | null => {
   if (!props.config.showAvailability) {
     return null
@@ -125,12 +76,6 @@ const availabilityStatus = computed((): string | null => {
   return props.artwork.available !== false ? 'Disponible' : 'Vendu'
 })
 
-/**
- * Generate CSS classes for card container
- * Pure function - returns class string based on configuration
- *
- * @returns Space-separated class names
- */
 const cardClasses = computed((): string => {
   const classes: string[] = ['artwork-card']
 
@@ -145,12 +90,6 @@ const cardClasses = computed((): string => {
   return classes.join(' ')
 })
 
-/**
- * Generate ARIA label for card
- * Pure function - creates descriptive label for screen readers
- *
- * @returns ARIA label string
- */
 const ariaLabel = computed((): string => {
   const parts: string[] = [
     props.artwork.title,
@@ -203,27 +142,22 @@ const ariaLabel = computed((): string => {
 
       <!-- Content Section -->
       <div class="artwork-card__content">
-        <!-- Title -->
         <h3 class="artwork-card__title">
           {{ artwork.title }}
         </h3>
 
-        <!-- Dimensions -->
         <p class="artwork-card__dimensions">
           {{ formattedDimensions }}
         </p>
 
-        <!-- Material -->
         <p class="artwork-card__material">
           {{ artwork.material }}
         </p>
 
-        <!-- Description -->
         <p class="artwork-card__description">
           {{ artwork.description }}
         </p>
 
-        <!-- Optional: Price and Availability -->
         <div
           v-if="formattedPrice || availabilityStatus"
           class="artwork-card__footer"
@@ -256,28 +190,39 @@ const ariaLabel = computed((): string => {
   display: flex;
   flex-direction: column;
   width: 100%;
-  background-color: $color-white;
+  background-color: $color-canvas;
   border-radius: $border-radius-base;
   overflow: hidden;
-  transition:
-    transform $transition-base,
-    box-shadow $transition-base;
 
-  // Hoverable state
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform $transition-base,
+      box-shadow $transition-base;
+  }
+
   &--hoverable:hover {
     box-shadow: $shadow-md;
   }
 
-  // Clickable state
   &--clickable {
     cursor: pointer;
 
     &:hover {
-      transform: translateY(-4px);
+      transform: translateY(-2px);
     }
 
     &:active {
-      transform: translateY(-2px);
+      transform: translateY(-1px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none;
+    transition: none;
+
+    &--clickable:hover,
+    &--clickable:active {
+      transform: none;
     }
   }
 }
@@ -289,9 +234,9 @@ const ariaLabel = computed((): string => {
   text-decoration: none;
   color: inherit;
 
-  @include focus-visible;
-
   &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 2px;
     border-radius: $border-radius-base;
   }
 }
@@ -301,7 +246,7 @@ const ariaLabel = computed((): string => {
   margin: 0;
   width: 100%;
   overflow: hidden;
-  background-color: $color-gray-100;
+  background-color: $color-canvas-soft;
 }
 
 .artwork-card__image-container {
@@ -315,10 +260,13 @@ const ariaLabel = computed((): string => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform $transition-slow;
 
-  .artwork-card--hoverable:hover & {
-    transform: scale(1.05);
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform $transition-slow;
+
+    .artwork-card--hoverable:hover & {
+      transform: scale(1.05);
+    }
   }
 }
 
@@ -336,12 +284,8 @@ const ariaLabel = computed((): string => {
   font-size: $font-size-xl;
   font-weight: $font-weight-semibold;
   line-height: $line-height-tight;
-  color: $color-gray-900;
-  transition: color $transition-fast;
-
-  .artwork-card--clickable:hover & {
-    color: $color-gray-600;
-  }
+  letter-spacing: $letter-spacing-tight;
+  color: $color-ink;
 
   @include tablet {
     font-size: $font-size-2xl;
@@ -352,7 +296,7 @@ const ariaLabel = computed((): string => {
   margin: 0;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  color: $color-gray-600;
+  color: $color-stone;
   line-height: $line-height-base;
 }
 
@@ -360,14 +304,14 @@ const ariaLabel = computed((): string => {
   margin: 0;
   font-size: $font-size-base;
   font-style: italic;
-  color: $color-gray-600;
+  color: $color-stone;
   line-height: $line-height-base;
 }
 
 .artwork-card__description {
   margin: $spacing-xs 0 0;
   font-size: $font-size-base;
-  color: $color-gray-900;
+  color: $color-ink-soft;
   line-height: $line-height-base;
 }
 
@@ -378,13 +322,13 @@ const ariaLabel = computed((): string => {
   align-items: center;
   margin-top: $spacing-sm;
   padding-top: $spacing-sm;
-  border-top: 1px solid $color-gray-200;
+  border-top: 1px solid $color-line;
 }
 
 .artwork-card__price {
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: $color-gray-900;
+  color: $color-ink;
 }
 
 .artwork-card__availability {
@@ -407,7 +351,6 @@ const ariaLabel = computed((): string => {
   }
 }
 
-// Responsive adjustments
 @include tablet {
   .artwork-card__content {
     padding: $spacing-lg;

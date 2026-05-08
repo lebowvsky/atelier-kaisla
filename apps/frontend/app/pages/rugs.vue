@@ -134,7 +134,11 @@ useCollectionPageSchema('Rugs')
     <div class="container">
       <!-- Page Header -->
       <header class="page-header">
-        <h1 class="page-header__title">{{ introTitle }}</h1>
+        <div class="page-header__heading">
+          <span class="page-header__eyebrow">Collection</span>
+          <h1 class="page-header__title">{{ introTitle }}</h1>
+          <span class="page-header__hairline" aria-hidden="true" />
+        </div>
         <div class="page-header__description" v-html="introDescription" />
       </header>
 
@@ -182,35 +186,39 @@ useCollectionPageSchema('Rugs')
         class="info-section"
         aria-labelledby="info-heading"
       >
-        <h2
-          id="info-heading"
-          class="info-section__title"
-        >
-          About Our Rugs
-        </h2>
+        <header class="info-section__header">
+          <span class="info-section__eyebrow">Why Atelier Kaisla</span>
+          <h2
+            id="info-heading"
+            class="info-section__title"
+          >
+            About our rugs
+          </h2>
+          <span class="info-section__hairline" aria-hidden="true" />
+        </header>
 
         <div class="info-section__content">
-          <div class="info-card">
-            <h3 class="info-card__title">Traditional Craftsmanship</h3>
-            <p class="info-card__text">
+          <div class="info-block">
+            <h3 class="info-block__title">Traditional Craftsmanship</h3>
+            <p class="info-block__text">
               Every rug is hand-knotted using centuries-old techniques, ensuring exceptional
               durability and quality. Each piece takes weeks to complete and is built to last
               generations.
             </p>
           </div>
 
-          <div class="info-card">
-            <h3 class="info-card__title">Premium Natural Fibers</h3>
-            <p class="info-card__text">
+          <div class="info-block">
+            <h3 class="info-block__title">Premium Natural Fibers</h3>
+            <p class="info-block__text">
               We exclusively use the finest natural materials including pure new wool, organic
               cotton, and linen. Many rugs feature natural plant-based dyes for rich, lasting
               color.
             </p>
           </div>
 
-          <div class="info-card">
-            <h3 class="info-card__title">Custom Commissions</h3>
-            <p class="info-card__text">
+          <div class="info-block">
+            <h3 class="info-block__title">Custom Commissions</h3>
+            <p class="info-block__text">
               Looking for a specific size or color palette? We create custom rugs tailored to your
               space and style preferences. Contact us to discuss your unique project.
             </p>
@@ -224,7 +232,7 @@ useCollectionPageSchema('Rugs')
 <style lang="scss" scoped>
 .rugs-page {
   min-height: calc(100vh - $navbar-height);
-  background-color: $color-white;
+  background-color: $color-canvas;
   padding: $spacing-2xl 0;
 
   @include tablet {
@@ -236,38 +244,58 @@ useCollectionPageSchema('Rugs')
   @include container;
 }
 
-// Page Header
+// --- Page Header ---
 .page-header {
   margin-bottom: $spacing-3xl;
-  text-align: center;
-  max-width: $container-content-width;
-  margin-left: auto;
-  margin-right: auto;
   padding: 0 $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
 
   @include tablet {
-    margin-bottom: $spacing-3xl;
     padding: 0 $spacing-lg;
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: $spacing-2xl;
+    align-items: start;
   }
+}
+
+.page-header__heading {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-header__eyebrow {
+  @include eyebrow;
+  margin: 0 0 $spacing-sm;
 }
 
 .page-header__title {
   font-size: $font-size-3xl;
   font-weight: $font-weight-bold;
-  color: $color-black;
-  margin-bottom: $spacing-md;
+  color: $color-ink;
+  margin: 0;
   line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
 
   @include tablet {
-    font-size: $font-size-4xl;
-    margin-bottom: $spacing-lg;
+    font-size: $font-size-display;
   }
 }
 
+.page-header__hairline {
+  @include hairline($color-fjord, 1px);
+  display: block;
+  width: 48px;
+  margin-top: $spacing-md;
+}
+
 .page-header__description {
+  @include reading-column;
   font-size: $font-size-base;
-  color: $color-gray-600;
-  line-height: $line-height-base;
+  color: $color-ink-soft;
+  line-height: $line-height-relaxed;
 
   @include tablet {
     font-size: $font-size-lg;
@@ -290,7 +318,7 @@ useCollectionPageSchema('Rugs')
   }
 }
 
-// Artwork Section
+// --- Artwork Section ---
 .artwork-section {
   margin-bottom: $spacing-3xl;
   padding: 0 $spacing-md;
@@ -300,11 +328,10 @@ useCollectionPageSchema('Rugs')
   }
 }
 
-// Information Section
+// --- Information Section ---
 .info-section {
-  background-color: $color-gray-100;
+  background-color: $color-canvas;
   padding: $spacing-2xl $spacing-md;
-  border-radius: $border-radius-base;
   margin-top: $spacing-3xl;
 
   @include tablet {
@@ -312,72 +339,81 @@ useCollectionPageSchema('Rugs')
   }
 }
 
+.info-section__header {
+  margin-bottom: $spacing-2xl;
+  display: flex;
+  flex-direction: column;
+
+  @include tablet {
+    margin-bottom: $spacing-3xl;
+  }
+}
+
+.info-section__eyebrow {
+  @include eyebrow;
+  margin: 0 0 $spacing-sm;
+}
+
 .info-section__title {
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
-  color: $color-black;
-  margin-bottom: $spacing-xl;
-  text-align: center;
+  color: $color-ink;
+  margin: 0;
   line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
 
   @include tablet {
     font-size: $font-size-3xl;
-    margin-bottom: $spacing-2xl;
   }
+}
+
+.info-section__hairline {
+  @include hairline($color-fjord, 1px);
+  display: block;
+  width: 48px;
+  margin-top: $spacing-md;
 }
 
 .info-section__content {
   display: grid;
   grid-template-columns: 1fr;
-  gap: $spacing-lg;
+  gap: $spacing-xl;
 
   @include tablet {
     grid-template-columns: repeat(3, 1fr);
-    gap: $spacing-xl;
+    gap: $spacing-2xl;
   }
 }
 
-.info-card {
-  background-color: $color-white;
-  padding: $spacing-lg;
-  border-radius: $border-radius-base;
-  box-shadow: $shadow-sm;
-  transition:
-    transform $transition-base,
-    box-shadow $transition-base;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  }
-
-  @include tablet {
-    padding: $spacing-xl;
-  }
+.info-block {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
 }
 
-.info-card__title {
+.info-block__title {
   font-size: $font-size-lg;
   font-weight: $font-weight-semibold;
-  color: $color-black;
-  margin-bottom: $spacing-sm;
+  color: $color-ink;
+  margin: 0;
   line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
 
   @include tablet {
     font-size: $font-size-xl;
   }
 }
 
-.info-card__text {
+.info-block__text {
   font-size: $font-size-base;
-  color: $color-gray-600;
-  line-height: $line-height-base;
+  color: $color-ink-soft;
+  line-height: $line-height-relaxed;
   margin: 0;
 }
 
-// Error Message
+// --- Error Message ---
 .error-message {
-  text-align: center;
+  text-align: left;
   padding: $spacing-2xl;
   background-color: $color-danger-bg;
   border: 1px solid $color-danger-border;
@@ -392,27 +428,33 @@ useCollectionPageSchema('Rugs')
 }
 
 .retry-button {
-  background-color: $color-black;
-  color: $color-white;
+  background-color: $color-ink;
+  color: $color-canvas;
   padding: $spacing-sm $spacing-lg;
   border: none;
   border-radius: $border-radius-base;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
   cursor: pointer;
-  transition: background-color $transition-base;
 
-  &:hover {
-    background-color: $color-gray-900;
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
   }
 
-  &:focus {
-    outline: 2px solid $color-black;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
     outline-offset: 2px;
   }
 }
 
-// Accessibility - Visually Hidden
+// --- Accessibility ---
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -423,5 +465,16 @@ useCollectionPageSchema('Rugs')
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+}
+
+// --- Reduced motion ---
+@media (prefers-reduced-motion: reduce) {
+  .retry-button {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
 }
 </style>

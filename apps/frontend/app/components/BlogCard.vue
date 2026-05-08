@@ -101,16 +101,25 @@ const formattedDate = computed(() => {
   display: flex;
   flex-direction: column;
   width: 100%;
-  background-color: $color-white;
+  background-color: $color-canvas;
   border-radius: $border-radius-base;
   overflow: hidden;
-  transition:
-    transform $transition-base,
-    box-shadow $transition-base;
 
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: $shadow-md;
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform $transition-base,
+      box-shadow $transition-base;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      transform: none;
+    }
   }
 }
 
@@ -121,9 +130,9 @@ const formattedDate = computed(() => {
   text-decoration: none;
   color: inherit;
 
-  @include focus-visible;
-
   &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 2px;
     border-radius: $border-radius-base;
   }
 }
@@ -133,7 +142,7 @@ const formattedDate = computed(() => {
   margin: 0;
   width: 100%;
   overflow: hidden;
-  background-color: $color-gray-100;
+  background-color: $color-canvas-soft;
 }
 
 .blog-card__image-container {
@@ -148,17 +157,20 @@ const formattedDate = computed(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform $transition-slow;
 
-  .blog-card:hover & {
-    transform: scale(1.05);
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform $transition-slow;
+
+    .blog-card:hover & {
+      transform: scale(1.05);
+    }
   }
 }
 
 .blog-card__image-placeholder {
   width: 100%;
   height: 100%;
-  background-color: $color-gray-200;
+  background-color: $color-canvas-soft;
 }
 
 // Content
@@ -175,12 +187,8 @@ const formattedDate = computed(() => {
   font-size: $font-size-lg;
   font-weight: $font-weight-semibold;
   line-height: $line-height-tight;
-  color: $color-gray-900;
-  transition: color $transition-fast;
-
-  .blog-card:hover & {
-    color: $color-gray-600;
-  }
+  letter-spacing: $letter-spacing-tight;
+  color: $color-ink;
 
   @include tablet {
     font-size: $font-size-xl;
@@ -190,14 +198,14 @@ const formattedDate = computed(() => {
 .blog-card__subtitle {
   margin: 0;
   font-size: $font-size-base;
-  color: $color-gray-600;
+  color: $color-ink-soft;
   line-height: $line-height-base;
 }
 
 .blog-card__excerpt {
   margin: 0;
   font-size: $font-size-base;
-  color: $color-gray-600;
+  color: $color-ink-soft;
   line-height: $line-height-base;
 }
 
@@ -213,18 +221,17 @@ const formattedDate = computed(() => {
   padding: 2px $spacing-xs;
   font-size: $font-size-xs;
   font-weight: $font-weight-medium;
-  color: $color-gray-600;
-  background-color: $color-gray-100;
+  color: $color-stone;
+  background-color: $color-canvas-soft;
   border-radius: $border-radius-sm;
   line-height: $line-height-snug;
 }
 
 .blog-card__date {
+  @include eyebrow;
   margin-top: auto;
+  margin-bottom: 0;
   padding-top: $spacing-xs;
-  font-size: $font-size-sm;
-  color: $color-gray-600;
-  font-weight: $font-weight-normal;
 }
 
 // Responsive

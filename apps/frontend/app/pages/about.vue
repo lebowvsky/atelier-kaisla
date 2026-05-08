@@ -111,11 +111,13 @@ useSeo({
     <Breadcrumbs :items="[{ name: 'About' }]" />
     <!-- Hero Section -->
     <section class="about-hero" aria-labelledby="about-hero-title">
-      <div class="container">
-        <div class="about-hero__content">
+      <div class="container about-hero__container" lang="fr">
+        <div class="about-hero__heading">
+          <span class="about-hero__eyebrow">Atelier</span>
           <h1 id="about-hero-title" class="about-hero__title">{{ heroTitle }}</h1>
-          <div class="about-hero__subtitle" v-html="heroSubtitle" />
+          <span class="about-hero__hairline" aria-hidden="true" />
         </div>
+        <div class="about-hero__subtitle" v-html="heroSubtitle" />
       </div>
     </section>
 
@@ -147,44 +149,51 @@ useSeo({
     </div>
 
     <!-- Sections from API (Adapter + Strategy patterns) -->
-    <div v-else class="about-stories">
+    <div v-else class="about-stories" lang="fr">
       <StorySection
         v-for="(story, index) in stories"
         :key="story.id"
         :id="story.id"
+        :eyebrow="`Chapitre ${String(index + 1).padStart(2, '0')}`"
         :title="story.title"
         :image="story.image"
         :content="story.content"
         :image-position="story.imagePosition"
-        :theme="index % 2 === 0 ? 'light' : 'dark'"
+        :theme="'light'"
       />
     </div>
 
     <!-- Call to Action Section -->
     <section class="about-cta" aria-labelledby="about-cta-title">
-      <div class="container">
-        <div class="about-cta__content">
+      <div class="container about-cta__container" lang="fr">
+        <div class="about-cta__heading">
+          <span class="about-cta__eyebrow">Découvrir</span>
           <h2 id="about-cta-title" class="about-cta__title">Explorez Nos Créations</h2>
-          <p class="about-cta__text">
-            Chaque pièce créée à l'atelier Kaisla est unique et raconte sa propre histoire.
-            Découvrez notre collection de tentures murales et de tapis artisanaux.
-          </p>
-          <div class="about-cta__buttons">
-            <NuxtLink to="/wall-hanging" class="about-cta__button about-cta__button--primary">
-              Tentures Murales
-            </NuxtLink>
-            <NuxtLink to="/rugs" class="about-cta__button about-cta__button--secondary">
-              Tapis Artisanaux
-            </NuxtLink>
-          </div>
+          <span class="about-cta__hairline" aria-hidden="true" />
+        </div>
+        <p class="about-cta__text">
+          Chaque pièce créée à l'atelier Kaisla est unique et raconte sa propre histoire.
+          Découvrez notre collection de tentures murales et de tapis artisanaux.
+        </p>
+        <div class="about-cta__buttons">
+          <NuxtLink to="/wall-hanging" class="about-cta__button about-cta__button--primary">
+            Tentures Murales
+          </NuxtLink>
+          <NuxtLink to="/rugs" class="about-cta__button about-cta__button--secondary">
+            Tapis Artisanaux
+          </NuxtLink>
         </div>
       </div>
     </section>
 
     <!-- Social Contact Section -->
     <section class="about-social" aria-labelledby="about-social-title">
-      <div class="container">
-        <h2 id="about-social-title" class="visually-hidden">Suivez-nous et contactez-nous</h2>
+      <div class="container about-social__container" lang="fr">
+        <span class="about-social__eyebrow">Restons en contact</span>
+        <h2 id="about-social-title" class="about-social__title">
+          Suivez-nous et contactez-nous
+        </h2>
+        <span class="about-social__hairline" aria-hidden="true" />
         <SocialShare />
       </div>
     </section>
@@ -194,41 +203,71 @@ useSeo({
 <style lang="scss" scoped>
 .about-page {
   min-height: calc(100vh - $navbar-height);
-  background-color: $color-white;
+  background-color: $color-canvas;
 }
 
-// Hero Section
+.container {
+  @include container;
+}
+
+// --- Hero Section ---
 .about-hero {
-  background: linear-gradient(135deg, $color-gray-100 0%, $color-gray-200 100%);
+  background-color: $color-canvas;
   padding: $spacing-3xl $spacing-md;
-  text-align: center;
 
   @include tablet {
     padding: calc($spacing-3xl + $spacing-xl) $spacing-lg;
   }
 }
 
-.about-hero__content {
-  max-width: $container-content-width;
-  margin: 0 auto;
+.about-hero__container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+
+  @include tablet {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: $spacing-2xl;
+    align-items: start;
+  }
+}
+
+.about-hero__heading {
+  display: flex;
+  flex-direction: column;
+}
+
+.about-hero__eyebrow {
+  @include eyebrow;
+  margin: 0 0 $spacing-sm;
 }
 
 .about-hero__title {
   font-size: $font-size-3xl;
   font-weight: $font-weight-bold;
-  color: $color-black;
-  margin-bottom: $spacing-md;
+  color: $color-ink;
+  margin: 0;
   line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
 
   @include tablet {
-    font-size: $font-size-4xl;
+    font-size: $font-size-display;
   }
 }
 
+.about-hero__hairline {
+  @include hairline($color-fjord, 1px);
+  display: block;
+  width: 48px;
+  margin-top: $spacing-md;
+}
+
 .about-hero__subtitle {
+  @include reading-column;
   font-size: $font-size-lg;
-  color: $color-gray-600;
-  line-height: $line-height-base;
+  color: $color-ink-soft;
+  line-height: $line-height-relaxed;
   font-weight: $font-weight-normal;
 
   @include tablet {
@@ -252,32 +291,32 @@ useSeo({
   }
 }
 
-// Story Sections Container
+// --- Story Sections Container ---
 .about-stories {
   // Story sections have their own padding, no need for additional container padding
 }
 
-// Loading State
+// --- Loading State ---
 .about-loading {
   padding: $spacing-3xl $spacing-md;
-  text-align: center;
+  text-align: left;
 }
 
 .about-loading__text {
   font-size: $font-size-lg;
-  color: $color-gray-600;
+  color: $color-stone;
   margin: 0;
 }
 
-// Error State
+// --- Error State ---
 .about-error {
   padding: $spacing-3xl $spacing-md;
-  text-align: center;
+  text-align: left;
 }
 
 .about-error__text {
   font-size: $font-size-lg;
-  color: $color-gray-600;
+  color: $color-ink-soft;
   margin: 0 0 $spacing-lg 0;
 }
 
@@ -286,64 +325,95 @@ useSeo({
   padding: $spacing-sm $spacing-xl;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
-  color: $color-white;
-  background-color: $color-black;
+  color: $color-canvas;
+  background-color: $color-ink;
   border: none;
   border-radius: $border-radius-base;
   cursor: pointer;
-  transition: background-color $transition-base;
 
-  &:hover {
-    background-color: $color-gray-900;
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
   }
 
-  @include focus-visible;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 2px;
+  }
 }
 
-// Empty State
+// --- Empty State ---
 .about-empty {
   padding: $spacing-3xl $spacing-md;
-  text-align: center;
+  text-align: left;
 }
 
 .about-empty__text {
   font-size: $font-size-lg;
-  color: $color-gray-600;
+  color: $color-stone;
   margin: 0;
 }
 
-// Call to Action Section
+// --- Call to Action Section ---
 .about-cta {
   padding: $spacing-3xl $spacing-md;
-  background-color: $color-gray-100;
-  text-align: center;
+  background-color: $color-canvas;
 
   @include tablet {
     padding: calc($spacing-3xl + $spacing-xl) $spacing-lg;
   }
 }
 
-.about-cta__content {
-  max-width: $container-content-width;
-  margin: 0 auto;
+.about-cta__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: $spacing-md;
+}
+
+.about-cta__heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.about-cta__eyebrow {
+  @include eyebrow;
+  margin: 0 0 $spacing-sm;
 }
 
 .about-cta__title {
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
-  color: $color-black;
-  margin-bottom: $spacing-md;
+  color: $color-ink;
+  margin: 0;
   line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
 
   @include tablet {
     font-size: $font-size-3xl;
   }
 }
 
+.about-cta__hairline {
+  @include hairline($color-fjord, 1px);
+  display: block;
+  width: 48px;
+  margin: $spacing-md auto $spacing-md;
+}
+
 .about-cta__text {
+  @include reading-column;
   font-size: $font-size-base;
-  color: $color-gray-600;
-  line-height: $line-height-base;
+  color: $color-ink-soft;
+  line-height: $line-height-relaxed;
   margin: 0 0 $spacing-xl 0;
 
   @include tablet {
@@ -371,16 +441,17 @@ useSeo({
   font-weight: $font-weight-semibold;
   text-decoration: none;
   border-radius: $border-radius-base;
-  transition:
-    background-color $transition-base,
-    color $transition-base,
-    transform $transition-base,
-    box-shadow $transition-base;
   cursor: pointer;
   min-width: 200px;
   text-align: center;
 
-  @include focus-visible;
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease,
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
 
   @include tablet {
     font-size: $font-size-lg;
@@ -390,47 +461,87 @@ useSeo({
   // Hover effect
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: $shadow-md;
   }
 
   // Active effect
   &:active {
     transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: $shadow-sm;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 4px;
   }
 }
 
 .about-cta__button--primary {
-  background-color: $color-black;
-  color: $color-white;
+  background-color: $color-ink;
+  color: $color-canvas;
+  border: 2px solid $color-ink;
 
   &:hover {
-    background-color: $color-gray-900;
+    background-color: $color-ink-soft;
+    border-color: $color-ink-soft;
   }
 }
 
 .about-cta__button--secondary {
-  background-color: $color-white;
-  color: $color-black;
-  border: 2px solid $color-black;
+  background-color: $color-canvas;
+  color: $color-ink;
+  border: 2px solid $color-ink;
 
   &:hover {
-    background-color: $color-black;
-    color: $color-white;
+    background-color: $color-ink;
+    color: $color-canvas;
   }
 }
 
-// Social Section
+// --- Social Section ---
 .about-social {
   padding: $spacing-2xl $spacing-md;
-  background-color: $color-white;
+  background-color: $color-canvas;
 
   @include tablet {
     padding: $spacing-3xl $spacing-lg;
   }
 }
 
-// Accessibility helper
+.about-social__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: $spacing-md;
+}
+
+.about-social__eyebrow {
+  @include eyebrow;
+  margin: 0;
+}
+
+.about-social__title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-ink;
+  margin: 0;
+  line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
+
+  @include tablet {
+    font-size: $font-size-3xl;
+  }
+}
+
+.about-social__hairline {
+  @include hairline($color-fjord, 1px);
+  display: block;
+  width: 48px;
+  margin: $spacing-sm auto $spacing-lg;
+}
+
+// --- Accessibility helper ---
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -443,14 +554,22 @@ useSeo({
   border-width: 0;
 }
 
-.container {
-  @include container;
+// --- Reduced motion ---
+@media (prefers-reduced-motion: reduce) {
+  .about-error__button,
+  .about-cta__button {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
 }
 
-// Print styles
+// --- Print styles ---
 @media print {
   .about-hero {
-    background: $color-white;
+    background: $color-canvas;
     padding: $spacing-lg 0;
   }
 
