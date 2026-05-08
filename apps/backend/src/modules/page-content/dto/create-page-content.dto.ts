@@ -35,6 +35,16 @@ export class CreatePageContentDto {
   section: string;
 
   @ApiPropertyOptional({
+    description: 'Section eyebrow / kicker label',
+    maxLength: 255,
+    example: 'Notre démarche',
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(255)
+  eyebrow?: string;
+
+  @ApiPropertyOptional({
     description: 'Section title',
     maxLength: 255,
     example: 'Handcrafted Wall Art & Rugs',

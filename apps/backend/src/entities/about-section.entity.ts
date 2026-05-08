@@ -16,6 +16,9 @@ export class AboutSection {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ length: 255, nullable: true })
+  eyebrow: string;
+
   @Column({ length: 255, nullable: false })
   title: string;
 

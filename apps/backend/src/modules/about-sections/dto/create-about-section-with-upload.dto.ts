@@ -15,6 +15,16 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
  * DTO for creating an about section with image upload (multipart/form-data)
  */
 export class CreateAboutSectionWithUploadDto {
+  @ApiPropertyOptional({
+    description: 'Section eyebrow / kicker label',
+    maxLength: 255,
+    example: 'Notre démarche',
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(255)
+  eyebrow?: string;
+
   @ApiProperty({
     description: 'Section title',
     maxLength: 255,

@@ -27,6 +27,9 @@ export class PageContent {
   section: string;
 
   @Column({ length: 255, nullable: true })
+  eyebrow: string;
+
+  @Column({ length: 255, nullable: true })
   title: string;
 
   @Column({ type: 'text', nullable: true })
