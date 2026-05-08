@@ -126,8 +126,6 @@ const getGridItemClasses = (_image: GalleryImage): string => {
 </template>
 
 <style lang="scss" scoped>
-@use 'sass:color';
-
 .image-grid {
   width: 100%;
   display: flex;
@@ -156,38 +154,51 @@ const getGridItemClasses = (_image: GalleryImage): string => {
   height: auto;
   cursor: pointer;
   overflow: hidden;
-  transition:
-    transform $transition-base,
-    box-shadow $transition-base;
 
-  &:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform $transition-base,
+      box-shadow $transition-base;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+
+    &:active {
+      transform: translateY(-1px);
+    }
   }
 
-  &:active {
-    transform: scale(0.98);
+  @media (prefers-reduced-motion: reduce) {
+    &:hover,
+    &:active {
+      transform: none;
+    }
   }
 
-  @include focus-visible;
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 2px;
+  }
 }
 
 .grid-item__placeholder {
   width: 100%;
   height: 100%;
-  background-color: $color-gray-200;
+  background-color: $color-canvas-soft;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background-color $transition-fast;
 
   .grid-item:hover & {
-    background-color: color.adjust($color-gray-200, $lightness: -5%);
+    background-color: $color-line;
   }
 }
 
 .grid-item__placeholder-text {
-  color: $color-gray-600;
+  color: $color-stone;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
   text-align: center;

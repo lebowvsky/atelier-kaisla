@@ -63,8 +63,14 @@ useBreadcrumbsSchema(allItems)
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: $font-size-base;
-  color: $color-gray-600;
+
+  // Editorial eyebrow style: uppercase small caps stone with 0.12em letter-spacing.
+  // Applied at the list level so all items inherit the magazine cadence.
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  letter-spacing: $letter-spacing-eyebrow;
+  text-transform: uppercase;
+  color: $color-stone;
 
   @include container;
 }
@@ -76,28 +82,29 @@ useBreadcrumbsSchema(allItems)
 }
 
 .breadcrumbs__link {
-  color: $color-gray-600;
+  color: $color-stone;
   text-decoration: none;
-  transition: color $transition-fast;
 
-  &:hover,
-  &:focus {
-    color: $color-black;
-    text-decoration: underline;
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color $transition-fast;
   }
 
-  &:focus {
-    outline: 2px solid $color-black;
+  &:hover {
+    color: $color-ink;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
     outline-offset: 2px;
   }
 }
 
 .breadcrumbs__current {
-  color: $color-black;
+  color: $color-ink;
   font-weight: $font-weight-medium;
 }
 
 .breadcrumbs__separator {
-  color: $color-gray-300;
+  color: $color-line;
 }
 </style>

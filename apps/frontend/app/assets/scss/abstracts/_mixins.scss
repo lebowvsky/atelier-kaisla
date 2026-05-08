@@ -13,10 +13,10 @@
   min-height: calc(100vh - $navbar-height);
 }
 
-// Focus visible mixin for accessibility
+// Focus visible mixin for accessibility — editorial palette uses cobalt for focus
 @mixin focus-visible {
   &:focus-visible {
-    outline: 2px solid $color-black;
+    outline: 2px solid $color-fjord-deep;
     outline-offset: 2px;
   }
 }

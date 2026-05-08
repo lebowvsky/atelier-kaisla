@@ -167,9 +167,9 @@ useSeoMeta({
   left: 0;
   right: 0;
   z-index: 1000;
-  background-color: $color-white;
-  border-bottom: 1px solid $color-gray-300;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  background-color: $color-canvas;
+  border-bottom: 1px solid $color-line;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
 }
 
 .navbar__container {
@@ -187,13 +187,19 @@ useSeoMeta({
 .logo-link {
   display: block;
   line-height: 0;
-  transition: opacity $transition-fast;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity $transition-fast;
+  }
 
   &:hover {
     opacity: 0.8;
   }
 
-  @include focus-visible;
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 2px;
+  }
 }
 
 .logo-image {
@@ -217,13 +223,12 @@ useSeoMeta({
 .nav-link {
   position: relative;
   display: inline-block;
-  color: $color-gray-900;
+  color: $color-ink-soft;
   text-decoration: none;
   font-size: 0.9375rem;
   font-weight: $font-weight-medium;
   letter-spacing: 0.025em;
   padding: $spacing-xs 0;
-  transition: color $transition-fast;
 
   &::after {
     content: '';
@@ -232,22 +237,27 @@ useSeoMeta({
     left: 0;
     width: 0;
     height: 2px;
-    background-color: $color-black;
-    transition: width $transition-base;
+    background-color: $color-ink;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: width $transition-base;
+    }
   }
 
   &:hover {
-    color: $color-black;
-
+    // No color-shift — keep underline animation only.
     &::after {
       width: 100%;
     }
   }
 
-  @include focus-visible;
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 4px;
+  }
 
   &--active {
-    color: $color-black;
+    color: $color-ink;
     font-weight: $font-weight-semibold;
 
     &::after {
@@ -267,13 +277,19 @@ useSeoMeta({
   cursor: pointer;
   padding: 0;
   z-index: 10;
-  transition: transform $transition-base;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform $transition-base;
+  }
 
   &:hover {
     transform: scale(1.1);
   }
 
-  @include focus-visible;
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 4px;
+  }
 
   &--active {
     .hamburger-line {
@@ -291,15 +307,26 @@ useSeoMeta({
       }
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
 }
 
 .hamburger-line {
   width: 2rem;
   height: 2px;
-  background-color: $color-gray-900;
+  background-color: $color-ink;
   border-radius: 10px;
-  transition: all $transition-base;
   transform-origin: 1px;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: all $transition-base;
+  }
 }
 
 .navbar__menu--mobile {
@@ -307,9 +334,9 @@ useSeoMeta({
   top: 100%;
   left: 0;
   right: 0;
-  background-color: $color-white;
-  border-bottom: 1px solid $color-gray-300;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  background-color: $color-canvas;
+  border-bottom: 1px solid $color-line;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
 }
 
 .nav-list--mobile {
@@ -336,6 +363,18 @@ useSeoMeta({
 .slide-fade-leave-to {
   transform: translateY(-10px);
   opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide-fade-enter-active,
+  .slide-fade-leave-active {
+    transition: none;
+  }
+
+  .slide-fade-enter-from,
+  .slide-fade-leave-to {
+    transform: none;
+  }
 }
 
 @include tablet {

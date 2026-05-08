@@ -29,7 +29,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  background-color: $color-white;
+  background-color: $color-canvas;
   border-radius: $border-radius-base;
   overflow: hidden;
 }
@@ -37,7 +37,7 @@
 .blog-card-skeleton__image {
   width: 100%;
   aspect-ratio: 3 / 2;
-  background: linear-gradient(90deg, $color-gray-100 25%, $color-gray-200 50%, $color-gray-100 75%);
+  background: linear-gradient(90deg, $color-canvas-soft 25%, $color-line 50%, $color-canvas-soft 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -56,7 +56,7 @@
 .blog-card-skeleton__line {
   height: 1rem;
   border-radius: calc($border-radius-base / 2);
-  background: linear-gradient(90deg, $color-gray-100 25%, $color-gray-200 50%, $color-gray-100 75%);
+  background: linear-gradient(90deg, $color-canvas-soft 25%, $color-line 50%, $color-canvas-soft 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 
@@ -71,6 +71,13 @@
 
   &--short {
     width: 40%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blog-card-skeleton__image,
+  .blog-card-skeleton__line {
+    animation: none;
   }
 }
 </style>

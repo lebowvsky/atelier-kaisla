@@ -288,7 +288,7 @@ const gridAriaLabel = computed((): string => {
 .artwork-list__skeleton {
   display: flex;
   flex-direction: column;
-  background-color: $color-white;
+  background-color: $color-canvas;
   border-radius: $border-radius-base;
   overflow: hidden;
   box-shadow: $shadow-sm;
@@ -299,9 +299,9 @@ const gridAriaLabel = computed((): string => {
   aspect-ratio: 4/3;
   background: linear-gradient(
     90deg,
-    $color-gray-100 0%,
-    $color-gray-200 50%,
-    $color-gray-100 100%
+    $color-canvas-soft 0%,
+    $color-line 50%,
+    $color-canvas-soft 100%
   );
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s ease-in-out infinite;
@@ -323,9 +323,9 @@ const gridAriaLabel = computed((): string => {
   height: 1rem;
   background: linear-gradient(
     90deg,
-    $color-gray-100 0%,
-    $color-gray-200 50%,
-    $color-gray-100 100%
+    $color-canvas-soft 0%,
+    $color-line 50%,
+    $color-canvas-soft 100%
   );
   background-size: 200% 100%;
   border-radius: $border-radius-sm;
@@ -363,6 +363,13 @@ const gridAriaLabel = computed((): string => {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .skeleton__image,
+  .skeleton__line {
+    animation: none;
+  }
+}
+
 // Empty State Styles
 .artwork-list__empty {
   display: flex;
@@ -371,7 +378,7 @@ const gridAriaLabel = computed((): string => {
   min-height: 300px;
   padding: $spacing-2xl $spacing-md;
   text-align: center;
-  background-color: $color-gray-100;
+  background-color: $color-canvas;
   border-radius: $border-radius-base;
 
   @include tablet {
@@ -382,7 +389,7 @@ const gridAriaLabel = computed((): string => {
 
 .artwork-list__empty-message {
   font-size: $font-size-lg;
-  color: $color-gray-600;
+  color: $color-stone;
   margin: 0;
   max-width: 500px;
   line-height: $line-height-base;

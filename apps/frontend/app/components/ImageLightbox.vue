@@ -234,7 +234,7 @@ onUnmounted(() => {
   z-index: 10;
   background: rgba(0, 0, 0, 0.5);
   border: none;
-  color: $color-white;
+  color: $color-canvas;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -242,14 +242,27 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all $transition-fast;
 
-  &:hover {
-    background: rgba(0, 0, 0, 0.8);
-    transform: scale(1.1);
+  @media (prefers-reduced-motion: no-preference) {
+    transition: all $transition-fast;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.8);
+      transform: scale(1.1);
+    }
   }
 
-  @include focus-visible;
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      background: rgba(0, 0, 0, 0.8);
+      opacity: 0.8;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 2px;
+  }
 
   @include tablet {
     top: $spacing-lg;
@@ -264,7 +277,7 @@ onUnmounted(() => {
   z-index: 10;
   background: rgba(0, 0, 0, 0.5);
   border: none;
-  color: $color-white;
+  color: $color-canvas;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -272,14 +285,27 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all $transition-fast;
 
-  &:hover {
-    background: rgba(0, 0, 0, 0.8);
-    transform: translateY(-50%) scale(1.1);
+  @media (prefers-reduced-motion: no-preference) {
+    transition: all $transition-fast;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.8);
+      transform: translateY(-50%) scale(1.1);
+    }
   }
 
-  @include focus-visible;
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      background: rgba(0, 0, 0, 0.8);
+      opacity: 0.8;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 2px;
+  }
 
   &--prev {
     left: $spacing-md;
@@ -326,7 +352,7 @@ onUnmounted(() => {
 
 .lightbox__info {
   text-align: center;
-  color: $color-white;
+  color: $color-canvas;
   max-width: 600px;
 }
 
@@ -349,7 +375,7 @@ onUnmounted(() => {
   left: 50%;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.7);
-  color: $color-white;
+  color: $color-canvas;
   padding: $spacing-xs $spacing-md;
   border-radius: $border-radius-xl;
   font-size: $font-size-sm;

@@ -315,13 +315,16 @@ Modifiers:
 
 ### SCSS Variables Used
 
+Editorial palette (mono contrasté + cobalt accent) — see `app/assets/scss/abstracts/_variables.scss`:
+
 ```scss
-// Colors
-$color-black: #000000
-$color-white: #ffffff
-$color-gray-900: #1f2937
-$color-gray-600: #4b5563
-$color-gray-300: #e5e7eb
+// Colors — editorial palette
+$color-ink:         #000000  // primary icon color (dark theme)
+$color-ink-soft:    #1a1a1a  // hover icon color (dark theme)
+$color-canvas:      #ffffff  // primary icon color (light theme, on dark backdrops)
+$color-canvas-soft: #f2f2f0  // hover icon color (light theme)
+$color-stone:       #545454  // muted captions / contact label
+$color-fjord-deep:  #1b47b0  // focus-visible outline only
 
 // Spacing
 $spacing-xs: 0.5rem
@@ -330,8 +333,11 @@ $spacing-md: 1.5rem
 $spacing-lg: 2rem
 $spacing-xl: 3rem
 
+// Shadows
+$shadow-md  // applied on hover lift (translateY(-2px))
+
 // Transitions
-$transition-base: 0.3s ease
+$transition-base: 0.3s ease  // wrapped in `prefers-reduced-motion: no-preference`
 
 // Typography
 $font-size-base: 1rem
@@ -339,6 +345,8 @@ $font-size-lg: 1.125rem
 $font-size-xl: 1.5rem
 $line-height-base: 1.6
 ```
+
+> **Note:** Cobalt (`$color-fjord` / `$color-fjord-deep`) is **decorative only** in this design system — never used on hover or text color. It appears here exclusively as the focus-visible outline.
 
 ### Responsive Breakpoints
 
