@@ -48,15 +48,15 @@ const introHtml = computed(() => {
 
 // Hero background image from API (full URL stored in DB).
 // When an image is available, it is used as a CSS background-image with
-// a dark overlay for text readability. Without an image the default
-// gradient is preserved via the CSS fallback class.
+// a warm ink-toned overlay for text readability. Without an image,
+// a soft canvas gradient fallback is used and text adopts ink colors.
 const heroImageUrl = computed(() => heroContent.value?.image || null)
 const heroImageAlt = computed(() => heroContent.value?.imageAlt || '')
 
 const heroStyle = computed(() => {
   if (!heroImageUrl.value) return {}
   return {
-    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url(${heroImageUrl.value})`,
+    backgroundImage: `linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.30) 60%, rgba(0, 0, 0, 0.55) 100%), url(${heroImageUrl.value})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
@@ -93,41 +93,46 @@ useHead({
 
 <template>
   <div class="home-page">
+    <!-- Hero -->
     <section
       :class="['hero', { 'hero--with-image': heroImageUrl }]"
       :style="heroStyle"
-      :aria-label="heroImageAlt || undefined"
-      role="img"
+      aria-labelledby="hero-title"
     >
       <div class="hero__content">
-        <h1 class="hero__title">{{ heroTitle }}</h1>
+        <span v-if="heroImageAlt" class="visually-hidden">{{ heroImageAlt }}</span>
+        <span class="hero__hairline" aria-hidden="true" />
+        <span class="hero__eyebrow">Atelier · Tapis &amp; tentures murales</span>
+        <h1 id="hero-title" class="hero__title">{{ heroTitle }}</h1>
         <div class="hero__subtitle" v-html="sanitizedHeroSubtitle" />
       </div>
     </section>
 
-    <!-- Gallery Section -->
+    <!-- Gallery -->
     <section v-if="homeGridImages.length > 0 || gridLoading" class="gallery-section">
       <div class="container">
         <header class="gallery-section__header">
-          <h2 class="gallery-section__title">Our Collection</h2>
+          <div class="gallery-section__heading">
+            <span class="gallery-section__eyebrow">Collection</span>
+            <h2 class="gallery-section__title">Our Collection</h2>
+            <span class="gallery-section__hairline" aria-hidden="true" />
+          </div>
           <p class="gallery-section__description">
             Explore our handcrafted pieces. Click on any image to view it in full size.
           </p>
         </header>
 
-        <!-- Loading State -->
-        <div v-if="gridLoading" class="gallery-section__loading">
-          <p>Loading...</p>
-        </div>
+        <p v-if="gridLoading" role="status" class="gallery-section__loading">
+          Loading...
+        </p>
 
-        <!-- Grid -->
         <ImageGrid v-else :images="homeGridImages" />
       </div>
     </section>
 
-    <!-- Homo Faber Guide Badge Section -->
+    <!-- Homo Faber Badge -->
     <section class="badge-section">
-      <div class="container">
+      <div class="container badge-section__container">
         <a
           href="https://www.homofaber.com/"
           target="_blank"
@@ -145,21 +150,33 @@ useHead({
             format="webp"
           />
         </a>
+        <p class="badge-section__caption">
+          Member of the Michelangelo Foundation — international distinction
+          for contemporary craftsmanship.
+        </p>
       </div>
     </section>
 
-    <!-- What is Kaisla Section -->
+    <!-- Kaisla Intro -->
     <section class="kaisla-intro" aria-labelledby="kaisla-intro-title">
-      <div class="container">
-        <h2 id="kaisla-intro-title" class="visually-hidden">{{ introTitle }}</h2>
+      <div class="container kaisla-intro__container" lang="fr">
+        <div class="kaisla-intro__heading">
+          <span class="kaisla-intro__eyebrow">Notre démarche</span>
+          <h2 id="kaisla-intro-title" class="kaisla-intro__title">{{ introTitle }}</h2>
+          <span class="kaisla-intro__hairline" aria-hidden="true" />
+        </div>
         <div class="kaisla-intro__content" v-html="introHtml" />
       </div>
     </section>
 
-    <!-- Social Share Section -->
+    <!-- Social Share -->
     <section class="social-section" aria-labelledby="social-section-title">
-      <div class="container">
-        <h2 id="social-section-title" class="visually-hidden">Suivez-nous et contactez-nous</h2>
+      <div class="container social-section__container">
+        <span class="social-section__eyebrow">Restons en contact</span>
+        <h2 id="social-section-title" class="social-section__title">
+          Suivez-nous et contactez-nous
+        </h2>
+        <span class="social-section__hairline" aria-hidden="true" />
         <SocialShare />
       </div>
     </section>
@@ -171,10 +188,18 @@ useHead({
   min-height: calc(100vh - $navbar-height);
 }
 
+.container {
+  @include container;
+}
+
+// --- Hero ---
 .hero {
-  background: linear-gradient(135deg, $color-gray-100 0%, $color-gray-200 100%);
+  background: linear-gradient(135deg, $color-canvas 0%, $color-canvas-soft 100%);
   padding: $spacing-2xl $spacing-md;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(40vh, 50vh, 520px);
 
   @include tablet {
     padding: $spacing-3xl $spacing-lg;
@@ -182,59 +207,95 @@ useHead({
 
   // Variant with background image from API
   &--with-image {
-    // Background properties are set via inline style (backgroundImage, backgroundSize, etc.)
-    // The overlay is baked into the linear-gradient layer of the background-image.
     padding: $spacing-3xl $spacing-md;
-    min-height: 400px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    min-height: clamp(60vh, 70vh, 720px);
 
     @include tablet {
       padding: calc($spacing-3xl + $spacing-xl) $spacing-lg;
-      min-height: 500px;
+    }
+
+    .hero__eyebrow,
+    .hero__title,
+    .hero__subtitle {
+      // Guarantee 4.5:1 even when the CMS image is light-toned
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero__eyebrow {
+      color: rgba(255, 252, 247, 0.85);
     }
 
     .hero__title {
-      color: $color-white;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      color: #fffcf7;
     }
 
     .hero__subtitle {
-      color: rgba(255, 255, 255, 0.9);
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      color: rgba(255, 252, 247, 0.92);
     }
   }
 }
 
 .hero__content {
   max-width: $container-content-width;
+  width: 100%;
   margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @include tablet {
+    text-align: left;
+    align-items: flex-start;
+  }
+}
+
+.hero__hairline {
+  @include hairline($color-fjord, 1px);
+  display: block;
+  width: 64px;
+  margin-bottom: $spacing-md;
+}
+
+.hero__eyebrow {
+  @include eyebrow;
+  margin: 0 0 $spacing-sm;
+  color: $color-stone;
 }
 
 .hero__title {
   font-size: $font-size-3xl;
   font-weight: $font-weight-bold;
-  color: $color-black;
-  margin-bottom: $spacing-sm;
+  color: $color-ink;
+  margin: 0 0 $spacing-sm;
   line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
 
   @include tablet {
-    font-size: 3.5rem;
+    font-size: $font-size-display;
   }
 }
 
 .hero__subtitle {
-  font-size: 1.25rem;
-  color: $color-gray-600;
+  color: $color-ink-soft;
   font-weight: $font-weight-normal;
+  font-size: $font-size-lg;
+  line-height: $line-height-relaxed;
+  max-width: 52ch;
+  text-align: left;
+  margin-inline: auto;
 
   @include tablet {
     font-size: $font-size-xl;
+    margin-inline: 0;
   }
 
   :deep(p) {
     margin: 0;
+  }
+
+  :deep(p + p) {
+    margin-top: $spacing-sm;
   }
 
   :deep(strong) {
@@ -246,41 +307,66 @@ useHead({
   }
 }
 
+// --- Gallery ---
 .gallery-section {
   padding: $spacing-2xl $spacing-md;
-  padding-bottom: 0;
-  background-color: $color-white;
+  background-color: $color-canvas;
 
   @include tablet {
     padding: $spacing-3xl $spacing-lg;
-    padding-bottom: 0;
   }
 }
 
 .gallery-section__header {
-  text-align: center;
   margin-bottom: $spacing-2xl;
-  max-width: $container-content-width;
-  margin-left: auto;
-  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+
+  @include tablet {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: $spacing-2xl;
+    align-items: start;
+  }
+}
+
+.gallery-section__heading {
+  display: flex;
+  flex-direction: column;
+}
+
+.gallery-section__eyebrow {
+  @include eyebrow;
+  margin: 0 0 $spacing-sm;
 }
 
 .gallery-section__title {
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
-  color: $color-black;
-  margin-bottom: $spacing-sm;
+  color: $color-ink;
+  margin: 0;
   line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
 
   @include tablet {
     font-size: $font-size-3xl;
   }
 }
 
+.gallery-section__hairline {
+  @include hairline($color-fjord, 1px);
+  display: block;
+  width: 48px;
+  margin-top: $spacing-md;
+}
+
 .gallery-section__description {
+  @include reading-column;
   font-size: $font-size-base;
-  color: $color-gray-600;
-  line-height: $line-height-base;
+  color: $color-ink-soft;
+  line-height: $line-height-relaxed;
+  margin: 0;
 
   @include tablet {
     font-size: $font-size-lg;
@@ -288,38 +374,46 @@ useHead({
 }
 
 .gallery-section__loading {
-  text-align: center;
   padding: $spacing-2xl 0;
-  color: $color-gray-600;
+  color: $color-stone;
+  text-align: left;
+  margin: 0;
 }
 
-.container {
-  @include container;
-}
-
+// --- Homo Faber Badge ---
 .badge-section {
   padding: $spacing-xl $spacing-md;
-  text-align: center;
+  background-color: $color-canvas;
 
   @include tablet {
     padding: $spacing-2xl $spacing-lg;
   }
 }
 
+.badge-section__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-lg;
+}
+
 .badge-link {
   display: inline-block;
-  transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
 
-  &:hover,
-  &:focus {
-    transform: translateY(-4px);
-    opacity: 0.9;
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
   }
 
-  &:focus {
-    outline: 2px solid $color-black;
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
     outline-offset: 8px;
   }
 }
@@ -335,22 +429,72 @@ useHead({
   }
 }
 
+.badge-section__caption {
+  font-size: $font-size-base;
+  color: $color-ink-soft;
+  line-height: $line-height-relaxed;
+  max-width: 52ch;
+  margin: 0 auto;
+  text-align: left;
+}
+
+// --- Kaisla Intro ---
 .kaisla-intro {
-  padding: $spacing-3xl $spacing-md;
-  padding-top: $spacing-xl;
-  background-color: $color-gray-100;
-  text-align: center;
+  padding: $spacing-2xl $spacing-md;
+  background-color: $color-canvas;
 
   @include tablet {
     padding: $spacing-3xl $spacing-lg;
-    padding-top: $spacing-2xl;
   }
 }
 
+.kaisla-intro__container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+
+  @include tablet {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: $spacing-2xl;
+    align-items: start;
+  }
+}
+
+.kaisla-intro__heading {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.kaisla-intro__eyebrow {
+  @include eyebrow;
+  margin: 0 0 $spacing-sm;
+}
+
+.kaisla-intro__title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-ink;
+  margin: 0;
+  line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
+  text-align: left;
+
+  @include tablet {
+    font-size: $font-size-3xl;
+  }
+}
+
+.kaisla-intro__hairline {
+  @include hairline($color-fjord, 1px);
+  display: block;
+  width: 48px;
+  margin-top: $spacing-md;
+}
+
 .kaisla-intro__content {
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
+  text-align: left;
 
   :deep(ul),
   :deep(ol) {
@@ -359,37 +503,45 @@ useHead({
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: $spacing-lg;
+    gap: $spacing-md;
 
     @include tablet {
-      gap: $spacing-xl;
+      gap: $spacing-lg;
     }
   }
 
   :deep(li) {
-    color: $color-gray-600;
-    font-size: $font-size-lg;
-    line-height: $line-height-base;
+    color: $color-ink-soft;
+    font-size: $font-size-base;
+    line-height: $line-height-relaxed;
     font-weight: $font-weight-normal;
-    transition: color $transition-base;
+    padding-left: $spacing-md;
+    text-indent: -$spacing-md;
 
     @include tablet {
-      font-size: $font-size-xl;
+      font-size: $font-size-lg;
     }
 
-    &:hover {
-      color: $color-black;
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background-color: $color-fjord;
+      margin-right: $spacing-sm;
+      vertical-align: middle;
+      transform: translateY(-2px);
     }
   }
 
   :deep(p) {
-    color: $color-gray-600;
-    font-size: $font-size-lg;
-    line-height: $line-height-base;
+    color: $color-ink-soft;
+    font-size: $font-size-base;
+    line-height: $line-height-relaxed;
     margin: 0 0 $spacing-md;
 
     @include tablet {
-      font-size: $font-size-xl;
+      font-size: $font-size-lg;
     }
 
     &:last-child {
@@ -407,9 +559,11 @@ useHead({
 
   :deep(h2),
   :deep(h3) {
-    color: $color-black;
+    color: $color-ink;
     font-weight: $font-weight-bold;
-    margin: 0 0 $spacing-md;
+    margin: 0 0 $spacing-sm;
+    line-height: $line-height-tight;
+    letter-spacing: $letter-spacing-tight;
   }
 
   :deep(h2) {
@@ -430,11 +584,55 @@ useHead({
 
   :deep(hr) {
     border: none;
-    border-top: 1px solid $color-gray-300;
+    border-top: 1px solid $color-line;
     margin: $spacing-lg 0;
   }
 }
 
+// --- Social Share ---
+.social-section {
+  padding: $spacing-2xl $spacing-md;
+  background-color: $color-canvas;
+
+  @include tablet {
+    padding: $spacing-3xl $spacing-lg;
+  }
+}
+
+.social-section__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: $spacing-md;
+}
+
+.social-section__eyebrow {
+  @include eyebrow;
+  margin: 0;
+}
+
+.social-section__title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-ink;
+  margin: 0;
+  line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
+
+  @include tablet {
+    font-size: $font-size-3xl;
+  }
+}
+
+.social-section__hairline {
+  @include hairline($color-fjord, 1px);
+  display: block;
+  width: 48px;
+  margin: $spacing-sm auto $spacing-lg;
+}
+
+// --- Utilities ---
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -447,12 +645,15 @@ useHead({
   border-width: 0;
 }
 
-.social-section {
-  padding: $spacing-2xl $spacing-md;
-  background-color: $color-white;
+// --- Reduced motion ---
+@media (prefers-reduced-motion: reduce) {
+  .badge-link {
+    transition: none;
 
-  @include tablet {
-    padding: $spacing-3xl $spacing-lg;
+    &:hover,
+    &:focus-visible {
+      transform: none;
+    }
   }
 }
 </style>

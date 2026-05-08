@@ -34,6 +34,35 @@
   }
 }
 
+// Editorial reading column — left-aligned with optimal line length (60-75ch).
+// Use for body lead text and long paragraphs to improve readability.
+@mixin reading-column {
+  max-width: 62ch;
+  text-align: left;
+  line-height: $line-height-base;
+}
+
+// Eyebrow label — uppercase small-caps style heading prefix.
+// Use above section titles to create editorial rhythm.
+@mixin eyebrow {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  letter-spacing: $letter-spacing-eyebrow;
+  text-transform: uppercase;
+  color: $color-stone;
+  margin: 0 0 $spacing-sm;
+}
+
+// Decorative hairline — short colored line used as a section signature.
+// Defaults to fjord blue but accepts a color override.
+@mixin hairline($color: $color-fjord, $width: 48px) {
+  display: block;
+  width: $width;
+  height: 1px;
+  background-color: $color;
+  border: 0;
+}
+
 // Link underline animation
 @mixin link-underline {
   position: relative;
