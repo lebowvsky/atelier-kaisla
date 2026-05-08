@@ -4,6 +4,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { PageContentService } from './page-content.service';
 import { PageContentController } from './page-content.controller';
 import { PageContent } from '../../entities/page-content.entity';
+import { PageContentBlock } from '../../entities/page-content-block.entity';
 import { UploadModule } from '../upload/upload.module';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -17,7 +18,7 @@ const logger = new Logger('PageContentModule');
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PageContent]),
+    TypeOrmModule.forFeature([PageContent, PageContentBlock]),
     UploadModule,
     MulterModule.register({
       storage: diskStorage({

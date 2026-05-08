@@ -16,9 +16,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * Down() recreates `header` rows with their canonical eyebrow seed so the
  * schema can roll back without surprising editors.
  */
-export class MergeWallHangingRugsHeaderIntoIntro1770900000000
-  implements MigrationInterface
-{
+export class MergeWallHangingRugsHeaderIntoIntro1770900000000 implements MigrationInterface {
   name = 'MergeWallHangingRugsHeaderIntoIntro1770900000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

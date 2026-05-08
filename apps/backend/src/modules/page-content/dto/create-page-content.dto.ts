@@ -5,10 +5,14 @@ import {
   IsBoolean,
   IsInt,
   IsObject,
+  IsArray,
+  ValidateNested,
   MaxLength,
   Min,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { PageContentBlockDto } from './page-content-block.dto';
 
 /**
  * DTO for creating a new page content entry (JSON format)
@@ -107,4 +111,14 @@ export class CreatePageContentDto {
   @IsBoolean()
   @IsOptional()
   isPublished?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Editable info-blocks (title + description) for this section',
+    type: [PageContentBlockDto],
+  })
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => PageContentBlockDto)
+  blocks?: PageContentBlockDto[];
 }

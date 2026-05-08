@@ -6,7 +6,9 @@ import {
   UpdateDateColumn,
   Index,
   Unique,
+  OneToMany,
 } from 'typeorm';
+import { PageContentBlock } from './page-content-block.entity';
 
 /**
  * PageContent entity
@@ -51,6 +53,12 @@ export class PageContent {
   @Column({ name: 'sort_order', type: 'int', default: 0 })
   @Index()
   sortOrder: number;
+
+  @OneToMany(() => PageContentBlock, (block) => block.pageContent, {
+    cascade: true,
+    eager: true,
+  })
+  blocks: PageContentBlock[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
