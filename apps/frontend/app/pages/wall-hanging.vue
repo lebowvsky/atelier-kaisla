@@ -38,11 +38,18 @@ import type { ArtworkCardConfig } from '~/types/artwork'
 import type { Product } from '~/types/product'
 import { adaptProductToArtwork } from '~/composables/useProducts'
 
-// Page content composable - fetches CMS content for the intro section.
+// Page content composables - intro powers the page header (eyebrow + title +
+// description), info powers the lower information section.
 const { content: introContent, fetchSection: fetchIntro } = usePageContent('wall-hanging', 'intro')
+const { content: infoContent, fetchSection: fetchInfo } = usePageContent('wall-hanging', 'info')
 
 // Intro computed values with static fallback if API returns nothing.
+const headerEyebrow = computed(() => introContent.value?.eyebrow || 'Collection')
 const introTitle = computed(() => introContent.value?.title || 'Wall Hanging Collection')
+
+// Info section computed values with static fallbacks if API returns nothing.
+const infoEyebrow = computed(() => infoContent.value?.eyebrow || 'Why Atelier Kaisla')
+const infoTitle = computed(() => infoContent.value?.title || 'About our wall hangings')
 
 const defaultIntroDescription = '<p>Each wall hanging is thoughtfully designed and handwoven using traditional techniques. Natural materials, contemporary aesthetics, and timeless craftsmanship come together to create pieces that transform your space into a warm, welcoming sanctuary.</p>'
 
@@ -97,7 +104,10 @@ const getApiUrl = (): string => {
   return config.public.apiUrl
 }
 
-useAsyncData('wall-hanging-intro', () => fetchIntro(), { server: true })
+await Promise.all([
+  fetchIntro(),
+  fetchInfo(),
+])
 
 const { data: products, error, pending: loading } = await useAsyncData(
   'wall-hanging-products',
@@ -135,7 +145,7 @@ useCollectionPageSchema('Wall Hangings')
       <!-- Page Header -->
       <header class="page-header">
         <div class="page-header__heading">
-          <span class="page-header__eyebrow">Collection</span>
+          <span class="page-header__eyebrow">{{ headerEyebrow }}</span>
           <h1 class="page-header__title">{{ introTitle }}</h1>
           <span class="page-header__hairline" aria-hidden="true" />
         </div>
@@ -187,12 +197,12 @@ useCollectionPageSchema('Wall Hangings')
         aria-labelledby="info-heading"
       >
         <header class="info-section__header">
-          <span class="info-section__eyebrow">Why Atelier Kaisla</span>
+          <span class="info-section__eyebrow">{{ infoEyebrow }}</span>
           <h2
             id="info-heading"
             class="info-section__title"
           >
-            About our wall hangings
+            {{ infoTitle }}
           </h2>
           <span class="info-section__hairline" aria-hidden="true" />
         </header>

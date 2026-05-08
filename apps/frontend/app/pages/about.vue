@@ -44,8 +44,30 @@ import type { Story } from '~/types/story'
 // Page content composable - fetches CMS content for the hero section.
 const { content: heroContent, fetchSection: fetchHero } = usePageContent('about', 'hero')
 
+// Page content composable - fetches CMS content for the CTA section.
+const { content: ctaContent, fetchSection: fetchCta } = usePageContent('about', 'cta')
+
+// Page content composable - fetches CMS content for the social section.
+const { content: socialContent, fetchSection: fetchSocial } = usePageContent('about', 'social')
+
 // Hero computed values with static fallback if API returns nothing.
 const heroTitle = computed(() => heroContent.value?.title || "À Propos d'Atelier Kaisla")
+const heroEyebrow = computed(() => heroContent.value?.eyebrow || 'Atelier')
+
+// CTA computed values with static fallbacks if API returns nothing.
+const ctaEyebrow = computed(() => ctaContent.value?.eyebrow || 'Découvrir')
+const ctaTitle = computed(() => ctaContent.value?.title || 'Explorez Nos Créations')
+const defaultCtaText = "<p>Chaque pièce créée à l'atelier Kaisla est unique et raconte sa propre histoire. Découvrez notre collection de tentures murales et de tapis artisanaux.</p>"
+const ctaText = computed(() => {
+  const raw = ctaContent.value?.content
+  return isEmptyHtml(raw) ? defaultCtaText : sanitizeHtml(raw!)
+})
+
+// Social computed values with static fallbacks if API returns nothing.
+const socialEyebrow = computed(() => socialContent.value?.eyebrow || 'Restons en contact')
+const socialTitle = computed(
+  () => socialContent.value?.title || 'Suivez-nous et contactez-nous',
+)
 
 const defaultHeroSubtitle = "<p>Découvrez l'histoire d'un atelier artisanal dédié à la création de pièces textiles uniques, où tradition et modernité se rencontrent pour donner vie à des œuvres authentiques.</p>"
 
@@ -69,7 +91,11 @@ const getApiUrl = (): string => {
   return config.public.apiUrl
 }
 
-useAsyncData('about-hero', () => fetchHero(), { server: true })
+await Promise.all([
+  fetchHero(),
+  fetchCta(),
+  fetchSocial(),
+])
 
 const { data: aboutSectionsData, pending: loading, error: fetchError } = await useAsyncData(
   'about-sections',
@@ -86,6 +112,7 @@ const stories = computed<Story[]>(() => {
   }
   return aboutSectionsData.value.map((section: AboutSection, index: number) => ({
     id: section.id,
+    eyebrow: section.eyebrow,
     title: section.title,
     image: {
       src: section.image,
@@ -113,7 +140,7 @@ useSeo({
     <section class="about-hero" aria-labelledby="about-hero-title">
       <div class="container about-hero__container" lang="fr">
         <div class="about-hero__heading">
-          <span class="about-hero__eyebrow">Atelier</span>
+          <span class="about-hero__eyebrow">{{ heroEyebrow }}</span>
           <h1 id="about-hero-title" class="about-hero__title">{{ heroTitle }}</h1>
           <span class="about-hero__hairline" aria-hidden="true" />
         </div>
@@ -154,7 +181,7 @@ useSeo({
         v-for="(story, index) in stories"
         :key="story.id"
         :id="story.id"
-        :eyebrow="`Chapitre ${String(index + 1).padStart(2, '0')}`"
+        :eyebrow="story.eyebrow ?? ''"
         :title="story.title"
         :image="story.image"
         :content="story.content"
@@ -167,14 +194,11 @@ useSeo({
     <section class="about-cta" aria-labelledby="about-cta-title">
       <div class="container about-cta__container" lang="fr">
         <div class="about-cta__heading">
-          <span class="about-cta__eyebrow">Découvrir</span>
-          <h2 id="about-cta-title" class="about-cta__title">Explorez Nos Créations</h2>
+          <span class="about-cta__eyebrow">{{ ctaEyebrow }}</span>
+          <h2 id="about-cta-title" class="about-cta__title">{{ ctaTitle }}</h2>
           <span class="about-cta__hairline" aria-hidden="true" />
         </div>
-        <p class="about-cta__text">
-          Chaque pièce créée à l'atelier Kaisla est unique et raconte sa propre histoire.
-          Découvrez notre collection de tentures murales et de tapis artisanaux.
-        </p>
+        <div class="about-cta__text" v-html="ctaText" />
         <div class="about-cta__buttons">
           <NuxtLink to="/wall-hanging" class="about-cta__button about-cta__button--primary">
             Tentures Murales
@@ -189,10 +213,8 @@ useSeo({
     <!-- Social Contact Section -->
     <section class="about-social" aria-labelledby="about-social-title">
       <div class="container about-social__container" lang="fr">
-        <span class="about-social__eyebrow">Restons en contact</span>
-        <h2 id="about-social-title" class="about-social__title">
-          Suivez-nous et contactez-nous
-        </h2>
+        <span class="about-social__eyebrow">{{ socialEyebrow }}</span>
+        <h2 id="about-social-title" class="about-social__title">{{ socialTitle }}</h2>
         <span class="about-social__hairline" aria-hidden="true" />
         <SocialShare />
       </div>

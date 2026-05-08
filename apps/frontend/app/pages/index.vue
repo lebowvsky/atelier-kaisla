@@ -19,10 +19,19 @@ const { content: heroContent, fetchSection: fetchHero } = usePageContent('home',
 // Page content composable - fetches CMS content for the intro section.
 const { content: introContent, fetchSection: fetchIntro } = usePageContent('home', 'intro')
 
+// Page content composable - fetches CMS content for the gallery section.
+const { content: galleryContent, fetchSection: fetchGallery } = usePageContent('home', 'gallery')
+
+// Page content composable - fetches CMS content for the social section.
+const { content: socialContent, fetchSection: fetchSocial } = usePageContent('home', 'social')
+
 // Hero computed values with static fallback if API returns nothing.
 const heroTitle = computed(() => heroContent.value?.title || 'Welcome to Atelier Kaisla')
 const heroSubtitle = computed(
   () => heroContent.value?.content || 'Handcrafted wall art and rugs, designed with passion',
+)
+const heroEyebrow = computed(
+  () => heroContent.value?.eyebrow || 'Atelier · Tapis & tentures murales',
 )
 
 const sanitizedHeroSubtitle = computed(() => {
@@ -32,6 +41,22 @@ const sanitizedHeroSubtitle = computed(() => {
 
 // Intro computed values with static fallback if API returns nothing.
 const introTitle = computed(() => introContent.value?.title || "Qu'est-ce que Kaisla ?")
+const introEyebrow = computed(() => introContent.value?.eyebrow || 'Notre démarche')
+
+// Gallery computed values with static fallbacks if API returns nothing.
+const galleryEyebrow = computed(() => galleryContent.value?.eyebrow || 'Collection')
+const galleryTitle = computed(() => galleryContent.value?.title || 'Our Collection')
+const defaultGalleryDescription = '<p>Explore our handcrafted pieces. Click on any image to view it in full size.</p>'
+const galleryDescription = computed(() => {
+  const raw = galleryContent.value?.content
+  return isEmptyHtml(raw) ? defaultGalleryDescription : sanitizeHtml(raw!)
+})
+
+// Social computed values with static fallbacks if API returns nothing.
+const socialEyebrow = computed(() => socialContent.value?.eyebrow || 'Restons en contact')
+const socialTitle = computed(
+  () => socialContent.value?.title || 'Suivez-nous et contactez-nous',
+)
 
 const defaultIntroHtml = `<ul>
   <li>Un atelier artisanal dédié à la création de pièces murales uniques</li>
@@ -67,11 +92,13 @@ const heroStyle = computed(() => {
 // useAsyncData blocks SSR rendering until data is available,
 // ensuring consistent server/client markup and preventing hydration mismatches.
 // The handler must return a value to transfer the payload to the client.
-useAsyncData('home-hero', () => fetchHero(), { server: true })
-useAsyncData('home-intro', () => fetchIntro(), { server: true })
-useAsyncData('home-grid', () => fetchHomeGrid(), {
-  server: true,
-})
+await Promise.all([
+  fetchHero(),
+  fetchIntro(),
+  fetchGallery(),
+  fetchSocial(),
+  fetchHomeGrid(),
+])
 
 // Page-specific SEO meta tags
 useSeo({
@@ -102,7 +129,7 @@ useHead({
       <div class="hero__content">
         <span v-if="heroImageAlt" class="visually-hidden">{{ heroImageAlt }}</span>
         <span class="hero__hairline" aria-hidden="true" />
-        <span class="hero__eyebrow">Atelier · Tapis &amp; tentures murales</span>
+        <span class="hero__eyebrow">{{ heroEyebrow }}</span>
         <h1 id="hero-title" class="hero__title">{{ heroTitle }}</h1>
         <div class="hero__subtitle" v-html="sanitizedHeroSubtitle" />
       </div>
@@ -113,13 +140,11 @@ useHead({
       <div class="container">
         <header class="gallery-section__header">
           <div class="gallery-section__heading">
-            <span class="gallery-section__eyebrow">Collection</span>
-            <h2 class="gallery-section__title">Our Collection</h2>
+            <span class="gallery-section__eyebrow">{{ galleryEyebrow }}</span>
+            <h2 class="gallery-section__title">{{ galleryTitle }}</h2>
             <span class="gallery-section__hairline" aria-hidden="true" />
           </div>
-          <p class="gallery-section__description">
-            Explore our handcrafted pieces. Click on any image to view it in full size.
-          </p>
+          <div class="gallery-section__description" v-html="galleryDescription" />
         </header>
 
         <p v-if="gridLoading" role="status" class="gallery-section__loading">
@@ -161,7 +186,7 @@ useHead({
     <section class="kaisla-intro" aria-labelledby="kaisla-intro-title">
       <div class="container kaisla-intro__container" lang="fr">
         <div class="kaisla-intro__heading">
-          <span class="kaisla-intro__eyebrow">Notre démarche</span>
+          <span class="kaisla-intro__eyebrow">{{ introEyebrow }}</span>
           <h2 id="kaisla-intro-title" class="kaisla-intro__title">{{ introTitle }}</h2>
           <span class="kaisla-intro__hairline" aria-hidden="true" />
         </div>
@@ -172,10 +197,8 @@ useHead({
     <!-- Social Share -->
     <section class="social-section" aria-labelledby="social-section-title">
       <div class="container social-section__container">
-        <span class="social-section__eyebrow">Restons en contact</span>
-        <h2 id="social-section-title" class="social-section__title">
-          Suivez-nous et contactez-nous
-        </h2>
+        <span class="social-section__eyebrow">{{ socialEyebrow }}</span>
+        <h2 id="social-section-title" class="social-section__title">{{ socialTitle }}</h2>
         <span class="social-section__hairline" aria-hidden="true" />
         <SocialShare />
       </div>

@@ -12,3 +12,8 @@ export function sanitizeHtml(html: string): string {
 export function isHtmlContent(content: string): boolean {
   return /<[a-z][\s\S]*>/i.test(content)
 }
+
+export function isEmptyHtml(content: string | null | undefined): boolean {
+  if (!content) return true
+  return content.replace(/<[^>]*>/g, '').replace(/\s|&nbsp;/g, '') === ''
+}

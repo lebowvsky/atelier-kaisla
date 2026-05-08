@@ -13,6 +13,36 @@ const getApiUrl = (): string => {
   return config.public.apiUrl
 }
 
+// Page content composables - fetch CMS content for hero, articles header and social section.
+const { content: heroContent, fetchSection: fetchHero } = usePageContent('blog', 'hero')
+const { content: articlesContent, fetchSection: fetchArticles } = usePageContent('blog', 'articles')
+const { content: socialContent, fetchSection: fetchSocial } = usePageContent('blog', 'social')
+
+// Hero computed values with static fallbacks if API returns nothing.
+const heroEyebrow = computed(() => heroContent.value?.eyebrow || 'Journal')
+const heroTitle = computed(() => heroContent.value?.title || 'Journal')
+const defaultHeroSubtitle = "<p>Inspirations, techniques et coulisses de l'atelier. Plongez dans l'univers du tissage artisanal.</p>"
+const heroSubtitle = computed(() => {
+  const raw = heroContent.value?.content
+  return isEmptyHtml(raw) ? defaultHeroSubtitle : sanitizeHtml(raw!)
+})
+
+// Articles header computed values with static fallbacks if API returns nothing.
+const articlesEyebrow = computed(() => articlesContent.value?.eyebrow || 'Lectures')
+const articlesTitle = computed(() => articlesContent.value?.title || 'Articles récents')
+
+// Social computed values with static fallbacks if API returns nothing.
+const socialEyebrow = computed(() => socialContent.value?.eyebrow || 'Restons en contact')
+const socialTitle = computed(
+  () => socialContent.value?.title || 'Suivez-nous et contactez-nous',
+)
+
+await Promise.all([
+  fetchHero(),
+  fetchArticles(),
+  fetchSocial(),
+])
+
 const { data: articles, error, pending: loading } = await useAsyncData(
   'blog-articles',
   () => $fetch<BlogArticle[]>(`${getApiUrl()}/blog`),
@@ -40,18 +70,16 @@ useCollectionPageSchema('Journal')
     >
       <div class="container blog-hero__container" lang="fr">
         <div class="blog-hero__heading">
-          <span class="blog-hero__eyebrow">Journal</span>
+          <span class="blog-hero__eyebrow">{{ heroEyebrow }}</span>
           <h1
             id="blog-hero-title"
             class="blog-hero__title"
           >
-            Journal
+            {{ heroTitle }}
           </h1>
           <span class="blog-hero__hairline" aria-hidden="true" />
         </div>
-        <p class="blog-hero__subtitle">
-          Inspirations, techniques et coulisses de l'atelier. Plongez dans l'univers du tissage artisanal.
-        </p>
+        <div class="blog-hero__subtitle" v-html="heroSubtitle" />
       </div>
     </section>
 
@@ -62,12 +90,12 @@ useCollectionPageSchema('Journal')
     >
       <div class="container">
         <header class="blog-articles__header" lang="fr">
-          <span class="blog-articles__eyebrow">Lectures</span>
+          <span class="blog-articles__eyebrow">{{ articlesEyebrow }}</span>
           <h2
             id="blog-articles-heading"
             class="blog-articles__title"
           >
-            Articles récents
+            {{ articlesTitle }}
           </h2>
           <span class="blog-articles__hairline" aria-hidden="true" />
         </header>
@@ -132,12 +160,12 @@ useCollectionPageSchema('Journal')
       aria-labelledby="blog-social-title"
     >
       <div class="container blog-social__container" lang="fr">
-        <span class="blog-social__eyebrow">Restons en contact</span>
+        <span class="blog-social__eyebrow">{{ socialEyebrow }}</span>
         <h2
           id="blog-social-title"
           class="blog-social__title"
         >
-          Suivez-nous et contactez-nous
+          {{ socialTitle }}
         </h2>
         <span class="blog-social__hairline" aria-hidden="true" />
         <SocialShare />
