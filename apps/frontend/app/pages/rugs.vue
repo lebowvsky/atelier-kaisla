@@ -233,10 +233,10 @@ useCollectionPageSchema('Rugs')
 .rugs-page {
   min-height: calc(100vh - $navbar-height);
   background-color: $color-canvas;
-  padding: $spacing-2xl 0;
+  padding-bottom: $spacing-2xl;
 
   @include tablet {
-    padding: $spacing-3xl 0;
+    padding-bottom: $spacing-3xl;
   }
 }
 
@@ -247,13 +247,13 @@ useCollectionPageSchema('Rugs')
 // --- Page Header ---
 .page-header {
   margin-bottom: $spacing-3xl;
-  padding: 0 $spacing-md;
+  padding: $spacing-2xl $spacing-md 0;
   display: flex;
   flex-direction: column;
   gap: $spacing-lg;
 
   @include tablet {
-    padding: 0 $spacing-lg;
+    padding: $spacing-3xl $spacing-lg 0;
     display: grid;
     grid-template-columns: 2fr 3fr;
     gap: $spacing-2xl;
