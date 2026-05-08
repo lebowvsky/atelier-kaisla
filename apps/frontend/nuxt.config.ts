@@ -39,11 +39,7 @@ export default defineNuxtConfig({
     defaults: {
       changefreq: 'weekly',
       priority: 0.7
-    },
-    exclude: [
-      '/social-demo',
-      '/wall-hanging-example'
-    ]
+    }
   },
 
   robots: {
