@@ -66,6 +66,7 @@ export function usePageContent() {
       if (dto.content) formData.append('content', dto.content)
       if (dto.imageAlt) formData.append('imageAlt', dto.imageAlt)
       if (dto.metadata) formData.append('metadata', JSON.stringify(dto.metadata))
+      if (dto.blocks) formData.append('blocks', JSON.stringify(dto.blocks))
       if (dto.sortOrder !== undefined) formData.append('sortOrder', dto.sortOrder.toString())
       if (dto.isPublished !== undefined) formData.append('isPublished', dto.isPublished.toString())
       formData.append('image', imageFile)

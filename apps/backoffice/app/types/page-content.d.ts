@@ -1,3 +1,10 @@
+export interface PageContentBlock {
+  id?: string
+  title: string
+  description: string
+  sortOrder?: number
+}
+
 export interface PageContent {
   id: string
   page: string
@@ -8,6 +15,7 @@ export interface PageContent {
   image?: string
   imageAlt?: string
   metadata?: Record<string, unknown>
+  blocks?: PageContentBlock[]
   isPublished: boolean
   sortOrder: number
   createdAt: string
@@ -23,6 +31,7 @@ export interface CreatePageContentDto {
   image?: string
   imageAlt?: string
   metadata?: Record<string, unknown>
+  blocks?: PageContentBlock[]
   sortOrder?: number
   isPublished?: boolean
 }
@@ -35,6 +44,7 @@ export interface UpdatePageContentDto {
   content?: string
   imageAlt?: string
   metadata?: Record<string, unknown>
+  blocks?: PageContentBlock[]
   sortOrder?: number
   isPublished?: boolean
 }

@@ -3,9 +3,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Separator } from '@/components/ui/separator'
 import { RichTextEditor } from '@/components/ui/rich-text-editor'
-import { X, Loader2, CheckCircle2, AlertCircle, Upload, Image as ImageIcon } from 'lucide-vue-next'
-import type { PageContent, CreatePageContentDto, UpdatePageContentDto } from '@/types/page-content'
+import { X, Loader2, CheckCircle2, AlertCircle, Upload, Image as ImageIcon, Plus, Trash2 } from 'lucide-vue-next'
+import type { PageContent, CreatePageContentDto, UpdatePageContentDto, PageContentBlock } from '@/types/page-content'
 import { getSectionsForPage } from '@/constants/page-sections'
 
 interface Props {
@@ -59,8 +60,35 @@ const formData = ref({
   content: '',
   imageAlt: '',
   metadata: '',
+  blocks: [] as PageContentBlock[],
   sortOrder: 0,
   isPublished: false,
+})
+
+const showBlocksEditor = computed(
+  () =>
+    (formData.value.page === 'wall-hanging' || formData.value.page === 'rugs') &&
+    formData.value.section === 'info',
+)
+
+const addBlock = () => {
+  formData.value.blocks.push({
+    title: '',
+    description: '',
+    sortOrder: formData.value.blocks.length,
+  })
+}
+
+const removeBlock = (index: number) => {
+  if (formData.value.blocks.length > 1) {
+    formData.value.blocks.splice(index, 1)
+  }
+}
+
+watch(showBlocksEditor, (visible) => {
+  if (visible && formData.value.blocks.length === 0) {
+    addBlock()
+  }
 })
 
 const imageFile = ref<File | null>(null)
@@ -109,6 +137,21 @@ const validateForm = (): boolean => {
   if (formData.value.sortOrder < 0) {
     validationErrors.value.sortOrder = "L'ordre d'affichage doit être 0 ou plus"
     isValid = false
+  }
+
+  if (showBlocksEditor.value) {
+    if (formData.value.blocks.length === 0) {
+      validationErrors.value.blocks = 'Au moins un info-block est requis'
+      isValid = false
+    } else {
+      const hasInvalidBlock = formData.value.blocks.some(
+        (b) => !b.title.trim() || !b.description.trim(),
+      )
+      if (hasInvalidBlock) {
+        validationErrors.value.blocks = 'Chaque info-block doit avoir un titre et une description'
+        isValid = false
+      }
+    }
   }
 
   return isValid
@@ -188,6 +231,15 @@ const handleSubmit = async () => {
     ? JSON.parse(formData.value.metadata)
     : undefined
 
+  const blocksPayload: PageContentBlock[] | undefined = showBlocksEditor.value
+    ? formData.value.blocks.map((block, index) => ({
+        ...(block.id ? { id: block.id } : {}),
+        title: block.title.trim(),
+        description: block.description.trim(),
+        sortOrder: index,
+      }))
+    : undefined
+
   if (isEditMode.value && props.editContent) {
     const dto: UpdatePageContentDto = {
       page: formData.value.page,
@@ -197,6 +249,7 @@ const handleSubmit = async () => {
       content: formData.value.content || undefined,
       imageAlt: formData.value.imageAlt || undefined,
       metadata: parsedMetadata,
+      blocks: blocksPayload,
       sortOrder: formData.value.sortOrder,
       isPublished: formData.value.isPublished,
     }
@@ -225,6 +278,7 @@ const handleSubmit = async () => {
       content: formData.value.content || undefined,
       imageAlt: formData.value.imageAlt || undefined,
       metadata: parsedMetadata,
+      blocks: blocksPayload,
       sortOrder: formData.value.sortOrder,
       isPublished: formData.value.isPublished,
     }
@@ -257,6 +311,7 @@ const resetForm = () => {
     content: '',
     imageAlt: '',
     metadata: '',
+    blocks: [],
     sortOrder: 0,
     isPublished: false,
   }
@@ -279,6 +334,14 @@ const populateFromEditContent = () => {
       metadata: props.editContent.metadata
         ? JSON.stringify(props.editContent.metadata, null, 2)
         : '',
+      blocks: props.editContent.blocks
+        ? props.editContent.blocks.map((b) => ({
+            id: b.id,
+            title: b.title,
+            description: b.description,
+            sortOrder: b.sortOrder,
+          }))
+        : [],
       sortOrder: props.editContent.sortOrder,
       isPublished: props.editContent.isPublished,
     }
@@ -644,6 +707,78 @@ watch(
             (Seul le contenu publié apparaît sur le site)
           </span>
         </div>
+
+        <!-- Info blocks editor (wall-hanging / rugs > info section only) -->
+        <template v-if="showBlocksEditor">
+          <Separator />
+
+          <div class="space-y-3">
+            <div>
+              <h3 class="text-base font-semibold">Info blocks</h3>
+              <p class="text-muted-foreground text-xs">
+                Liste des blocs (titre + description) affichés dans la section info.
+              </p>
+            </div>
+
+            <div
+              v-for="(block, index) in formData.blocks"
+              :key="block.id ?? index"
+              class="space-y-2 rounded-md border bg-muted/40 p-3"
+            >
+              <div class="flex items-start gap-2">
+                <div class="flex-1 space-y-2">
+                  <Label :for="`block-title-${index}`">Titre du bloc *</Label>
+                  <Input
+                    :id="`block-title-${index}`"
+                    v-model="formData.blocks[index]!.title"
+                    type="text"
+                    placeholder="Block title"
+                    maxlength="255"
+                    :disabled="loading"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  @click="removeBlock(index)"
+                  :disabled="loading || formData.blocks.length <= 1"
+                  class="mt-7 flex-shrink-0 text-red-600 hover:text-red-700"
+                  :aria-label="`Remove block ${index + 1}`"
+                >
+                  <Trash2 class="h-4 w-4" />
+                </Button>
+              </div>
+
+              <div class="space-y-2">
+                <Label :for="`block-description-${index}`">Description *</Label>
+                <Textarea
+                  :id="`block-description-${index}`"
+                  v-model="formData.blocks[index]!.description"
+                  placeholder="Block description"
+                  rows="3"
+                  :disabled="loading"
+                />
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              @click="addBlock"
+              :disabled="loading"
+              class="w-full justify-center gap-2"
+            >
+              <Plus class="h-4 w-4" />
+              Ajouter un bloc
+            </Button>
+
+            <p v-if="validationErrors.blocks" class="text-sm text-red-600">
+              {{ validationErrors.blocks }}
+            </p>
+          </div>
+        </template>
       </form>
     </div>
 
