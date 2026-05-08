@@ -36,7 +36,29 @@
 import type { ArtworkCardConfig } from '~/types/artwork'
 
 import type { Product } from '~/types/product'
+import type { PageContentBlock } from '~/types/page-content'
 import { adaptProductToArtwork } from '~/composables/useProducts'
+
+const RUGS_INFO_FALLBACK: PageContentBlock[] = [
+  {
+    id: 'fallback-traditional-craftsmanship',
+    title: 'Traditional Craftsmanship',
+    description: 'Every rug is hand-knotted using centuries-old techniques, ensuring exceptional durability and quality. Each piece takes weeks to complete and is built to last generations.',
+    sortOrder: 0,
+  },
+  {
+    id: 'fallback-premium-natural-fibers',
+    title: 'Premium Natural Fibers',
+    description: 'We exclusively use the finest natural materials including pure new wool, organic cotton, and linen. Many rugs feature natural plant-based dyes for rich, lasting color.',
+    sortOrder: 1,
+  },
+  {
+    id: 'fallback-custom-commissions',
+    title: 'Custom Commissions',
+    description: 'Looking for a specific size or color palette? We create custom rugs tailored to your space and style preferences. Contact us to discuss your unique project.',
+    sortOrder: 2,
+  },
+]
 
 // Page content composables - intro powers the page header (eyebrow + title +
 // description), info powers the lower information section.
@@ -50,6 +72,10 @@ const introTitle = computed(() => introContent.value?.title || 'Rugs Collection'
 // Info section computed values with static fallbacks if API returns nothing.
 const infoEyebrow = computed(() => infoContent.value?.eyebrow || 'Why Atelier Kaisla')
 const infoTitle = computed(() => infoContent.value?.title || 'About our rugs')
+
+const infoBlocks = computed<PageContentBlock[]>(() =>
+  infoContent.value?.blocks?.length ? infoContent.value.blocks : RUGS_INFO_FALLBACK,
+)
 
 const defaultIntroDescription = '<p>Each rug is meticulously hand-knotted using traditional weaving techniques passed down through generations. Premium natural fibers, timeless patterns, and exceptional craftsmanship come together to create pieces that bring warmth, comfort, and enduring beauty to your living space.</p>'
 
@@ -208,30 +234,13 @@ useCollectionPageSchema('Rugs')
         </header>
 
         <div class="info-section__content">
-          <div class="info-block">
-            <h3 class="info-block__title">Traditional Craftsmanship</h3>
-            <p class="info-block__text">
-              Every rug is hand-knotted using centuries-old techniques, ensuring exceptional
-              durability and quality. Each piece takes weeks to complete and is built to last
-              generations.
-            </p>
-          </div>
-
-          <div class="info-block">
-            <h3 class="info-block__title">Premium Natural Fibers</h3>
-            <p class="info-block__text">
-              We exclusively use the finest natural materials including pure new wool, organic
-              cotton, and linen. Many rugs feature natural plant-based dyes for rich, lasting
-              color.
-            </p>
-          </div>
-
-          <div class="info-block">
-            <h3 class="info-block__title">Custom Commissions</h3>
-            <p class="info-block__text">
-              Looking for a specific size or color palette? We create custom rugs tailored to your
-              space and style preferences. Contact us to discuss your unique project.
-            </p>
+          <div
+            v-for="block in infoBlocks"
+            :key="block.id ?? block.title"
+            class="info-block"
+          >
+            <h3 class="info-block__title">{{ block.title }}</h3>
+            <p class="info-block__text">{{ block.description }}</p>
           </div>
         </div>
       </section>

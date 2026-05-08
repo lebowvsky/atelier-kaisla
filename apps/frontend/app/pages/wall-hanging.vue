@@ -36,7 +36,29 @@
 import type { ArtworkCardConfig } from '~/types/artwork'
 
 import type { Product } from '~/types/product'
+import type { PageContentBlock } from '~/types/page-content'
 import { adaptProductToArtwork } from '~/composables/useProducts'
+
+const WALL_HANGING_INFO_FALLBACK: PageContentBlock[] = [
+  {
+    id: 'fallback-handcrafted-quality',
+    title: 'Handcrafted Quality',
+    description: 'Every piece is handwoven on a traditional loom, ensuring exceptional quality and attention to detail. No two pieces are exactly alike.',
+    sortOrder: 0,
+  },
+  {
+    id: 'fallback-natural-materials',
+    title: 'Natural Materials',
+    description: 'We use only natural, sustainable materials including wool, cotton, linen, and jute. Many pieces feature plant-based natural dyes.',
+    sortOrder: 1,
+  },
+  {
+    id: 'fallback-made-to-order',
+    title: 'Made to Order',
+    description: 'Interested in a custom piece? We offer made-to-order wall hangings in your choice of colors and dimensions. Contact us to discuss your vision.',
+    sortOrder: 2,
+  },
+]
 
 // Page content composables - intro powers the page header (eyebrow + title +
 // description), info powers the lower information section.
@@ -50,6 +72,10 @@ const introTitle = computed(() => introContent.value?.title || 'Wall Hanging Col
 // Info section computed values with static fallbacks if API returns nothing.
 const infoEyebrow = computed(() => infoContent.value?.eyebrow || 'Why Atelier Kaisla')
 const infoTitle = computed(() => infoContent.value?.title || 'About our wall hangings')
+
+const infoBlocks = computed<PageContentBlock[]>(() =>
+  infoContent.value?.blocks?.length ? infoContent.value.blocks : WALL_HANGING_INFO_FALLBACK,
+)
 
 const defaultIntroDescription = '<p>Each wall hanging is thoughtfully designed and handwoven using traditional techniques. Natural materials, contemporary aesthetics, and timeless craftsmanship come together to create pieces that transform your space into a warm, welcoming sanctuary.</p>'
 
@@ -208,28 +234,13 @@ useCollectionPageSchema('Wall Hangings')
         </header>
 
         <div class="info-section__content">
-          <div class="info-block">
-            <h3 class="info-block__title">Handcrafted Quality</h3>
-            <p class="info-block__text">
-              Every piece is handwoven on a traditional loom, ensuring exceptional quality
-              and attention to detail. No two pieces are exactly alike.
-            </p>
-          </div>
-
-          <div class="info-block">
-            <h3 class="info-block__title">Natural Materials</h3>
-            <p class="info-block__text">
-              We use only natural, sustainable materials including wool, cotton, linen, and jute.
-              Many pieces feature plant-based natural dyes.
-            </p>
-          </div>
-
-          <div class="info-block">
-            <h3 class="info-block__title">Made to Order</h3>
-            <p class="info-block__text">
-              Interested in a custom piece? We offer made-to-order wall hangings in your choice
-              of colors and dimensions. Contact us to discuss your vision.
-            </p>
+          <div
+            v-for="block in infoBlocks"
+            :key="block.id ?? block.title"
+            class="info-block"
+          >
+            <h3 class="info-block__title">{{ block.title }}</h3>
+            <p class="info-block__text">{{ block.description }}</p>
           </div>
         </div>
       </section>
