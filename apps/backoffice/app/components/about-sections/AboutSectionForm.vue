@@ -59,6 +59,7 @@ const isEditMode = computed(() => !!props.editSection)
  */
 const formData = ref({
   title: '',
+  eyebrow: '',
   paragraphs: [''] as string[],
   imageAlt: '',
   sortOrder: 0,
@@ -101,6 +102,12 @@ const validateForm = (): boolean => {
     isValid = false
   } else if (formData.value.title.length > 255) {
     validationErrors.value.title = 'Le titre doit contenir moins de 255 caractères'
+    isValid = false
+  }
+
+  // Optional eyebrow: max 255
+  if (formData.value.eyebrow.length > 255) {
+    validationErrors.value.eyebrow = "L'eyebrow doit contenir moins de 255 caractères"
     isValid = false
   }
 
@@ -250,6 +257,7 @@ const handleSubmit = async () => {
     // Edit mode: update text fields, optionally update image
     const dto: UpdateAboutSectionDto = {
       title: formData.value.title,
+      eyebrow: formData.value.eyebrow || undefined,
       paragraphs: cleanParagraphs,
       imageAlt: formData.value.imageAlt,
       sortOrder: formData.value.sortOrder,
@@ -278,6 +286,7 @@ const handleSubmit = async () => {
 
     const dto: CreateAboutSectionDto = {
       title: formData.value.title,
+      eyebrow: formData.value.eyebrow || undefined,
       paragraphs: cleanParagraphs,
       imageAlt: formData.value.imageAlt,
       sortOrder: formData.value.sortOrder,
@@ -304,6 +313,7 @@ const handleSubmit = async () => {
 const resetForm = () => {
   formData.value = {
     title: '',
+    eyebrow: '',
     paragraphs: [''],
     imageAlt: '',
     sortOrder: 0,
@@ -323,6 +333,7 @@ const populateFromEditSection = () => {
   if (props.editSection) {
     formData.value = {
       title: props.editSection.title,
+      eyebrow: props.editSection.eyebrow || '',
       paragraphs: props.editSection.paragraphs.length > 0
         ? [...props.editSection.paragraphs]
         : [''],
@@ -414,6 +425,22 @@ watch(
     <!-- Form Content -->
     <div class="flex-1 overflow-y-auto px-6 py-4">
       <form @submit.prevent="handleSubmit" class="space-y-6">
+        <!-- Eyebrow -->
+        <div class="space-y-2">
+          <Label for="eyebrow">Eyebrow</Label>
+          <Input
+            id="eyebrow"
+            v-model="formData.eyebrow"
+            type="text"
+            placeholder="ex. Notre démarche"
+            maxlength="255"
+            :aria-invalid="!!validationErrors.eyebrow"
+            :disabled="loading"
+          />
+          <p v-if="validationErrors.eyebrow" class="text-sm text-red-600">{{ validationErrors.eyebrow }}</p>
+          <p class="text-muted-foreground text-xs">{{ formData.eyebrow.length }} / 255 caractères — petite étiquette affichée au-dessus du titre.</p>
+        </div>
+
         <!-- Title -->
         <div class="space-y-2">
           <Label for="title">Titre *</Label>

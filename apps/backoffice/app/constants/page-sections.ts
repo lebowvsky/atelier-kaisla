@@ -7,11 +7,11 @@
  * backoffice UI — it does not wire it on the public site.
  */
 export const PAGE_SECTIONS = {
-  home: ['hero', 'intro'],
-  rugs: ['intro'],
-  'wall-hanging': ['intro'],
-  about: ['hero'],
-  blog: [],
+  home: ['hero', 'gallery', 'intro', 'social'],
+  rugs: ['intro', 'info'],
+  'wall-hanging': ['intro', 'info'],
+  about: ['hero', 'cta', 'social'],
+  blog: ['hero', 'articles', 'social'],
 } as const satisfies Record<string, readonly string[]>
 
 export type ConfiguredPage = keyof typeof PAGE_SECTIONS

@@ -87,6 +87,7 @@ export function useAboutSections() {
       const formData = new FormData()
 
       formData.append('title', dto.title)
+      if (dto.eyebrow) formData.append('eyebrow', dto.eyebrow)
       formData.append('paragraphs', JSON.stringify(dto.paragraphs))
       formData.append('imageAlt', dto.imageAlt)
       if (dto.sortOrder !== undefined) {

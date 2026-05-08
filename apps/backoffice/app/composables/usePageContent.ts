@@ -61,6 +61,7 @@ export function usePageContent() {
 
       formData.append('page', dto.page)
       formData.append('section', dto.section)
+      if (dto.eyebrow) formData.append('eyebrow', dto.eyebrow)
       if (dto.title) formData.append('title', dto.title)
       if (dto.content) formData.append('content', dto.content)
       if (dto.imageAlt) formData.append('imageAlt', dto.imageAlt)
