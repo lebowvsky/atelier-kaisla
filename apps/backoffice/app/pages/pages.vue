@@ -2,9 +2,11 @@
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import PageContentForm from '@/components/page-content/PageContentForm.vue'
 import { Plus, Pencil, Trash2, RefreshCw, Eye, EyeOff, Home, Package, Info, FileText } from 'lucide-vue-next'
 import type { PageContent } from '@/types/page-content'
+import { hasSectionsConfigured } from '@/constants/page-sections'
 
 useSeoMeta({
   title: 'Pages - Atelier Kaisla Backoffice',
@@ -32,6 +34,8 @@ const tabs = [
 ]
 
 const activeTab = ref('home')
+
+const canAddSection = computed(() => hasSectionsConfigured(activeTab.value))
 
 const pageContents = computed(() => getByPage(activeTab.value))
 
@@ -124,12 +128,21 @@ const getContentImage = (image?: string): string => {
             Actualiser
           </Button>
           <Sheet v-model:open="isFormOpen">
-            <SheetTrigger as-child>
-              <Button @click="openCreateForm">
-                <Plus class="mr-2 h-4 w-4" />
-                Ajouter une section
-              </Button>
-            </SheetTrigger>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <span class="inline-flex">
+                  <SheetTrigger as-child>
+                    <Button :disabled="!canAddSection" @click="openCreateForm">
+                      <Plus class="mr-2 h-4 w-4" />
+                      Ajouter une section
+                    </Button>
+                  </SheetTrigger>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent v-if="!canAddSection">
+                Aucune section configurée pour la page « {{ activeTab }} ».
+              </TooltipContent>
+            </Tooltip>
             <SheetContent class="w-full sm:max-w-2xl">
               <PageContentForm
                 :open="isFormOpen"
@@ -223,9 +236,15 @@ const getContentImage = (image?: string): string => {
               <div class="text-center">
                 <h3 class="text-lg font-semibold">Aucune section</h3>
                 <p class="mt-1 text-sm text-muted-foreground">
-                  Aucun contenu pour cette page. Commencez par ajouter une section.
+                  {{ canAddSection
+                    ? 'Aucun contenu pour cette page. Commencez par ajouter une section.'
+                    : 'Aucune section n\'est configurée pour cette page.' }}
                 </p>
-                <Button class="mt-4" @click="openCreateForm">
+                <Button
+                  v-if="canAddSection"
+                  class="mt-4"
+                  @click="openCreateForm"
+                >
                   <Plus class="mr-2 h-4 w-4" />
                   Ajouter une section
                 </Button>

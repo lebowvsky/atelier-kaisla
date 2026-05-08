@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import { X, Loader2, CheckCircle2, AlertCircle, Upload, Image as ImageIcon } from 'lucide-vue-next'
 import type { PageContent, CreatePageContentDto, UpdatePageContentDto } from '@/types/page-content'
+import { getSectionsForPage } from '@/constants/page-sections'
 
 interface Props {
   open: boolean
@@ -35,6 +36,20 @@ const {
 } = usePageContent()
 
 const isEditMode = computed(() => !!props.editContent)
+
+const availableSections = computed<string[]>(() => {
+  const baseSections = getSectionsForPage(formData.value.page)
+  const current = props.editContent?.section
+  if (current && !baseSections.includes(current)) {
+    return [current, ...baseSections]
+  }
+  return [...baseSections]
+})
+
+const isLegacySection = (section: string): boolean => {
+  if (!isEditMode.value) return false
+  return !getSectionsForPage(formData.value.page).includes(section)
+}
 
 const formData = ref({
   page: '',
@@ -352,21 +367,58 @@ watch(
 
         <!-- Section -->
         <div class="space-y-2">
-          <Label for="section">Section *</Label>
-          <Input
-            id="section"
-            v-model="formData.section"
-            type="text"
-            placeholder="ex. hero, intro, features"
-            maxlength="100"
+          <Label as="span" id="section-label">Section *</Label>
+
+          <div
+            v-if="availableSections.length > 0"
+            role="radiogroup"
+            aria-labelledby="section-label"
             :aria-invalid="!!validationErrors.section"
-            :disabled="loading"
-          />
+            class="flex flex-wrap gap-2"
+          >
+            <label
+              v-for="sectionKey in availableSections"
+              :key="sectionKey"
+              :class="[
+                'group inline-flex h-9 select-none items-center gap-1.5 rounded-full border px-4 text-sm font-medium transition-colors',
+                'focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
+                formData.section === sectionKey
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground',
+                loading ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+              ]"
+            >
+              <input
+                v-model="formData.section"
+                type="radio"
+                name="section"
+                :value="sectionKey"
+                :disabled="loading"
+                class="sr-only"
+              />
+              <span>{{ sectionKey }}</span>
+              <span
+                v-if="isLegacySection(sectionKey)"
+                class="text-[10px] font-normal uppercase tracking-wide opacity-80"
+                title="Section non listée dans la configuration actuelle"
+              >
+                actuel
+              </span>
+            </label>
+          </div>
+
+          <p
+            v-else
+            class="rounded-md border border-dashed border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200"
+          >
+            Aucune section configurée pour la page « {{ formData.page || '—' }} ».
+          </p>
+
           <p v-if="validationErrors.section" class="text-sm text-red-600">
             {{ validationErrors.section }}
           </p>
           <p class="text-muted-foreground text-xs">
-            Identifiant de la section (sans le nom de la page). Ex : pour la page "home", utilisez "hero", "intro", etc.
+            Choisissez la section à éditer. La liste correspond aux sections câblées sur le site pour cette page.
           </p>
         </div>
 
