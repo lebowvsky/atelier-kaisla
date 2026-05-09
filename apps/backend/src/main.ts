@@ -20,6 +20,10 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // Behind Traefik / Dokploy reverse proxy: trust X-Forwarded-Proto so
+  // request.protocol returns 'https' when the original request was TLS.
+  app.set('trust proxy', 1);
+
   // Serve static files (uploaded images)
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads/',
