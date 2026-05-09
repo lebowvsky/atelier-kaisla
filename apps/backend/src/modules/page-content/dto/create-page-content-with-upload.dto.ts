@@ -5,11 +5,14 @@ import {
   IsBoolean,
   IsInt,
   IsObject,
+  IsArray,
+  ValidateNested,
   MaxLength,
   Min,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { PageContentBlockDto } from './page-content-block.dto';
 
 /**
  * DTO for creating a page content entry with image upload (multipart/form-data)
@@ -34,6 +37,16 @@ export class CreatePageContentWithUploadDto {
   @IsNotEmpty()
   @MaxLength(100)
   section: string;
+
+  @ApiPropertyOptional({
+    description: 'Section eyebrow / kicker label',
+    maxLength: 255,
+    example: 'Notre démarche',
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(255)
+  eyebrow?: string;
 
   @ApiPropertyOptional({
     description: 'Section title',
@@ -113,4 +126,27 @@ export class CreatePageContentWithUploadDto {
     return value;
   })
   isPublished?: boolean;
+
+  @ApiPropertyOptional({
+    description:
+      'Editable info-blocks (title + description) for this section. Sent as a JSON-encoded string when posted via multipart/form-data.',
+    type: [PageContentBlockDto],
+  })
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => PageContentBlockDto)
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return JSON.parse(value);
+      } catch {
+        return value;
+      }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return value;
+  })
+  blocks?: PageContentBlockDto[];
 }

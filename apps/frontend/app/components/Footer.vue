@@ -193,8 +193,8 @@ const legalLinks = computed<NavigationItem[]>(() => [
 
 <style lang="scss" scoped>
 .footer {
-  background-color: $color-gray-100;
-  border-top: 1px solid $color-gray-200;
+  background-color: $color-canvas;
+  border-top: 1px solid $color-line;
   padding: $spacing-3xl 0 $spacing-xl;
 
   @include tablet {
@@ -241,22 +241,28 @@ const legalLinks = computed<NavigationItem[]>(() => [
 .footer__logo {
   text-decoration: none;
   width: fit-content;
-  transition: opacity $transition-base;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity $transition-base;
+  }
 
   &:hover {
     opacity: 0.7;
   }
 
-  @include focus-visible;
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 2px;
+  }
 }
 
 .footer__logo-text {
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
-  color: $color-black;
+  color: $color-ink;
   margin: 0;
   line-height: $line-height-tight;
-  letter-spacing: -0.02em;
+  letter-spacing: $letter-spacing-tight;
 
   @include tablet {
     font-size: $font-size-3xl;
@@ -265,7 +271,7 @@ const legalLinks = computed<NavigationItem[]>(() => [
 
 .footer__tagline {
   font-size: $font-size-base;
-  color: $color-gray-600;
+  color: $color-ink-soft;
   line-height: $line-height-base;
   margin: 0;
   max-width: 300px;
@@ -297,12 +303,8 @@ const legalLinks = computed<NavigationItem[]>(() => [
 }
 
 .footer__nav-title {
-  font-size: $font-size-base;
-  font-weight: $font-weight-bold;
-  color: $color-black;
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  // Editorial eyebrow style for footer headings
+  @include eyebrow;
 }
 
 .footer__nav-list {
@@ -320,16 +322,22 @@ const legalLinks = computed<NavigationItem[]>(() => [
 
 .footer__nav-link {
   font-size: $font-size-base;
-  color: $color-gray-600;
+  color: $color-ink-soft;
   text-decoration: none;
-  transition: color $transition-base;
   display: inline-block;
 
-  &:hover {
-    color: $color-black;
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity $transition-base;
   }
 
-  @include focus-visible;
+  &:hover {
+    opacity: 0.7;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 4px;
+  }
 
   @include tablet {
     font-size: $font-size-lg;
@@ -352,12 +360,8 @@ const legalLinks = computed<NavigationItem[]>(() => [
 }
 
 .footer__social-title {
-  font-size: $font-size-base;
-  font-weight: $font-weight-bold;
-  color: $color-black;
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  // Editorial eyebrow style for footer headings
+  @include eyebrow;
 }
 
 // ==========================================
@@ -367,7 +371,7 @@ const legalLinks = computed<NavigationItem[]>(() => [
 .footer__divider {
   width: 100%;
   height: 1px;
-  background-color: $color-gray-200;
+  background-color: $color-line;
 }
 
 // ==========================================
@@ -428,7 +432,7 @@ const legalLinks = computed<NavigationItem[]>(() => [
         right: calc(-1 * $spacing-lg / 2 - 0.25rem);
         top: 50%;
         transform: translateY(-50%);
-        color: $color-gray-300;
+        color: $color-line;
       }
     }
   }
@@ -436,7 +440,7 @@ const legalLinks = computed<NavigationItem[]>(() => [
 
 .footer__legal-link {
   font-size: $font-size-sm;
-  color: $color-gray-600;
+  color: $color-stone;
   text-decoration: none;
   white-space: nowrap;
   cursor: default;
@@ -448,7 +452,7 @@ const legalLinks = computed<NavigationItem[]>(() => [
 
 .footer__copyright {
   font-size: $font-size-sm;
-  color: $color-gray-600;
+  color: $color-stone;
   margin: 0;
   text-align: center;
 
@@ -463,7 +467,7 @@ const legalLinks = computed<NavigationItem[]>(() => [
 
 @media print {
   .footer {
-    border-top: 1px solid $color-black;
+    border-top: 1px solid $color-ink;
     padding: $spacing-lg 0;
   }
 

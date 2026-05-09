@@ -81,6 +81,7 @@ const breadcrumbItems = computed(() => [
       class="blog-detail__loading"
       role="status"
       aria-label="Chargement de l'article"
+      lang="fr"
     >
       <div class="container">
         <p class="blog-detail__loading-text">Chargement...</p>
@@ -92,6 +93,7 @@ const breadcrumbItems = computed(() => [
       v-else-if="error"
       class="blog-detail__error"
       role="alert"
+      lang="fr"
     >
       <div class="container">
         <p class="blog-detail__error-text">
@@ -101,7 +103,7 @@ const breadcrumbItems = computed(() => [
           to="/blog"
           class="blog-detail__back-link"
         >
-          &larr; Retour au blog
+          &larr; Retour au journal
         </NuxtLink>
       </div>
     </div>
@@ -109,13 +111,13 @@ const breadcrumbItems = computed(() => [
     <!-- Article Content -->
     <template v-else-if="article">
       <!-- Header -->
-      <header class="blog-detail__header">
+      <header class="blog-detail__header" lang="fr">
         <div class="container">
           <NuxtLink
             to="/blog"
             class="blog-detail__back-link"
           >
-            &larr; Retour au blog
+            &larr; Retour au journal
           </NuxtLink>
 
           <h1 class="blog-detail__title">{{ article.title }}</h1>
@@ -126,6 +128,8 @@ const breadcrumbItems = computed(() => [
           >
             {{ article.subtitle }}
           </p>
+
+          <span class="blog-detail__hairline" aria-hidden="true" />
 
           <div class="blog-detail__meta">
             <time
@@ -177,7 +181,7 @@ const breadcrumbItems = computed(() => [
       </section>
 
       <!-- Article Body -->
-      <section class="blog-detail__body">
+      <section class="blog-detail__body" lang="fr">
         <div class="container">
           <div
             class="blog-detail__content"
@@ -222,13 +226,13 @@ const breadcrumbItems = computed(() => [
       </section>
 
       <!-- Back Navigation -->
-      <nav class="blog-detail__nav">
+      <nav class="blog-detail__nav" lang="fr">
         <div class="container">
           <NuxtLink
             to="/blog"
             class="blog-detail__back-link"
           >
-            &larr; Retour au blog
+            &larr; Retour au journal
           </NuxtLink>
         </div>
       </nav>
@@ -255,7 +259,7 @@ const breadcrumbItems = computed(() => [
 <style lang="scss" scoped>
 .blog-detail {
   min-height: calc(100vh - $navbar-height);
-  background-color: $color-white;
+  background-color: $color-canvas;
 }
 
 .container {
@@ -275,23 +279,33 @@ const breadcrumbItems = computed(() => [
 
 .blog-detail__back-link {
   display: inline-block;
-  font-size: $font-size-base;
-  color: $color-gray-600;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  letter-spacing: $letter-spacing-eyebrow;
+  text-transform: uppercase;
+  color: $color-stone;
   text-decoration: none;
   margin-bottom: $spacing-lg;
-  transition: color $transition-base;
 
-  &:hover {
-    color: $color-black;
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color $transition-base;
   }
 
-  @include focus-visible;
+  &:hover {
+    color: $color-ink;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 4px;
+  }
 }
 
 .blog-detail__title {
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
-  color: $color-black;
+  color: $color-ink;
+  letter-spacing: $letter-spacing-tight;
   margin: 0 0 $spacing-sm;
   line-height: $line-height-tight;
 
@@ -305,14 +319,19 @@ const breadcrumbItems = computed(() => [
 }
 
 .blog-detail__subtitle {
+  @include reading-column;
   font-size: $font-size-lg;
-  color: $color-gray-600;
-  line-height: $line-height-base;
+  color: $color-ink-soft;
   margin: 0 0 $spacing-md;
 
   @include tablet {
     font-size: $font-size-xl;
   }
+}
+
+.blog-detail__hairline {
+  @include hairline($color-fjord, 48px);
+  margin: $spacing-md 0;
 }
 
 .blog-detail__meta {
@@ -323,8 +342,8 @@ const breadcrumbItems = computed(() => [
 }
 
 .blog-detail__date {
-  font-size: $font-size-base;
-  color: $color-gray-600;
+  @include eyebrow;
+  margin: 0;
 }
 
 .blog-detail__tags {
@@ -338,9 +357,10 @@ const breadcrumbItems = computed(() => [
   padding: 2px $spacing-xs;
   font-size: $font-size-xs;
   font-weight: $font-weight-medium;
-  color: $color-gray-600;
-  background-color: $color-gray-100;
+  color: $color-stone;
+  background-color: $color-canvas-soft;
   border-radius: $border-radius-sm;
+  line-height: $line-height-snug;
 }
 
 // Cover Image
@@ -382,8 +402,8 @@ const breadcrumbItems = computed(() => [
   max-width: $container-content-width;
   margin: 0 auto;
   font-size: $font-size-base;
-  color: $color-gray-900;
-  line-height: $line-height-base;
+  color: $color-ink-soft;
+  line-height: $line-height-relaxed;
 
   @include tablet {
     font-size: $font-size-lg;
@@ -400,7 +420,8 @@ const breadcrumbItems = computed(() => [
   :deep(h2) {
     font-size: $font-size-xl;
     font-weight: $font-weight-bold;
-    color: $color-black;
+    color: $color-ink;
+    letter-spacing: $letter-spacing-tight;
     margin: $spacing-xl 0 $spacing-sm;
     line-height: $line-height-tight;
 
@@ -412,7 +433,8 @@ const breadcrumbItems = computed(() => [
   :deep(h3) {
     font-size: $font-size-lg;
     font-weight: $font-weight-semibold;
-    color: $color-black;
+    color: $color-ink;
+    letter-spacing: $letter-spacing-tight;
     margin: $spacing-lg 0 $spacing-xs;
     line-height: $line-height-tight;
 
@@ -423,6 +445,7 @@ const breadcrumbItems = computed(() => [
 
   :deep(strong) {
     font-weight: $font-weight-bold;
+    color: $color-ink;
   }
 
   :deep(em) {
@@ -437,21 +460,44 @@ const breadcrumbItems = computed(() => [
 
   :deep(li) {
     margin-bottom: $spacing-xs;
+
+    &::marker {
+      color: $color-fjord;
+    }
   }
 
   :deep(a) {
-    color: $color-black;
+    color: $color-ink;
     text-decoration: underline;
-    transition: color $transition-base;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: text-decoration-thickness $transition-fast;
+    }
 
     &:hover {
-      color: $color-gray-600;
+      text-decoration-thickness: 2px;
     }
+
+    &:focus-visible {
+      outline: 2px solid $color-fjord-deep;
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+  }
+
+  :deep(blockquote) {
+    margin: $spacing-lg 0;
+    padding: 0 0 0 $spacing-md;
+    border-left: 1px solid $color-fjord;
+    font-style: italic;
+    color: $color-ink-soft;
   }
 
   :deep(hr) {
     border: none;
-    border-top: 1px solid $color-gray-200;
+    border-top: 1px solid $color-line;
     margin: $spacing-xl 0;
   }
 }
@@ -494,10 +540,13 @@ const breadcrumbItems = computed(() => [
   height: auto;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  transition: transform $transition-slow;
 
-  &:hover {
-    transform: scale(1.03);
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform $transition-slow;
+
+    &:hover {
+      transform: scale(1.03);
+    }
   }
 }
 
@@ -513,7 +562,7 @@ const breadcrumbItems = computed(() => [
 // Social
 .blog-detail__social {
   padding: $spacing-2xl $spacing-md;
-  background-color: $color-white;
+  background-color: $color-canvas;
 
   @include tablet {
     padding: $spacing-3xl $spacing-lg;
@@ -528,7 +577,7 @@ const breadcrumbItems = computed(() => [
 
 .blog-detail__loading-text {
   font-size: $font-size-lg;
-  color: $color-gray-600;
+  color: $color-stone;
   margin: 0;
 }
 
@@ -540,7 +589,7 @@ const breadcrumbItems = computed(() => [
 
 .blog-detail__error-text {
   font-size: $font-size-lg;
-  color: $color-gray-600;
+  color: $color-stone;
   margin: 0 0 $spacing-lg;
 }
 

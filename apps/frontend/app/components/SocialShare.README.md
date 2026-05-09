@@ -218,22 +218,26 @@ npm run test -- useSocialData.spec.ts
 
 ## Styling
 
-The component uses SCSS variables from the project's design system:
+The component uses SCSS tokens from the editorial design system (mono contrasté + cobalt accent):
 
-- Colors: `$color-black`, `$color-white`, `$color-gray-*`
+- Colors: `$color-ink`, `$color-ink-soft`, `$color-stone`, `$color-canvas`, `$color-canvas-soft`, `$color-fjord-deep` (focus only)
 - Spacing: `$spacing-xs`, `$spacing-sm`, `$spacing-md`, `$spacing-lg`, `$spacing-xl`
-- Transitions: `$transition-base`
+- Shadows: `$shadow-md` (hover lift)
+- Transitions: `$transition-base`, wrapped in `prefers-reduced-motion: no-preference`
 - Breakpoints: Responsive via `@include tablet` and `@include desktop`
 
 ### Theme Variants
 
 **Dark Theme (default):**
-- Black icons
-- Hover to gray
+- Ink icons (`$color-ink`)
+- Hover: `translateY(-2px)` + `$shadow-md`, color darken to `$color-ink-soft` (no color shift to cobalt — reserved for focus)
 
-**Light Theme:**
-- White icons
-- Hover to light gray
+**Light Theme (`--light` modifier, used on dark backdrops):**
+- Canvas-coloured icons (`$color-canvas`)
+- Hover: same lift + shadow pattern, color darken to `$color-canvas-soft`
+
+**Focus-visible (both themes):**
+- 2px solid `$color-fjord-deep` outline, 4px offset
 
 ## Browser Support
 

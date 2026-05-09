@@ -35,6 +35,18 @@ import type { Product, ProductCategory, ProductsResponse } from '~/types/product
 import type { Artwork } from '~/types/artwork'
 
 /**
+ * URL slug mapping for product categories.
+ *
+ * The backend enum uses singular `'rug'`, but the customer-facing route is
+ * pluralized as `/rugs/[id]` to read more naturally as a collection. This map
+ * keeps the canonical translation between the domain enum and the URL.
+ */
+export const CATEGORY_URL_SLUG: Record<ProductCategory, string> = {
+  'wall-hanging': 'wall-hanging',
+  rug: 'rugs',
+}
+
+/**
  * Pattern: Adapter Pattern
  * Purpose: Convert backend Product entity to frontend Artwork interface
  *
@@ -67,7 +79,7 @@ export function adaptProductToArtwork(product: Product): Artwork {
     price: Number(product.price),
     available: product.status === 'available' && product.stockQuantity > 0,
     category: product.category,
-    detailUrl: `/${product.category}/${product.id}`,
+    detailUrl: `/${CATEGORY_URL_SLUG[product.category]}/${product.id}`,
   }
 }
 

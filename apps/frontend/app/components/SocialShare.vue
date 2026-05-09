@@ -175,32 +175,49 @@ const containerClasses = computed(() => {
   justify-content: center;
   width: 48px;
   height: 48px;
-  color: $color-black;
+  color: $color-ink;
   text-decoration: none;
-  transition:
-    transform $transition-base,
-    color $transition-base;
 
-  // Accessibility: Focus indicator
-  @include focus-visible;
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform $transition-base,
+      color $transition-base,
+      box-shadow $transition-base;
+  }
 
-  // Hover effect: slight scale and rotation
+  // Accessibility: cobalt focus indicator
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 4px;
+  }
+
+  // Hover effect: editorial translateY + subtle ink darken (no cobalt)
   &:hover {
-    transform: scale(1.1) rotate(5deg);
-    color: $color-gray-600;
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+    color: $color-ink-soft;
   }
 
   // Active effect
   &:active {
-    transform: scale(0.95);
+    transform: translateY(-1px);
   }
 
-  // Light theme
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:active {
+      transform: none;
+    }
+  }
+
+  // Light theme (used on dark backdrops only — keep canvas/stone)
   .social-share--light & {
-    color: $color-white;
+    color: $color-canvas;
 
     &:hover {
-      color: $color-gray-300;
+      color: $color-canvas-soft;
     }
   }
 }
@@ -228,7 +245,7 @@ const containerClasses = computed(() => {
   white-space: nowrap;
   border: 0;
 
-  // Show on focus for keyboard users
+  // Show on focus for keyboard users — editorial ink/canvas chip
   .social-share__link:focus & {
     position: static;
     width: auto;
@@ -237,8 +254,8 @@ const containerClasses = computed(() => {
     overflow: visible;
     clip: auto;
     white-space: normal;
-    background-color: $color-black;
-    color: $color-white;
+    background-color: $color-ink;
+    color: $color-canvas;
     padding: $spacing-xs;
     font-size: $font-size-sm;
     border-radius: $border-radius-sm;
@@ -256,38 +273,44 @@ const containerClasses = computed(() => {
 
 .social-share__contact-label {
   font-size: $font-size-base;
-  color: $color-gray-900;
+  color: $color-ink-soft;
   margin: 0;
   font-weight: $font-weight-medium;
   line-height: $line-height-base;
 
   .social-share--light & {
-    color: $color-white;
+    color: $color-canvas;
   }
 }
 
 .social-share__email {
   font-size: $font-size-lg;
-  color: $color-black;
+  color: $color-ink;
   text-decoration: none;
   font-weight: $font-weight-semibold;
   position: relative;
-  transition: color $transition-base;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color $transition-base;
+  }
 
   // Underline animation using mixin
   @include link-underline;
 
   &:hover {
-    color: $color-gray-600;
+    color: $color-ink-soft;
   }
 
-  @include focus-visible;
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 4px;
+  }
 
   .social-share--light & {
-    color: $color-white;
+    color: $color-canvas;
 
     &:hover {
-      color: $color-gray-300;
+      color: $color-canvas-soft;
     }
   }
 }

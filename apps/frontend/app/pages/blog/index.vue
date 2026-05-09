@@ -13,6 +13,36 @@ const getApiUrl = (): string => {
   return config.public.apiUrl
 }
 
+// Page content composables - fetch CMS content for hero, articles header and social section.
+const { content: heroContent, fetchSection: fetchHero } = usePageContent('blog', 'hero')
+const { content: articlesContent, fetchSection: fetchArticles } = usePageContent('blog', 'articles')
+const { content: socialContent, fetchSection: fetchSocial } = usePageContent('blog', 'social')
+
+// Hero computed values with static fallbacks if API returns nothing.
+const heroEyebrow = computed(() => heroContent.value?.eyebrow || 'Journal')
+const heroTitle = computed(() => heroContent.value?.title || 'Journal')
+const defaultHeroSubtitle = "<p>Inspirations, techniques et coulisses de l'atelier. Plongez dans l'univers du tissage artisanal.</p>"
+const heroSubtitle = computed(() => {
+  const raw = heroContent.value?.content
+  return isEmptyHtml(raw) ? defaultHeroSubtitle : sanitizeHtml(raw!)
+})
+
+// Articles header computed values with static fallbacks if API returns nothing.
+const articlesEyebrow = computed(() => articlesContent.value?.eyebrow || 'Lectures')
+const articlesTitle = computed(() => articlesContent.value?.title || 'Articles récents')
+
+// Social computed values with static fallbacks if API returns nothing.
+const socialEyebrow = computed(() => socialContent.value?.eyebrow || 'Restons en contact')
+const socialTitle = computed(
+  () => socialContent.value?.title || 'Suivez-nous et contactez-nous',
+)
+
+await Promise.all([
+  fetchHero(),
+  fetchArticles(),
+  fetchSocial(),
+])
+
 const { data: articles, error, pending: loading } = await useAsyncData(
   'blog-articles',
   () => $fetch<BlogArticle[]>(`${getApiUrl()}/blog`),
@@ -38,18 +68,18 @@ useCollectionPageSchema('Journal')
       class="blog-hero"
       aria-labelledby="blog-hero-title"
     >
-      <div class="container">
-        <div class="blog-hero__content">
+      <div class="container blog-hero__container" lang="fr">
+        <div class="blog-hero__heading">
+          <span class="blog-hero__eyebrow">{{ heroEyebrow }}</span>
           <h1
             id="blog-hero-title"
             class="blog-hero__title"
           >
-            Journal
+            {{ heroTitle }}
           </h1>
-          <p class="blog-hero__subtitle">
-            Inspirations, techniques et coulisses de l'atelier. Plongez dans l'univers du tissage artisanal.
-          </p>
+          <span class="blog-hero__hairline" aria-hidden="true" />
         </div>
+        <div class="blog-hero__subtitle" v-html="heroSubtitle" />
       </div>
     </section>
 
@@ -59,12 +89,16 @@ useCollectionPageSchema('Journal')
       aria-labelledby="blog-articles-heading"
     >
       <div class="container">
-        <h2
-          id="blog-articles-heading"
-          class="visually-hidden"
-        >
-          Articles
-        </h2>
+        <header class="blog-articles__header" lang="fr">
+          <span class="blog-articles__eyebrow">{{ articlesEyebrow }}</span>
+          <h2
+            id="blog-articles-heading"
+            class="blog-articles__title"
+          >
+            {{ articlesTitle }}
+          </h2>
+          <span class="blog-articles__hairline" aria-hidden="true" />
+        </header>
 
         <!-- Loading State -->
         <div
@@ -125,13 +159,15 @@ useCollectionPageSchema('Journal')
       class="blog-social"
       aria-labelledby="blog-social-title"
     >
-      <div class="container">
+      <div class="container blog-social__container" lang="fr">
+        <span class="blog-social__eyebrow">{{ socialEyebrow }}</span>
         <h2
           id="blog-social-title"
-          class="visually-hidden"
+          class="blog-social__title"
         >
-          Suivez-nous et contactez-nous
+          {{ socialTitle }}
         </h2>
+        <span class="blog-social__hairline" aria-hidden="true" />
         <SocialShare />
       </div>
     </section>
@@ -141,45 +177,71 @@ useCollectionPageSchema('Journal')
 <style lang="scss" scoped>
 .blog-page {
   min-height: calc(100vh - $navbar-height);
-  background-color: $color-white;
+  background-color: $color-canvas;
 }
 
 .container {
   @include container;
 }
 
-// Hero Section
+// --- Hero Section ---
 .blog-hero {
-  background: linear-gradient(135deg, $color-gray-100 0%, $color-gray-200 100%);
+  background-color: $color-canvas;
   padding: $spacing-3xl $spacing-md;
-  text-align: center;
 
   @include tablet {
     padding: calc($spacing-3xl + $spacing-xl) $spacing-lg;
   }
 }
 
-.blog-hero__content {
-  max-width: $container-content-width;
-  margin: 0 auto;
+.blog-hero__container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+
+  @include tablet {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: $spacing-2xl;
+    align-items: start;
+  }
+}
+
+.blog-hero__heading {
+  display: flex;
+  flex-direction: column;
+}
+
+.blog-hero__eyebrow {
+  @include eyebrow;
+  margin: 0 0 $spacing-sm;
 }
 
 .blog-hero__title {
   font-size: $font-size-3xl;
   font-weight: $font-weight-bold;
-  color: $color-black;
-  margin-bottom: $spacing-md;
+  color: $color-ink;
+  margin: 0;
   line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
 
   @include tablet {
-    font-size: $font-size-4xl;
+    font-size: $font-size-display;
   }
 }
 
+.blog-hero__hairline {
+  @include hairline($color-fjord, 1px);
+  display: block;
+  width: 48px;
+  margin-top: $spacing-md;
+}
+
 .blog-hero__subtitle {
+  @include reading-column;
   font-size: $font-size-lg;
-  color: $color-gray-600;
-  line-height: $line-height-base;
+  color: $color-ink-soft;
+  line-height: $line-height-relaxed;
   margin: 0;
 
   @include tablet {
@@ -187,13 +249,49 @@ useCollectionPageSchema('Journal')
   }
 }
 
-// Articles Section
+// --- Articles Section ---
 .blog-articles {
   padding: $spacing-2xl $spacing-md;
+  background-color: $color-canvas;
 
   @include tablet {
     padding: $spacing-3xl $spacing-lg;
   }
+}
+
+.blog-articles__header {
+  margin-bottom: $spacing-2xl;
+  display: flex;
+  flex-direction: column;
+
+  @include tablet {
+    margin-bottom: $spacing-3xl;
+  }
+}
+
+.blog-articles__eyebrow {
+  @include eyebrow;
+  margin: 0 0 $spacing-sm;
+}
+
+.blog-articles__title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-ink;
+  margin: 0;
+  line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
+
+  @include tablet {
+    font-size: $font-size-3xl;
+  }
+}
+
+.blog-articles__hairline {
+  @include hairline($color-fjord, 1px);
+  display: block;
+  width: 48px;
+  margin-top: $spacing-md;
 }
 
 .blog-articles__grid {
@@ -211,9 +309,9 @@ useCollectionPageSchema('Journal')
   }
 }
 
-// Error State
+// --- Error State ---
 .blog-error {
-  text-align: center;
+  text-align: left;
   padding: $spacing-2xl;
   background-color: $color-danger-bg;
   border: 1px solid $color-danger-border;
@@ -231,43 +329,85 @@ useCollectionPageSchema('Journal')
   padding: $spacing-sm $spacing-xl;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
-  color: $color-white;
-  background-color: $color-black;
+  color: $color-canvas;
+  background-color: $color-ink;
   border: none;
   border-radius: $border-radius-base;
   cursor: pointer;
-  transition: background-color $transition-base;
 
-  &:hover {
-    background-color: $color-gray-900;
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
   }
 
-  @include focus-visible;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 2px;
+  }
 }
 
-// Empty State
+// --- Empty State ---
 .blog-empty {
-  text-align: center;
+  text-align: left;
   padding: $spacing-3xl $spacing-md;
 }
 
 .blog-empty__text {
   font-size: $font-size-lg;
-  color: $color-gray-600;
+  color: $color-stone;
   margin: 0;
 }
 
-// Social Section
+// --- Social Section ---
 .blog-social {
   padding: $spacing-2xl $spacing-md;
-  background-color: $color-white;
+  background-color: $color-canvas;
 
   @include tablet {
     padding: $spacing-3xl $spacing-lg;
   }
 }
 
-// Accessibility
+.blog-social__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: $spacing-md;
+}
+
+.blog-social__eyebrow {
+  @include eyebrow;
+  margin: 0;
+}
+
+.blog-social__title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-ink;
+  margin: 0;
+  line-height: $line-height-tight;
+  letter-spacing: $letter-spacing-tight;
+
+  @include tablet {
+    font-size: $font-size-3xl;
+  }
+}
+
+.blog-social__hairline {
+  @include hairline($color-fjord, 1px);
+  display: block;
+  width: 48px;
+  margin: $spacing-sm auto $spacing-lg;
+}
+
+// --- Accessibility ---
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -278,5 +418,16 @@ useCollectionPageSchema('Journal')
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+}
+
+// --- Reduced motion ---
+@media (prefers-reduced-motion: reduce) {
+  .blog-error__button {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
 }
 </style>

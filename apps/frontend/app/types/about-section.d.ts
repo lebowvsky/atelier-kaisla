@@ -18,6 +18,9 @@ export interface AboutSection {
   /** Unique identifier (UUID) */
   id: string
 
+  /** Optional eyebrow shown above the title */
+  eyebrow: string | null
+
   /** Section title */
   title: string
 

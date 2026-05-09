@@ -10,6 +10,7 @@
 export interface AboutSection {
   id: string
   title: string
+  eyebrow: string | null
   paragraphs: string[]
   image: string
   imageAlt: string
@@ -24,6 +25,7 @@ export interface AboutSection {
  */
 export interface CreateAboutSectionDto {
   title: string
+  eyebrow?: string
   paragraphs: string[]
   imageAlt: string
   sortOrder?: number
@@ -35,6 +37,7 @@ export interface CreateAboutSectionDto {
  */
 export interface UpdateAboutSectionDto {
   title?: string
+  eyebrow?: string
   paragraphs?: string[]
   imageAlt?: string
   sortOrder?: number

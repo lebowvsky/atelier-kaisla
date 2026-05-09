@@ -42,6 +42,12 @@ export interface Story {
   id: string
 
   /**
+   * Optional eyebrow text rendered above the title
+   * Sourced from the backend AboutSection.eyebrow field
+   */
+  eyebrow?: string | null
+
+  /**
    * Story section title
    * Displayed as an h2 heading
    */

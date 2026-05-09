@@ -61,10 +61,12 @@ export function usePageContent() {
 
       formData.append('page', dto.page)
       formData.append('section', dto.section)
+      if (dto.eyebrow) formData.append('eyebrow', dto.eyebrow)
       if (dto.title) formData.append('title', dto.title)
       if (dto.content) formData.append('content', dto.content)
       if (dto.imageAlt) formData.append('imageAlt', dto.imageAlt)
       if (dto.metadata) formData.append('metadata', JSON.stringify(dto.metadata))
+      if (dto.blocks) formData.append('blocks', JSON.stringify(dto.blocks))
       if (dto.sortOrder !== undefined) formData.append('sortOrder', dto.sortOrder.toString())
       if (dto.isPublished !== undefined) formData.append('isPublished', dto.isPublished.toString())
       formData.append('image', imageFile)

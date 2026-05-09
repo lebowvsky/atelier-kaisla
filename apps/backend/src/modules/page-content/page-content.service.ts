@@ -5,12 +5,14 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import * as sanitizeHtml from 'sanitize-html';
 import { PageContent } from '../../entities/page-content.entity';
+import { PageContentBlock } from '../../entities/page-content-block.entity';
 import { CreatePageContentDto } from './dto/create-page-content.dto';
 import { CreatePageContentWithUploadDto } from './dto/create-page-content-with-upload.dto';
 import { UpdatePageContentDto } from './dto/update-page-content.dto';
+import { PageContentBlockDto } from './dto/page-content-block.dto';
 import { UploadService } from '../upload/upload.service';
 
 const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
@@ -28,6 +30,9 @@ export class PageContentService {
   constructor(
     @InjectRepository(PageContent)
     private readonly pageContentRepository: Repository<PageContent>,
+    @InjectRepository(PageContentBlock)
+    private readonly pageContentBlockRepository: Repository<PageContentBlock>,
+    private readonly dataSource: DataSource,
     private readonly uploadService: UploadService,
   ) {}
 
@@ -37,6 +42,26 @@ export class PageContentService {
   private sanitizeContent(content?: string): string | undefined {
     if (!content) return content;
     return sanitizeHtml(content, SANITIZE_OPTIONS);
+  }
+
+  /**
+   * Build child block entities from incoming DTOs, normalizing sortOrder.
+   */
+  private buildBlocks(
+    blockDtos: PageContentBlockDto[] | undefined,
+  ): PageContentBlock[] {
+    if (!blockDtos || blockDtos.length === 0) {
+      return [];
+    }
+
+    return blockDtos.map((dto, index) => {
+      const block = this.pageContentBlockRepository.create({
+        title: dto.title,
+        description: dto.description,
+        sortOrder: dto.sortOrder ?? index,
+      });
+      return block;
+    });
   }
 
   /**
@@ -60,17 +85,20 @@ export class PageContentService {
         'page-content',
       );
 
+      const { blocks: blockDtos, ...rest } = createDto;
       const contentData = {
-        ...createDto,
+        ...rest,
         content: this.sanitizeContent(createDto.content),
         image: imageUrl,
       };
 
       const entry = this.pageContentRepository.create(contentData);
+      entry.blocks = this.buildBlocks(blockDtos);
+
       const saved = await this.pageContentRepository.save(entry);
 
       this.logger.log(`Page content created successfully: ${saved.id}`);
-      return saved;
+      return await this.findById(saved.id);
     } catch (error) {
       // Clean up uploaded file if creation fails
       await this.uploadService
@@ -92,14 +120,17 @@ export class PageContentService {
     this.logger.debug(`Received DTO: ${JSON.stringify(createDto, null, 2)}`);
 
     try {
+      const { blocks: blockDtos, ...rest } = createDto;
       const entry = this.pageContentRepository.create({
-        ...createDto,
+        ...rest,
         content: this.sanitizeContent(createDto.content),
       });
+      entry.blocks = this.buildBlocks(blockDtos);
+
       const saved = await this.pageContentRepository.save(entry);
 
       this.logger.log(`Page content created successfully: ${saved.id}`);
-      return saved;
+      return await this.findById(saved.id);
     } catch (error) {
       this.logger.error(`Failed to create page content: ${error.message}`);
       throw new BadRequestException('Failed to create page content');
@@ -112,7 +143,11 @@ export class PageContentService {
   async findPublishedByPage(page: string): Promise<PageContent[]> {
     return await this.pageContentRepository.find({
       where: { page, isPublished: true },
-      order: { sortOrder: 'ASC' },
+      relations: { blocks: true },
+      order: {
+        sortOrder: 'ASC',
+        blocks: { sortOrder: 'ASC' },
+      },
     });
   }
 
@@ -125,6 +160,10 @@ export class PageContentService {
   ): Promise<PageContent> {
     const entry = await this.pageContentRepository.findOne({
       where: { page, section, isPublished: true },
+      relations: { blocks: true },
+      order: {
+        blocks: { sortOrder: 'ASC' },
+      },
     });
 
     if (!entry) {
@@ -141,7 +180,12 @@ export class PageContentService {
    */
   async findAll(): Promise<PageContent[]> {
     return await this.pageContentRepository.find({
-      order: { page: 'ASC', sortOrder: 'ASC' },
+      relations: { blocks: true },
+      order: {
+        page: 'ASC',
+        sortOrder: 'ASC',
+        blocks: { sortOrder: 'ASC' },
+      },
     });
   }
 
@@ -151,6 +195,10 @@ export class PageContentService {
   async findById(id: string): Promise<PageContent> {
     const entry = await this.pageContentRepository.findOne({
       where: { id },
+      relations: { blocks: true },
+      order: {
+        blocks: { sortOrder: 'ASC' },
+      },
     });
 
     if (!entry) {
@@ -161,7 +209,9 @@ export class PageContentService {
   }
 
   /**
-   * Update a page content entry's text fields
+   * Update a page content entry's text fields.
+   * If `blocks` is provided in the DTO (even an empty array), all existing
+   * child blocks are replaced atomically with the new ones.
    */
   async update(
     id: string,
@@ -169,18 +219,46 @@ export class PageContentService {
   ): Promise<PageContent> {
     const entry = await this.findById(id);
 
-    // Exclude image field - image updates go through updateImage
-    const { image: _image, ...safeUpdate } =
-      updateDto as UpdatePageContentDto & { image?: string };
+    // Exclude image and blocks from the simple field assignment
+    const {
+      image: _image,
+      blocks: blockDtos,
+      ...safeUpdate
+    } = updateDto as UpdatePageContentDto & { image?: string };
+
     if (safeUpdate.content) {
       safeUpdate.content = this.sanitizeContent(safeUpdate.content);
     }
     Object.assign(entry, safeUpdate);
 
+    const blocksProvided = blockDtos !== undefined;
+
     try {
-      const updated = await this.pageContentRepository.save(entry);
+      await this.dataSource.transaction(async (manager) => {
+        // Persist scalar field changes first
+        await manager.save(PageContent, entry);
+
+        if (blocksProvided) {
+          // Replace strategy: drop all existing children, insert the new set
+          await manager.delete(PageContentBlock, { pageContentId: id });
+
+          const newBlocks = (blockDtos ?? []).map((dto, index) =>
+            manager.create(PageContentBlock, {
+              pageContentId: id,
+              title: dto.title,
+              description: dto.description,
+              sortOrder: dto.sortOrder ?? index,
+            }),
+          );
+
+          if (newBlocks.length > 0) {
+            await manager.save(PageContentBlock, newBlocks);
+          }
+        }
+      });
+
       this.logger.log(`Page content updated successfully: ${id}`);
-      return updated;
+      return await this.findById(id);
     } catch (error) {
       this.logger.error(
         `Failed to update page content ${id}: ${error.message}`,

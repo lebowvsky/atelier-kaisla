@@ -31,6 +31,7 @@ import type { Story } from '~/types/story'
 function adaptAboutSectionToStory(section: AboutSection, index: number): Story {
   return {
     id: section.id,
+    eyebrow: section.eyebrow,
     title: section.title,
     image: {
       src: section.image,

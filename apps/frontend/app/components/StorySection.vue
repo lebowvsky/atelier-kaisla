@@ -13,46 +13,14 @@
  * @category Behavioral
  * @purpose Different layout strategies based on image position (left/right)
  *
- * Features:
- * - Responsive layout (stacked on mobile, side-by-side on desktop)
- * - Alternating image positions for visual rhythm
- * - Semantic HTML structure
- * - Accessible with ARIA labels and proper heading hierarchy
- * - Support for multi-paragraph content
- * - Lazy loading images for performance
- * - Smooth animations on scroll (future enhancement)
- *
- * Accessibility:
- * - WCAG 2.1 AA compliant
- * - Semantic HTML with proper heading hierarchy
- * - Alt text required for images
- * - Keyboard navigable
- * - Screen reader friendly content structure
- *
- * Performance:
- * - Lazy loading images
- * - CSS-only animations (GPU accelerated)
- * - Minimal JavaScript
- * - Optimized for Core Web Vitals
- *
  * @example
  * ```vue
  * <StorySection
+ *   eyebrow="Notre histoire"
  *   title="L'Histoire de la Créatrice"
  *   :image="{ src: '/creator.jpg', alt: 'Portrait' }"
  *   content="Lorem ipsum..."
  *   image-position="left"
- * />
- * ```
- *
- * @example With all props
- * ```vue
- * <StorySection
- *   title="L'Histoire du Projet"
- *   :image="{ src: '/project.jpg', alt: 'Atelier', width: 600, height: 800 }"
- *   content="Multi-paragraph content..."
- *   image-position="right"
- *   theme="dark"
  * />
  * ```
  */
@@ -76,10 +44,14 @@ interface Props {
   }
 
   /**
-   * Story content text
-   * Multi-paragraph content supported (split by \n\n)
+   * Story content text (plain text or HTML)
    */
   content: string
+
+  /**
+   * Optional eyebrow text rendered above the title
+   */
+  eyebrow?: string
 
   /**
    * Image position in layout
@@ -88,7 +60,7 @@ interface Props {
   imagePosition?: ImagePosition
 
   /**
-   * Optional theme variant
+   * Optional theme variant (visually neutralized; kept for API compatibility)
    * @default 'light'
    */
   theme?: 'light' | 'dark'
@@ -101,23 +73,15 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   imagePosition: 'left',
-  theme: 'light'
+  theme: 'light',
+  eyebrow: undefined,
+  id: undefined
 })
 
-/**
- * Detect whether content is HTML or plain text
- */
 const contentIsHtml = computed(() => isHtmlContent(props.content))
 
-/**
- * Sanitized HTML content for rich text rendering
- */
 const sanitizedContent = computed(() => sanitizeHtml(props.content))
 
-/**
- * Split content into paragraphs (plain text fallback)
- * Handles multi-paragraph content separated by double newlines
- */
 const paragraphs = computed(() => {
   return props.content
     .split('\n\n')
@@ -125,12 +89,6 @@ const paragraphs = computed(() => {
     .filter(p => p.length > 0)
 })
 
-/**
- * Compute container classes based on props
- * Strategy Pattern: Different layout strategies
- *
- * Pure function for class generation
- */
 const sectionClasses = computed(() => {
   return {
     'story-section': true,
@@ -139,9 +97,6 @@ const sectionClasses = computed(() => {
   }
 })
 
-/**
- * Compute image wrapper classes for layout control
- */
 const imageClasses = computed(() => {
   return {
     'story-section__image-wrapper': true,
@@ -150,10 +105,6 @@ const imageClasses = computed(() => {
   }
 })
 
-/**
- * Generate unique section ID
- * Used for anchor links and accessibility
- */
 const sectionId = computed(() => {
   return props.id || props.title.toLowerCase().replace(/\s+/g, '-')
 })
@@ -178,9 +129,18 @@ const sectionId = computed(() => {
 
       <!-- Content Column -->
       <div class="story-section__content">
+        <span
+          v-if="eyebrow"
+          class="story-section__eyebrow"
+        >
+          {{ eyebrow }}
+        </span>
+
         <h2 :id="`${sectionId}-title`" class="story-section__title">
           {{ title }}
         </h2>
+
+        <span class="story-section__hairline" aria-hidden="true" />
 
         <div class="story-section__text">
           <!-- Rich HTML content -->
@@ -189,7 +149,7 @@ const sectionId = computed(() => {
             class="story-section__rich-content"
             v-html="sanitizedContent"
           />
-          <!-- Plain text fallback (retrocompatibility) -->
+          <!-- Plain text fallback -->
           <template v-else>
             <p v-for="(paragraph, index) in paragraphs" :key="index" class="story-section__paragraph">
               {{ paragraph }}
@@ -204,15 +164,17 @@ const sectionId = computed(() => {
 <style lang="scss" scoped>
 .story-section {
   padding: $spacing-2xl $spacing-md;
-  background-color: $color-white;
+  background-color: $color-canvas;
 
   @include tablet {
     padding: $spacing-3xl $spacing-lg;
   }
 
-  // Dark theme variant
+  // Theme variants are visually neutralized — both render on canvas.
+  // The visual rhythm is provided by alternating image positions.
+  &--theme-light,
   &--theme-dark {
-    background-color: $color-gray-100;
+    background-color: $color-canvas;
   }
 }
 
@@ -237,7 +199,6 @@ const sectionId = computed(() => {
 .story-section--image-left {
   .story-section__container {
     @include tablet {
-      // Image first, content second
       grid-template-areas: 'image content';
     }
   }
@@ -258,7 +219,6 @@ const sectionId = computed(() => {
 .story-section--image-right {
   .story-section__container {
     @include tablet {
-      // Content first, image second
       grid-template-areas: 'content image';
     }
   }
@@ -282,12 +242,22 @@ const sectionId = computed(() => {
   overflow: hidden;
   border-radius: $border-radius-base;
   box-shadow: $shadow-md;
-  transition: transform $transition-base, box-shadow $transition-base;
 
-  // Hover effect for subtle interactivity
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform $transition-base,
+      box-shadow $transition-base;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      transform: none;
+    }
   }
 }
 
@@ -297,11 +267,13 @@ const sectionId = computed(() => {
   display: block;
   object-fit: cover;
   aspect-ratio: 3 / 4;
-  transition: transform $transition-slow;
 
-  // Subtle zoom on hover
-  .story-section__image-wrapper:hover & {
-    transform: scale(1.02);
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform $transition-slow;
+
+    .story-section__image-wrapper:hover & {
+      transform: scale(1.02);
+    }
   }
 }
 
@@ -316,10 +288,16 @@ const sectionId = computed(() => {
   }
 }
 
+.story-section__eyebrow {
+  @include eyebrow;
+  margin: 0;
+}
+
 .story-section__title {
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
-  color: $color-black;
+  color: $color-ink;
+  letter-spacing: $letter-spacing-tight;
   line-height: $line-height-tight;
   margin: 0;
 
@@ -330,11 +308,13 @@ const sectionId = computed(() => {
   @include desktop {
     font-size: $font-size-4xl;
   }
+}
 
-  // Dark theme
-  .story-section--theme-dark & {
-    color: $color-gray-900;
-  }
+.story-section__hairline {
+  @include hairline($color-fjord, 1px);
+  display: block;
+  width: 48px;
+  margin-top: $spacing-md;
 }
 
 .story-section__text {
@@ -345,7 +325,7 @@ const sectionId = computed(() => {
 
 .story-section__paragraph {
   font-size: $font-size-base;
-  color: $color-gray-600;
+  color: $color-ink-soft;
   line-height: $line-height-base;
   margin: 0;
 
@@ -353,23 +333,13 @@ const sectionId = computed(() => {
     font-size: $font-size-lg;
   }
 
-  // First paragraph slightly larger for visual hierarchy
   &:first-child {
     font-size: $font-size-lg;
     font-weight: $font-weight-medium;
-    color: $color-gray-900;
+    color: $color-ink;
 
     @include tablet {
       font-size: $font-size-xl;
-    }
-  }
-
-  // Dark theme
-  .story-section--theme-dark & {
-    color: $color-gray-600;
-
-    &:first-child {
-      color: $color-gray-900;
     }
   }
 }
@@ -377,7 +347,7 @@ const sectionId = computed(() => {
 .story-section__rich-content {
   :deep(p) {
     font-size: $font-size-base;
-    color: $color-gray-600;
+    color: $color-ink-soft;
     line-height: $line-height-base;
     margin: 0 0 $spacing-sm;
 
@@ -393,7 +363,8 @@ const sectionId = computed(() => {
   :deep(h2) {
     font-size: $font-size-xl;
     font-weight: $font-weight-bold;
-    color: $color-black;
+    color: $color-ink;
+    letter-spacing: $letter-spacing-tight;
     margin: $spacing-md 0 $spacing-sm;
     line-height: $line-height-tight;
 
@@ -405,7 +376,8 @@ const sectionId = computed(() => {
   :deep(h3) {
     font-size: $font-size-lg;
     font-weight: $font-weight-semibold;
-    color: $color-black;
+    color: $color-ink;
+    letter-spacing: $letter-spacing-tight;
     margin: $spacing-sm 0 $spacing-xs;
     line-height: $line-height-tight;
 
@@ -418,18 +390,17 @@ const sectionId = computed(() => {
     list-style-type: disc;
     padding-left: $spacing-md;
     margin: $spacing-sm 0;
-    color: $color-gray-600;
   }
 
   :deep(ol) {
     list-style-type: decimal;
     padding-left: $spacing-md;
     margin: $spacing-sm 0;
-    color: $color-gray-600;
   }
 
   :deep(li) {
     font-size: $font-size-base;
+    color: $color-ink-soft;
     line-height: $line-height-base;
     margin: 0.25rem 0;
 
@@ -448,7 +419,7 @@ const sectionId = computed(() => {
 
   :deep(hr) {
     border: none;
-    border-top: 1px solid $color-gray-200;
+    border-top: 1px solid $color-line;
     margin: $spacing-md 0;
   }
 }

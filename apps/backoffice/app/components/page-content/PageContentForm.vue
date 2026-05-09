@@ -3,9 +3,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Separator } from '@/components/ui/separator'
 import { RichTextEditor } from '@/components/ui/rich-text-editor'
-import { X, Loader2, CheckCircle2, AlertCircle, Upload, Image as ImageIcon } from 'lucide-vue-next'
-import type { PageContent, CreatePageContentDto, UpdatePageContentDto } from '@/types/page-content'
+import { X, Loader2, CheckCircle2, AlertCircle, Upload, Image as ImageIcon, Plus, Trash2 } from 'lucide-vue-next'
+import type { PageContent, CreatePageContentDto, UpdatePageContentDto, PageContentBlock } from '@/types/page-content'
+import { getSectionsForPage } from '@/constants/page-sections'
 
 interface Props {
   open: boolean
@@ -36,15 +38,57 @@ const {
 
 const isEditMode = computed(() => !!props.editContent)
 
+const availableSections = computed<string[]>(() => {
+  const baseSections = getSectionsForPage(formData.value.page)
+  const current = props.editContent?.section
+  if (current && !baseSections.includes(current)) {
+    return [current, ...baseSections]
+  }
+  return [...baseSections]
+})
+
+const isLegacySection = (section: string): boolean => {
+  if (!isEditMode.value) return false
+  return !getSectionsForPage(formData.value.page).includes(section)
+}
+
 const formData = ref({
   page: '',
   section: '',
+  eyebrow: '',
   title: '',
   content: '',
   imageAlt: '',
   metadata: '',
+  blocks: [] as PageContentBlock[],
   sortOrder: 0,
   isPublished: false,
+})
+
+const showBlocksEditor = computed(
+  () =>
+    (formData.value.page === 'wall-hanging' || formData.value.page === 'rugs') &&
+    formData.value.section === 'info',
+)
+
+const addBlock = () => {
+  formData.value.blocks.push({
+    title: '',
+    description: '',
+    sortOrder: formData.value.blocks.length,
+  })
+}
+
+const removeBlock = (index: number) => {
+  if (formData.value.blocks.length > 1) {
+    formData.value.blocks.splice(index, 1)
+  }
+}
+
+watch(showBlocksEditor, (visible) => {
+  if (visible && formData.value.blocks.length === 0) {
+    addBlock()
+  }
 })
 
 const imageFile = ref<File | null>(null)
@@ -76,6 +120,11 @@ const validateForm = (): boolean => {
     isValid = false
   }
 
+  if (formData.value.eyebrow.length > 255) {
+    validationErrors.value.eyebrow = "L'eyebrow doit contenir moins de 255 caractères"
+    isValid = false
+  }
+
   if (formData.value.metadata.trim()) {
     try {
       JSON.parse(formData.value.metadata)
@@ -88,6 +137,21 @@ const validateForm = (): boolean => {
   if (formData.value.sortOrder < 0) {
     validationErrors.value.sortOrder = "L'ordre d'affichage doit être 0 ou plus"
     isValid = false
+  }
+
+  if (showBlocksEditor.value) {
+    if (formData.value.blocks.length === 0) {
+      validationErrors.value.blocks = 'Au moins un info-block est requis'
+      isValid = false
+    } else {
+      const hasInvalidBlock = formData.value.blocks.some(
+        (b) => !b.title.trim() || !b.description.trim(),
+      )
+      if (hasInvalidBlock) {
+        validationErrors.value.blocks = 'Chaque info-block doit avoir un titre et une description'
+        isValid = false
+      }
+    }
   }
 
   return isValid
@@ -167,14 +231,25 @@ const handleSubmit = async () => {
     ? JSON.parse(formData.value.metadata)
     : undefined
 
+  const blocksPayload: PageContentBlock[] | undefined = showBlocksEditor.value
+    ? formData.value.blocks.map((block, index) => ({
+        ...(block.id ? { id: block.id } : {}),
+        title: block.title.trim(),
+        description: block.description.trim(),
+        sortOrder: index,
+      }))
+    : undefined
+
   if (isEditMode.value && props.editContent) {
     const dto: UpdatePageContentDto = {
       page: formData.value.page,
       section: formData.value.section,
+      eyebrow: formData.value.eyebrow || undefined,
       title: formData.value.title || undefined,
       content: formData.value.content || undefined,
       imageAlt: formData.value.imageAlt || undefined,
       metadata: parsedMetadata,
+      blocks: blocksPayload,
       sortOrder: formData.value.sortOrder,
       isPublished: formData.value.isPublished,
     }
@@ -198,10 +273,12 @@ const handleSubmit = async () => {
     const dto: CreatePageContentDto = {
       page: formData.value.page,
       section: formData.value.section,
+      eyebrow: formData.value.eyebrow || undefined,
       title: formData.value.title || undefined,
       content: formData.value.content || undefined,
       imageAlt: formData.value.imageAlt || undefined,
       metadata: parsedMetadata,
+      blocks: blocksPayload,
       sortOrder: formData.value.sortOrder,
       isPublished: formData.value.isPublished,
     }
@@ -229,10 +306,12 @@ const resetForm = () => {
   formData.value = {
     page: props.defaultPage || '',
     section: '',
+    eyebrow: '',
     title: '',
     content: '',
     imageAlt: '',
     metadata: '',
+    blocks: [],
     sortOrder: 0,
     isPublished: false,
   }
@@ -248,12 +327,21 @@ const populateFromEditContent = () => {
     formData.value = {
       page: props.editContent.page,
       section: props.editContent.section,
+      eyebrow: props.editContent.eyebrow || '',
       title: props.editContent.title || '',
       content: props.editContent.content || '',
       imageAlt: props.editContent.imageAlt || '',
       metadata: props.editContent.metadata
         ? JSON.stringify(props.editContent.metadata, null, 2)
         : '',
+      blocks: props.editContent.blocks
+        ? props.editContent.blocks.map((b) => ({
+            id: b.id,
+            title: b.title,
+            description: b.description,
+            sortOrder: b.sortOrder,
+          }))
+        : [],
       sortOrder: props.editContent.sortOrder,
       isPublished: props.editContent.isPublished,
     }
@@ -352,22 +440,75 @@ watch(
 
         <!-- Section -->
         <div class="space-y-2">
-          <Label for="section">Section *</Label>
-          <Input
-            id="section"
-            v-model="formData.section"
-            type="text"
-            placeholder="ex. hero, intro, features"
-            maxlength="100"
+          <Label as="span" id="section-label">Section *</Label>
+
+          <div
+            v-if="availableSections.length > 0"
+            role="radiogroup"
+            aria-labelledby="section-label"
             :aria-invalid="!!validationErrors.section"
-            :disabled="loading"
-          />
+            class="flex flex-wrap gap-2"
+          >
+            <label
+              v-for="sectionKey in availableSections"
+              :key="sectionKey"
+              :class="[
+                'group inline-flex h-9 select-none items-center gap-1.5 rounded-full border px-4 text-sm font-medium transition-colors',
+                'focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
+                formData.section === sectionKey
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground',
+                loading ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+              ]"
+            >
+              <input
+                v-model="formData.section"
+                type="radio"
+                name="section"
+                :value="sectionKey"
+                :disabled="loading"
+                class="sr-only"
+              />
+              <span>{{ sectionKey }}</span>
+              <span
+                v-if="isLegacySection(sectionKey)"
+                class="text-[10px] font-normal uppercase tracking-wide opacity-80"
+                title="Section non listée dans la configuration actuelle"
+              >
+                actuel
+              </span>
+            </label>
+          </div>
+
+          <p
+            v-else
+            class="rounded-md border border-dashed border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200"
+          >
+            Aucune section configurée pour la page « {{ formData.page || '—' }} ».
+          </p>
+
           <p v-if="validationErrors.section" class="text-sm text-red-600">
             {{ validationErrors.section }}
           </p>
           <p class="text-muted-foreground text-xs">
-            Identifiant de la section (sans le nom de la page). Ex : pour la page "home", utilisez "hero", "intro", etc.
+            Choisissez la section à éditer. La liste correspond aux sections câblées sur le site pour cette page.
           </p>
+        </div>
+
+        <!-- Eyebrow -->
+        <div class="space-y-2">
+          <Label for="eyebrow">Eyebrow</Label>
+          <Input
+            id="eyebrow"
+            v-model="formData.eyebrow"
+            type="text"
+            placeholder="ex. Notre démarche"
+            maxlength="255"
+            :aria-invalid="!!validationErrors.eyebrow"
+            :disabled="loading"
+          />
+          <p v-if="validationErrors.eyebrow" class="text-sm text-red-600">{{ validationErrors.eyebrow }}</p>
+          <p class="text-muted-foreground text-xs">{{ formData.eyebrow.length }} / 255 caractères — petite étiquette affichée au-dessus du titre.</p>
         </div>
 
         <!-- Title -->
@@ -566,6 +707,78 @@ watch(
             (Seul le contenu publié apparaît sur le site)
           </span>
         </div>
+
+        <!-- Info blocks editor (wall-hanging / rugs > info section only) -->
+        <template v-if="showBlocksEditor">
+          <Separator />
+
+          <div class="space-y-3">
+            <div>
+              <h3 class="text-base font-semibold">Info blocks</h3>
+              <p class="text-muted-foreground text-xs">
+                Liste des blocs (titre + description) affichés dans la section info.
+              </p>
+            </div>
+
+            <div
+              v-for="(block, index) in formData.blocks"
+              :key="block.id ?? index"
+              class="space-y-2 rounded-md border bg-muted/40 p-3"
+            >
+              <div class="flex items-start gap-2">
+                <div class="flex-1 space-y-2">
+                  <Label :for="`block-title-${index}`">Titre du bloc *</Label>
+                  <Input
+                    :id="`block-title-${index}`"
+                    v-model="formData.blocks[index]!.title"
+                    type="text"
+                    placeholder="Block title"
+                    maxlength="255"
+                    :disabled="loading"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  @click="removeBlock(index)"
+                  :disabled="loading || formData.blocks.length <= 1"
+                  class="mt-7 flex-shrink-0 text-red-600 hover:text-red-700"
+                  :aria-label="`Remove block ${index + 1}`"
+                >
+                  <Trash2 class="h-4 w-4" />
+                </Button>
+              </div>
+
+              <div class="space-y-2">
+                <Label :for="`block-description-${index}`">Description *</Label>
+                <Textarea
+                  :id="`block-description-${index}`"
+                  v-model="formData.blocks[index]!.description"
+                  placeholder="Block description"
+                  rows="3"
+                  :disabled="loading"
+                />
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              @click="addBlock"
+              :disabled="loading"
+              class="w-full justify-center gap-2"
+            >
+              <Plus class="h-4 w-4" />
+              Ajouter un bloc
+            </Button>
+
+            <p v-if="validationErrors.blocks" class="text-sm text-red-600">
+              {{ validationErrors.blocks }}
+            </p>
+          </div>
+        </template>
       </form>
     </div>
 

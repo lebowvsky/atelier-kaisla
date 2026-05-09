@@ -29,9 +29,10 @@ const handleClearError = () => clearError({ redirect: '/' })
 <template>
   <div class="error-page">
     <main class="error-page__main">
-      <div class="error-page__container">
+      <div class="error-page__container" lang="fr">
         <p class="error-page__status">{{ error.statusCode }}</p>
         <h1 class="error-page__title">{{ title }}</h1>
+        <span class="error-page__hairline" aria-hidden="true" />
         <p class="error-page__description">{{ description }}</p>
         <div class="error-page__actions">
           <button
@@ -55,7 +56,7 @@ const handleClearError = () => clearError({ redirect: '/' })
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: $color-gray-100;
+  background-color: $color-canvas;
 }
 
 .error-page__main {
@@ -73,21 +74,15 @@ const handleClearError = () => clearError({ redirect: '/' })
 }
 
 .error-page__status {
-  font-size: 4rem;
-  font-weight: $font-weight-bold;
-  color: $color-gray-300;
-  margin: 0 0 $spacing-sm;
-  line-height: 1;
-
-  @include tablet {
-    font-size: 6rem;
-  }
+  @include eyebrow;
+  margin: 0 0 $spacing-md;
 }
 
 .error-page__title {
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
-  color: $color-black;
+  color: $color-ink;
+  letter-spacing: $letter-spacing-tight;
   margin: 0 0 $spacing-md;
   line-height: $line-height-tight;
 
@@ -96,11 +91,17 @@ const handleClearError = () => clearError({ redirect: '/' })
   }
 }
 
+.error-page__hairline {
+  @include hairline($color-fjord, 48px);
+  margin: 0 auto $spacing-md;
+}
+
 .error-page__description {
   font-size: $font-size-base;
-  color: $color-gray-600;
+  color: $color-ink-soft;
   line-height: $line-height-base;
-  margin: 0 0 $spacing-xl;
+  margin: 0 auto $spacing-xl;
+  max-width: 62ch;
 
   @include tablet {
     font-size: $font-size-lg;
@@ -123,43 +124,59 @@ const handleClearError = () => clearError({ redirect: '/' })
 .error-page__button {
   display: inline-block;
   padding: $spacing-sm $spacing-lg;
-  background-color: $color-black;
-  color: $color-white;
+  background-color: $color-ink;
+  color: $color-canvas;
   border: none;
   font-family: inherit;
   font-size: $font-size-base;
   cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
 
-  &:hover,
-  &:focus {
-    background-color: $color-gray-900;
-    transform: translateY(-2px);
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform $transition-fast,
+      box-shadow $transition-fast;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
   }
 
-  &:focus {
-    outline: 2px solid $color-black;
-    outline-offset: 2px;
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
+    outline-offset: 4px;
   }
 }
 
 .error-page__link {
-  color: $color-black;
-  text-decoration: underline;
+  position: relative;
+  color: $color-ink;
+  text-decoration: none;
   font-size: $font-size-base;
   padding: $spacing-sm $spacing-md;
-  transition: opacity $transition-fast;
 
-  &:hover,
-  &:focus {
-    opacity: 0.7;
+  &::after {
+    content: '';
+    position: absolute;
+    left: $spacing-md;
+    right: $spacing-md;
+    bottom: calc($spacing-sm - 2px);
+    height: 1px;
+    background-color: currentColor;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: bottom $transition-fast;
+    }
   }
 
-  &:focus {
-    outline: 2px solid $color-black;
+  &:hover::after {
+    bottom: calc($spacing-sm - 4px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-fjord-deep;
     outline-offset: 2px;
+    border-radius: 2px;
   }
 }
 </style>
