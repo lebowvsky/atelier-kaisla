@@ -107,10 +107,9 @@ const getGridItemClasses = (_image: GalleryImage): string => {
           :alt="image.alt"
           class="grid-item__image"
           loading="lazy"
-          format="webp"
-          width="600"
-          height="600"
-          sizes="sm:100vw md:50vw lg:25vw"
+          width="220"
+          height="220"
+          sizes="100vw sm:50vw lg:220px"
         />
         <div v-else class="grid-item__placeholder">
           <span class="grid-item__placeholder-text">

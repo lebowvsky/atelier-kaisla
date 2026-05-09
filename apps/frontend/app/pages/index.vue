@@ -72,21 +72,11 @@ const introHtml = computed(() => {
 })
 
 // Hero background image from API (full URL stored in DB).
-// When an image is available, it is used as a CSS background-image with
-// a warm ink-toned overlay for text readability. Without an image,
-// a soft canvas gradient fallback is used and text adopts ink colors.
+// Rendered as a NuxtPicture so the browser can pick AVIF/WebP variants
+// and the right resolution from srcset. A separate overlay element
+// reproduces the previous gradient for text readability.
 const heroImageUrl = computed(() => heroContent.value?.image || null)
 const heroImageAlt = computed(() => heroContent.value?.imageAlt || '')
-
-const heroStyle = computed(() => {
-  if (!heroImageUrl.value) return {}
-  return {
-    backgroundImage: `linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.30) 60%, rgba(0, 0, 0, 0.55) 100%), url(${heroImageUrl.value})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-  }
-})
 
 // Fetch home grid images and hero content using useAsyncData for SSR support.
 // useAsyncData blocks SSR rendering until data is available,
@@ -108,14 +98,6 @@ useSeo({
   image: '/logo-kaisla.png',
   type: 'website'
 })
-
-// Preload LCP hero image (CSS background-image cannot be optimized via NuxtImg).
-// Improves LCP by hinting the browser to start fetching the hero image early.
-useHead({
-  link: () => heroImageUrl.value
-    ? [{ rel: 'preload', as: 'image', href: heroImageUrl.value, fetchpriority: 'high' }]
-    : []
-})
 </script>
 
 <template>
@@ -123,9 +105,21 @@ useHead({
     <!-- Hero -->
     <section
       :class="['hero', { 'hero--with-image': heroImageUrl }]"
-      :style="heroStyle"
       aria-labelledby="hero-title"
     >
+      <NuxtPicture
+        v-if="heroImageUrl"
+        :src="heroImageUrl"
+        :alt="heroImageAlt"
+        class="hero__media"
+        :img-attrs="{ class: 'hero__img', fetchpriority: 'high' }"
+        sizes="100vw lg:1920px"
+        width="1920"
+        height="900"
+        preload
+        placeholder
+      />
+      <div v-if="heroImageUrl" class="hero__overlay" aria-hidden="true" />
       <div class="hero__content">
         <span v-if="heroImageAlt" class="visually-hidden">{{ heroImageAlt }}</span>
         <span class="hero__hairline" aria-hidden="true" />
@@ -200,7 +194,7 @@ useHead({
         <span class="social-section__eyebrow">{{ socialEyebrow }}</span>
         <h2 id="social-section-title" class="social-section__title">{{ socialTitle }}</h2>
         <span class="social-section__hairline" aria-hidden="true" />
-        <SocialShare />
+        <LazySocialShare hydrate-on-visible />
       </div>
     </section>
   </div>
@@ -217,12 +211,15 @@ useHead({
 
 // --- Hero ---
 .hero {
+  position: relative;
+  isolation: isolate;
   background: linear-gradient(135deg, $color-canvas 0%, $color-canvas-soft 100%);
   padding: $spacing-2xl $spacing-md;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: clamp(40vh, 50vh, 520px);
+  overflow: hidden;
 
   @include tablet {
     padding: $spacing-3xl $spacing-lg;
@@ -258,7 +255,35 @@ useHead({
   }
 }
 
+.hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  display: block;
+
+  :deep(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+}
+
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.30) 60%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
 .hero__content {
+  position: relative;
   max-width: $container-content-width;
   width: 100%;
   margin: 0 auto;

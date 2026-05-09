@@ -149,9 +149,10 @@ const legalLinks = computed<NavigationItem[]>(() => [
         <!-- Social Media Section -->
         <div class="footer__social">
           <h3 class="footer__social-title">Connect With Us</h3>
-          <SocialShare
+          <LazySocialShare
             theme="dark"
             :compact="true"
+            hydrate-on-visible
           />
         </div>
       </div>

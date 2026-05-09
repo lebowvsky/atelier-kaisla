@@ -168,7 +168,7 @@ useCollectionPageSchema('Journal')
           {{ socialTitle }}
         </h2>
         <span class="blog-social__hairline" aria-hidden="true" />
-        <SocialShare />
+        <LazySocialShare hydrate-on-visible />
       </div>
     </section>
   </div>

@@ -72,5 +72,25 @@ export default defineNuxtConfig({
       'api.lebowvsky.com',
       'localhost'
     ]
+  },
+
+  nitro: {
+    compressPublicAssets: { gzip: true, brotli: true },
+    routeRules: {
+      // IPX-derived images: parameters and target size are hashed into the
+      // path, so any change produces a new URL. Safe to mark immutable.
+      '/_ipx/**': {
+        headers: {
+          'cache-control': 'public, max-age=31536000, immutable'
+        }
+      },
+      // SSR HTML: short revalidation to absorb CMS edits quickly while
+      // still allowing intermediate caches to serve a fresh copy.
+      '/**': {
+        headers: {
+          'cache-control': 'public, max-age=0, must-revalidate'
+        }
+      }
+    }
   }
 })

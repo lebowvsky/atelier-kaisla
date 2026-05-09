@@ -216,7 +216,7 @@ useSeo({
         <span class="about-social__eyebrow">{{ socialEyebrow }}</span>
         <h2 id="about-social-title" class="about-social__title">{{ socialTitle }}</h2>
         <span class="about-social__hairline" aria-hidden="true" />
-        <SocialShare />
+        <LazySocialShare hydrate-on-visible />
       </div>
     </section>
   </div>
