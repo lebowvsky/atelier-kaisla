@@ -117,11 +117,22 @@ apps/
 │   │   └── utils/         # Pure utility functions
 │   └── public/            # Static assets
 ├── backoffice/        # Nuxt 4 admin panel
+│   └── app/
+│       ├── components/   # Editors mirroring backend modules
+│       │   ├── products/
+│       │   ├── page-content/
+│       │   ├── about-sections/
+│       │   ├── blog/
+│       │   └── contact-links/
+│       └── pages/        # login, products, pages, about, blog, contact-links, settings/
 └── backend/           # NestJS API
     └── src/
-        ├── *.module.ts       # NestJS modules
-        ├── *.controller.ts   # Route controllers
-        └── *.service.ts      # Business logic
+        ├── modules/         # Feature modules (auth, products, page-content,
+        │                    # about-sections, blog, contact-links, upload)
+        ├── entities/        # TypeORM entities
+        ├── common/          # Shared providers (guards, interceptors, filters)
+        ├── config/          # App configuration
+        └── database/        # TypeORM datasource + migrations
 
 packages/              # Shared code (future use)
 ├── shared-types/
@@ -321,8 +332,10 @@ make prod-logs
 
 ### Frontend
 - Fully responsive navigation bar with mobile menu
-- 5 main pages (Home, Wall Hanging, Rugs, About, Blog)
+- Public pages: Home, Wall Hanging (list + `[id]` detail), Rugs (list + `[id]` detail), About, Blog (list + `[id]` detail)
 - **Real API integration** for products (wall hangings and rugs)
+- **CMS-driven sections** rendered from `page-content` API (story, info-blocks, craft section, gallery)
+- Product detail pages with gallery, info, related artworks, social share
 - SEO optimization with meta tags
 - Accessibility features (ARIA, keyboard navigation)
 - TypeScript support throughout
@@ -330,14 +343,37 @@ make prod-logs
 
 ### Backend
 - NestJS REST API with TypeORM
-- Products module with full CRUD operations
+- Modules: `products`, `page-content`, `about-sections`, `blog`, `contact-links`, `auth`, `upload`
+- Entities: `Product`, `ProductImage`, `PageContent`, `PageContentBlock`, `AboutSection`, `BlogArticle`, `BlogArticleImage`, `BlogTag`, `ContactLink`, `User`
+- JWT-based authentication for admin endpoints (public decorator for open routes)
+- File uploads with image storage (`upload` module)
 - PostgreSQL database integration
 - Swagger API documentation (`http://localhost:4000/api/docs`)
 - CORS configured for frontend/backoffice
-- Database seeding capabilities
+- Database seeding + TypeORM migrations
 
 ### Backoffice
-- Starter template ready for development
+- Authenticated admin panel (`login.vue`)
+- Editors: products, pages (CMS sections + info-blocks + craft section), about, blog, contact-links, settings/credentials
+- Component organization mirrors backend modules under `app/components/{products,page-content,about-sections,blog,contact-links}`
+
+## CMS Architecture
+
+The CMS is built around a generic `page-content` table with a `(page, section)` unique constraint, allowing one editable entry per section per page (e.g. `wall-hanging/info`, `rugs/craft`).
+
+### Key concepts
+- **`PageContent`**: a section on a page. Holds `eyebrow`, `title`, `content`, `image`/`imageAlt`, `metadata` (jsonb), `isPublished`, `sortOrder`.
+- **`PageContentBlock`**: child rows attached to a `PageContent` (eager-loaded), used to render variable lists of info-blocks (title + description + sortOrder). Cascade delete on parent removal.
+- **`AboutSection`**: dedicated entity for the About page sections (separate from `PageContent`).
+
+### Endpoints
+- `GET /api/page-content/:page/:section` — public single section
+- `GET /api/page-content/all` — backoffice (all entries including unpublished)
+- `POST /api/page-content/with-upload` — multipart create with image
+- `PATCH`/`DELETE /api/page-content/:id` — admin updates
+
+### Frontend rendering
+Frontend pages fetch their CMS sections via composables and render them through dedicated components (e.g. `StorySection`, `TheProductInfoSection`, `TheProductGallerySection`). New section types should follow this convention: one `(page, section)` row + a dedicated render component.
 
 ## Testing API Integration
 
