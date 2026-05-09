@@ -178,7 +178,7 @@ useSeo({
     <!-- Sections from API (Adapter + Strategy patterns) -->
     <div v-else class="about-stories" lang="fr">
       <StorySection
-        v-for="(story, index) in stories"
+        v-for="story in stories"
         :key="story.id"
         :id="story.id"
         :eyebrow="story.eyebrow ?? ''"
