@@ -16,16 +16,6 @@ import type { PageContent } from '~/types/page-content'
 export function usePageContent(page: string, section: string) {
   const config = useRuntimeConfig()
 
-  const getApiUrl = (): string => {
-    if (import.meta.client) {
-      if (process.env.NODE_ENV === 'production') {
-        return config.public.apiUrl
-      }
-      return 'http://localhost:4000/api'
-    }
-    return config.public.apiUrl
-  }
-
   const stateKey = `page-content-${page}-${section}`
   const content = useState<PageContent | null>(`${stateKey}`, () => null)
   const loading = useState<boolean>(`${stateKey}-loading`, () => false)
@@ -36,10 +26,7 @@ export function usePageContent(page: string, section: string) {
     error.value = null
 
     try {
-      const apiUrl = getApiUrl()
-      const url = `${apiUrl}/page-content/${page}/${section}`
-
-      console.log(`[usePageContent] Fetching from: ${url}`)
+      const url = `${config.public.apiUrl}/page-content/${page}/${section}`
 
       const data = await $fetch<PageContent>(url, {
         timeout: 10000,
