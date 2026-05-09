@@ -8,8 +8,8 @@
  */
 export const PAGE_SECTIONS = {
   home: ['hero', 'gallery', 'intro', 'social'],
-  rugs: ['intro', 'info'],
-  'wall-hanging': ['intro', 'info'],
+  rugs: ['intro', 'info', 'craft'],
+  'wall-hanging': ['intro', 'info', 'craft'],
   about: ['hero', 'cta', 'social'],
   blog: ['hero', 'articles', 'social'],
 } as const satisfies Record<string, readonly string[]>
