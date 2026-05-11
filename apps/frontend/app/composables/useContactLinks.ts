@@ -136,21 +136,7 @@ function adaptEmailToContactInfo(emailLink: ContactLink): ContactInfo {
  * - Provides helper methods for filtering by type
  */
 export function useContactLinks() {
-  const config = useRuntimeConfig()
-
-  /**
-   * Get API URL based on environment and execution context
-   * Same logic as useProducts/useAboutSections for consistency
-   */
-  const getApiUrl = (): string => {
-    if (import.meta.client) {
-      if (process.env.NODE_ENV === 'production') {
-        return config.public.apiUrl
-      }
-      return 'http://localhost:4000/api'
-    }
-    return config.public.apiUrl
-  }
+  const { apiFetch } = useApi()
 
   // Use Nuxt's useState for SSR-safe shared state.
   // useState serializes state from server to client via Nuxt payload,
@@ -168,12 +154,7 @@ export function useContactLinks() {
     error.value = null
 
     try {
-      const apiUrl = getApiUrl()
-      const url = `${apiUrl}/contact-links`
-
-      const data = await $fetch<ContactLink[]>(url, {
-        timeout: 10000,
-      })
+      const data = await apiFetch<ContactLink[]>('/contact-links')
 
       if (data && Array.isArray(data)) {
         // Filter out links with unsafe URLs to prevent XSS

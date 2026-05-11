@@ -79,17 +79,7 @@ const heroSubtitle = computed(() => {
 // Fetch about sections from backend API using useAsyncData for proper SSR hydration.
 // useAsyncData transfers fetched data from server to client via Nuxt payload,
 // preventing hydration mismatches caused by re-fetching on client with different URLs.
-const config = useRuntimeConfig()
-
-const getApiUrl = (): string => {
-  if (import.meta.client) {
-    if (process.env.NODE_ENV === 'production') {
-      return config.public.apiUrl
-    }
-    return 'http://localhost:4000/api'
-  }
-  return config.public.apiUrl
-}
+const { apiFetch } = useApi()
 
 await Promise.all([
   fetchHero(),
@@ -99,7 +89,7 @@ await Promise.all([
 
 const { data: aboutSectionsData, pending: loading, error: fetchError } = await useAsyncData(
   'about-sections',
-  () => $fetch<AboutSection[]>(`${getApiUrl()}/about-sections`, { timeout: 10000 }),
+  () => apiFetch<AboutSection[]>('/about-sections'),
   { server: true }
 )
 

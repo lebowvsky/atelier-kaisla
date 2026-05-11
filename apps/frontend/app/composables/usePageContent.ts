@@ -14,7 +14,7 @@
 import type { PageContent } from '~/types/page-content'
 
 export function usePageContent(page: string, section: string) {
-  const config = useRuntimeConfig()
+  const { apiFetch } = useApi()
 
   const stateKey = `page-content-${page}-${section}`
   const content = useState<PageContent | null>(`${stateKey}`, () => null)
@@ -26,11 +26,7 @@ export function usePageContent(page: string, section: string) {
     error.value = null
 
     try {
-      const url = `${config.public.apiUrl}/page-content/${page}/${section}`
-
-      const data = await $fetch<PageContent>(url, {
-        timeout: 10000,
-      })
+      const data = await apiFetch<PageContent>(`/page-content/${page}/${section}`)
 
       content.value = data ?? null
     } catch (e: unknown) {

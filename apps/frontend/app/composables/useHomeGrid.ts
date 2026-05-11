@@ -23,27 +23,7 @@ import type { GalleryImage } from '~/types/gallery'
 import type { ProductImage } from '~/types/product'
 
 export function useHomeGrid() {
-  const config = useRuntimeConfig()
-
-  /**
-   * Get API URL based on environment and execution context
-   *
-   * Development:
-   *   - Client-side: http://localhost:4000/api (browser can't access Docker hostnames)
-   *   - Server-side: uses runtime config (Docker hostname)
-   *
-   * Production:
-   *   - Both: uses runtime config (public API URL)
-   */
-  const getApiUrl = (): string => {
-    if (import.meta.client) {
-      if (process.env.NODE_ENV === 'production') {
-        return config.public.apiUrl
-      }
-      return 'http://localhost:4000/api'
-    }
-    return config.public.apiUrl
-  }
+  const { apiFetch } = useApi()
 
   // Use Nuxt's useState for SSR-safe shared state.
   // useState serializes state from server to client via Nuxt payload,
@@ -61,14 +41,7 @@ export function useHomeGrid() {
     error.value = null
 
     try {
-      const apiUrl = getApiUrl()
-      const url = `${apiUrl}/products/home-grid`
-
-      console.log(`[useHomeGrid] Fetching from: ${url}`)
-
-      const data = await $fetch<ProductImage[]>(url, {
-        timeout: 10000,
-      })
+      const data = await apiFetch<ProductImage[]>('/products/home-grid')
 
       if (data && Array.isArray(data)) {
         // Adapter Pattern: Convert ProductImage[] to GalleryImage[]

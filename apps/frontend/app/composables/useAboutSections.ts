@@ -53,21 +53,7 @@ function adaptAboutSectionToStory(section: AboutSection, index: number): Story {
  * - Falls back to mock data if API is unavailable
  */
 export function useAboutSections() {
-  const config = useRuntimeConfig()
-
-  /**
-   * Get API URL based on environment and execution context
-   * Same logic as useProducts for consistency
-   */
-  const getApiUrl = (): string => {
-    if (import.meta.client) {
-      if (process.env.NODE_ENV === 'production') {
-        return config.public.apiUrl
-      }
-      return 'http://localhost:4000/api'
-    }
-    return config.public.apiUrl
-  }
+  const { apiFetch } = useApi()
 
   const stories = ref<Story[]>([])
   const loading = ref(false)
@@ -81,14 +67,7 @@ export function useAboutSections() {
     error.value = null
 
     try {
-      const apiUrl = getApiUrl()
-      const url = `${apiUrl}/about-sections`
-
-      console.log(`[useAboutSections] Fetching from: ${url} (${import.meta.server ? 'server' : 'client'})`)
-
-      const data = await $fetch<AboutSection[]>(url, {
-        timeout: 10000,
-      })
+      const data = await apiFetch<AboutSection[]>('/about-sections')
 
       if (data && Array.isArray(data)) {
         console.log(`[useAboutSections] Fetched ${data.length} sections`)

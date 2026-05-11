@@ -91,35 +91,7 @@ export function adaptProductToArtwork(product: Product): Artwork {
  * Provides a clean interface for components to interact with the products API.
  */
 export function useProducts() {
-  const config = useRuntimeConfig()
-
-  /**
-   * Get API URL based on environment and execution context
-   *
-   * Development:
-   *   - Client-side: http://localhost:4000/api (browser can't access Docker hostnames)
-   *   - Server-side: http://backend:4000/api (Nuxt in Docker can access backend container)
-   *
-   * Production:
-   *   - Client-side: https://api.lebowvsky.com (public URL)
-   *   - Server-side: https://api.lebowvsky.com (public URL)
-   */
-  const getApiUrl = (): string => {
-    // Client-side (browser)
-    if (import.meta.client) {
-      // Production: use public API URL from environment
-      if (process.env.NODE_ENV === 'production') {
-        return config.public.apiUrl
-      }
-      // Development: force localhost (backend hostname not accessible from browser)
-      return 'http://localhost:4000/api'
-    }
-
-    // Server-side (SSR): always use environment variable
-    // Dev: http://backend:4000/api
-    // Prod: https://api.lebowvsky.com
-    return config.public.apiUrl
-  }
+  const { apiFetch, baseUrl } = useApi()
 
   // Reactive state
   const products = ref<Product[]>([])
@@ -138,16 +110,7 @@ export function useProducts() {
     error.value = null
 
     try {
-      const apiUrl = getApiUrl()
-      const url = `${apiUrl}/products/category/${category}`
-
-      console.log(`[useProducts] Fetching from: ${url} (${import.meta.server ? 'server' : 'client'})`)
-
-      // Use $fetch for more reliable SSR/client data fetching
-      const data = await $fetch<Product[]>(url, {
-        // Add timeout to prevent hanging
-        timeout: 10000,
-      })
+      const data = await apiFetch<Product[]>(`/products/category/${category}`)
 
       if (data && Array.isArray(data)) {
         console.log(`[useProducts] Fetched ${data.length} products`)
@@ -186,7 +149,6 @@ export function useProducts() {
     error.value = null
 
     try {
-      const apiUrl = getApiUrl()
       const queryParams = new URLSearchParams()
 
       if (params?.category) queryParams.append('category', params.category)
@@ -195,9 +157,10 @@ export function useProducts() {
       if (params?.page) queryParams.append('page', params.page.toString())
       if (params?.limit) queryParams.append('limit', params.limit.toString())
 
-      const url = `${apiUrl}/products${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
+      const path = `/products${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
 
-      const { data, error: fetchError } = await useFetch<ProductsResponse>(url, {
+      const { data, error: fetchError } = await useFetch<ProductsResponse>(path, {
+        baseURL: baseUrl,
         key: `products-all-${queryParams.toString()}`,
       })
 
@@ -233,10 +196,10 @@ export function useProducts() {
     error.value = null
 
     try {
-      const apiUrl = getApiUrl()
       const { data, error: fetchError } = await useFetch<Product>(
-        `${apiUrl}/products/${id}`,
+        `/products/${id}`,
         {
+          baseURL: baseUrl,
           key: `product-${id}`,
         }
       )

@@ -100,35 +100,7 @@ const cardConfig: ArtworkCardConfig = {
  * Fetch wall hangings using useAsyncData for proper SSR support
  * Pattern: Decorator Pattern - Loading/error states handled by Nuxt
  */
-const config = useRuntimeConfig()
-
-/**
- * Get API URL based on environment and execution context
- *
- * Development:
- *   - Client-side: http://localhost:4000/api (browser can't access Docker hostnames)
- *   - Server-side: http://backend:4000/api (Nuxt in Docker can access backend container)
- *
- * Production:
- *   - Client-side: https://api.lebowvsky.com (public URL)
- *   - Server-side: https://api.lebowvsky.com (public URL)
- */
-const getApiUrl = (): string => {
-  // Client-side (browser)
-  if (import.meta.client) {
-    // Production: use public API URL from environment
-    if (process.env.NODE_ENV === 'production') {
-      return config.public.apiUrl
-    }
-    // Development: force localhost (backend hostname not accessible from browser)
-    return 'http://localhost:4000/api'
-  }
-
-  // Server-side (SSR): always use environment variable
-  // Dev: http://backend:4000/api
-  // Prod: https://api.lebowvsky.com
-  return config.public.apiUrl
-}
+const { apiFetch } = useApi()
 
 await Promise.all([
   fetchIntro(),
@@ -137,11 +109,7 @@ await Promise.all([
 
 const { data: products, error, pending: loading } = await useAsyncData(
   'wall-hanging-products',
-  () => {
-    const url = `${getApiUrl()}/products/category/wall-hanging`
-    console.log(`[wall-hanging] Fetching from: ${url}`)
-    return $fetch<Product[]>(url)
-  }
+  () => apiFetch<Product[]>('/products/category/wall-hanging'),
 )
 
 // Convert products to artworks using adapter pattern

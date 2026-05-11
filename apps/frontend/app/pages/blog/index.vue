@@ -1,17 +1,7 @@
 <script setup lang="ts">
 import type { BlogArticle } from '~/types/blog-article'
 
-const config = useRuntimeConfig()
-
-const getApiUrl = (): string => {
-  if (import.meta.client) {
-    if (process.env.NODE_ENV === 'production') {
-      return config.public.apiUrl
-    }
-    return 'http://localhost:4000/api'
-  }
-  return config.public.apiUrl
-}
+const { apiFetch } = useApi()
 
 // Page content composables - fetch CMS content for hero, articles header and social section.
 const { content: heroContent, fetchSection: fetchHero } = usePageContent('blog', 'hero')
@@ -45,7 +35,7 @@ await Promise.all([
 
 const { data: articles, error, pending: loading } = await useAsyncData(
   'blog-articles',
-  () => $fetch<BlogArticle[]>(`${getApiUrl()}/blog`),
+  () => apiFetch<BlogArticle[]>('/blog'),
   { server: true }
 )
 
