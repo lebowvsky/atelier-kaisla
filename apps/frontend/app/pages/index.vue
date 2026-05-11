@@ -325,33 +325,12 @@ useSeo({
 }
 
 .hero__subtitle {
-  color: $color-ink-soft;
-  font-weight: $font-weight-normal;
-  font-size: $font-size-lg;
-  line-height: $line-height-relaxed;
+  @include hero-subtitle($font-size-lg, $font-size-md);
   max-width: 52ch;
-  text-align: left;
   margin-inline: auto;
 
   @include tablet {
-    font-size: $font-size-xl;
     margin-inline: 0;
-  }
-
-  :deep(p) {
-    margin: 0;
-  }
-
-  :deep(p + p) {
-    margin-top: $spacing-sm;
-  }
-
-  :deep(strong) {
-    font-weight: $font-weight-bold;
-  }
-
-  :deep(em) {
-    font-style: italic;
   }
 }
 

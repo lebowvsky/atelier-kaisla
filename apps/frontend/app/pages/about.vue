@@ -286,31 +286,7 @@ useSeo({
 }
 
 .about-hero__subtitle {
-  @include reading-column;
-  font-size: $font-size-lg;
-  color: $color-ink-soft;
-  line-height: $line-height-relaxed;
-  font-weight: $font-weight-normal;
-
-  @include tablet {
-    font-size: $font-size-xl;
-  }
-
-  :deep(p) {
-    margin: 0 0 $spacing-sm;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  :deep(strong) {
-    font-weight: $font-weight-bold;
-  }
-
-  :deep(em) {
-    font-style: italic;
-  }
+  @include hero-subtitle($font-size-lg, $font-size-xl);
 }
 
 // --- Story Sections Container ---

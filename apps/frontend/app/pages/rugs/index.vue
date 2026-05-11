@@ -311,30 +311,7 @@ useCollectionPageSchema('Rugs')
 }
 
 .page-header__description {
-  @include reading-column;
-  font-size: $font-size-base;
-  color: $color-ink-soft;
-  line-height: $line-height-relaxed;
-
-  @include tablet {
-    font-size: $font-size-lg;
-  }
-
-  :deep(p) {
-    margin: 0 0 $spacing-sm;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  :deep(strong) {
-    font-weight: $font-weight-bold;
-  }
-
-  :deep(em) {
-    font-style: italic;
-  }
+  @include hero-subtitle($font-size-base, $font-size-lg);
 }
 
 // --- Artwork Section ---

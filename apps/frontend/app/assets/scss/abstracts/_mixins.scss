@@ -42,6 +42,42 @@
   line-height: $line-height-base;
 }
 
+// Hero subtitle — lead paragraph under a hero title.
+// Accepts mobile/desktop font-size tokens so each page can tune its emphasis
+// while sharing color, weight, line-height and rich-text rendering rules.
+@mixin hero-subtitle($size-mobile: $font-size-lg, $size-desktop: $font-size-xl) {
+  font-size: $size-mobile;
+  font-weight: $font-weight-normal;
+  color: $color-ink-soft;
+  line-height: 1.5;
+  max-width: 62ch;
+  text-align: left;
+
+  @include tablet {
+    font-size: $size-desktop;
+  }
+
+  :deep(p) {
+    margin: 0 0 $spacing-sm;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  :deep(p + p) {
+    margin-top: $spacing-sm;
+  }
+
+  :deep(strong) {
+    font-weight: $font-weight-bold;
+  }
+
+  :deep(em) {
+    font-style: italic;
+  }
+}
+
 // Eyebrow label — uppercase small-caps style heading prefix.
 // Use above section titles to create editorial rhythm.
 @mixin eyebrow {

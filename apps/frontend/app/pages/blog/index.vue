@@ -238,15 +238,8 @@ useCollectionPageSchema('Journal')
 }
 
 .blog-hero__subtitle {
-  @include reading-column;
-  font-size: $font-size-lg;
-  color: $color-ink-soft;
-  line-height: $line-height-relaxed;
+  @include hero-subtitle($font-size-lg, $font-size-xl);
   margin: 0;
-
-  @include tablet {
-    font-size: $font-size-xl;
-  }
 }
 
 // --- Articles Section ---
