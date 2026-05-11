@@ -126,6 +126,14 @@ seed-docker-clean: ## Exécuter les seeders en mode clean dans Docker (dev)
 	@echo "$(YELLOW)Exécution des seeders en mode clean dans Docker...$(NC)"
 	docker exec atelier-kaisla-backend-dev npm run seed:clean
 
+seed-auth-docker: ## Créer l'utilisateur admin dans Docker (dev)
+	@echo "$(GREEN)Création de l'utilisateur admin dans Docker...$(NC)"
+	docker exec atelier-kaisla-backend-dev npm run seed:auth
+
+seed-auth-docker-clean: ## Recréer l'utilisateur admin (purge + seed) dans Docker (dev)
+	@echo "$(YELLOW)Recréation de l'utilisateur admin (clean) dans Docker...$(NC)"
+	docker exec atelier-kaisla-backend-dev npm run seed:auth:clean
+
 seed-enhanced: ## Exécuter le seeder amélioré (évite les doublons) - dev
 	@echo "$(GREEN)Exécution du seeder amélioré (depuis le host)...$(NC)"
 	@cd apps/backend && npm run seed:enhanced
