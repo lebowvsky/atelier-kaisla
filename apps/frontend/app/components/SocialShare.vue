@@ -81,9 +81,9 @@ useAsyncData('contact-links', () => fetchSocialData(), {
  */
 const containerClasses = computed(() => {
   return {
-    'social-share': true,
-    'social-share--compact': props.compact,
-    [`social-share--${props.theme}`]: true
+    'contact-strip': true,
+    'contact-strip--compact': props.compact,
+    [`contact-strip--${props.theme}`]: true
   }
 })
 </script>
@@ -91,19 +91,19 @@ const containerClasses = computed(() => {
 <template>
   <div :class="containerClasses">
     <!-- Social Media Links Section -->
-    <div class="social-share__links">
+    <div class="contact-strip__links">
       <a
         v-for="link in socialLinks"
         :key="link.platform"
         :href="link.url"
         :aria-label="link.ariaLabel"
-        class="social-share__link"
+        class="contact-strip__link"
         target="_blank"
         rel="noopener noreferrer"
       >
         <!-- Inline SVG Icon -->
         <svg
-          class="social-share__icon"
+          class="contact-strip__icon"
           :aria-hidden="true"
           viewBox="0 0 24 24"
           fill="currentColor"
@@ -113,19 +113,19 @@ const containerClasses = computed(() => {
         </svg>
 
         <!-- Platform Name (visible on hover/focus for context) -->
-        <span class="social-share__name">{{ link.name }}</span>
+        <span class="contact-strip__name">{{ link.name }}</span>
       </a>
     </div>
 
     <!-- Contact Information Section -->
-    <div class="social-share__contact">
-      <p class="social-share__contact-label">
+    <div class="contact-strip__details">
+      <p class="contact-strip__details-label">
         {{ contactInfo.label }}
       </p>
       <a
         :href="`mailto:${contactInfo.email}`"
         :aria-label="contactInfo.ariaLabel"
-        class="social-share__email"
+        class="contact-strip__email"
       >
         {{ contactInfo.email }}
       </a>
@@ -134,7 +134,7 @@ const containerClasses = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-.social-share {
+.contact-strip {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -156,7 +156,7 @@ const containerClasses = computed(() => {
   }
 }
 
-.social-share__links {
+.contact-strip__links {
   display: flex;
   gap: $spacing-md;
   align-items: center;
@@ -168,7 +168,7 @@ const containerClasses = computed(() => {
   }
 }
 
-.social-share__link {
+.contact-strip__link {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -213,7 +213,7 @@ const containerClasses = computed(() => {
   }
 
   // Light theme (used on dark backdrops only — keep canvas/stone)
-  .social-share--light & {
+  .contact-strip--light & {
     color: $color-canvas;
 
     &:hover {
@@ -222,7 +222,7 @@ const containerClasses = computed(() => {
   }
 }
 
-.social-share__icon {
+.contact-strip__icon {
   width: 32px;
   height: 32px;
   transition: inherit;
@@ -233,7 +233,7 @@ const containerClasses = computed(() => {
   }
 }
 
-.social-share__name {
+.contact-strip__name {
   // Visually hidden but accessible to screen readers
   position: absolute;
   width: 1px;
@@ -246,7 +246,7 @@ const containerClasses = computed(() => {
   border: 0;
 
   // Show on focus for keyboard users — editorial ink/canvas chip
-  .social-share__link:focus & {
+  .contact-strip__link:focus & {
     position: static;
     width: auto;
     height: auto;
@@ -263,7 +263,7 @@ const containerClasses = computed(() => {
   }
 }
 
-.social-share__contact {
+.contact-strip__details {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -271,19 +271,19 @@ const containerClasses = computed(() => {
   text-align: center;
 }
 
-.social-share__contact-label {
+.contact-strip__details-label {
   font-size: $font-size-base;
   color: $color-ink-soft;
   margin: 0;
   font-weight: $font-weight-medium;
   line-height: $line-height-base;
 
-  .social-share--light & {
+  .contact-strip--light & {
     color: $color-canvas;
   }
 }
 
-.social-share__email {
+.contact-strip__email {
   font-size: $font-size-lg;
   color: $color-ink;
   text-decoration: none;
@@ -306,7 +306,7 @@ const containerClasses = computed(() => {
     outline-offset: 4px;
   }
 
-  .social-share--light & {
+  .contact-strip--light & {
     color: $color-canvas;
 
     &:hover {
@@ -317,22 +317,22 @@ const containerClasses = computed(() => {
 
 // Responsive adjustments
 @include tablet {
-  .social-share__contact-label {
+  .contact-strip__details-label {
     font-size: $font-size-lg;
   }
 
-  .social-share__email {
+  .contact-strip__email {
     font-size: $font-size-xl;
   }
 }
 
 // Print styles: show email, hide icons
 @media print {
-  .social-share__links {
+  .contact-strip__links {
     display: none;
   }
 
-  .social-share__email {
+  .contact-strip__email {
     text-decoration: underline;
   }
 }

@@ -143,12 +143,12 @@ useSeo({
     </section>
 
     <!-- Social Share -->
-    <section class="social-section" aria-labelledby="social-section-title">
-      <div class="container social-section__container">
+    <section class="connect-section" aria-labelledby="connect-section-title">
+      <div class="container connect-section__container">
         <template v-if="!socialIsEmpty">
-          <span v-if="socialContent?.eyebrow" class="social-section__eyebrow">{{ socialContent.eyebrow }}</span>
-          <h2 v-if="socialContent?.title" id="social-section-title" class="social-section__title">{{ socialContent.title }}</h2>
-          <span class="social-section__hairline" aria-hidden="true" />
+          <span v-if="socialContent?.eyebrow" class="connect-section__eyebrow">{{ socialContent.eyebrow }}</span>
+          <h2 v-if="socialContent?.title" id="connect-section-title" class="connect-section__title">{{ socialContent.title }}</h2>
+          <span class="connect-section__hairline" aria-hidden="true" />
         </template>
         <LazySocialShare hydrate-on-visible />
       </div>
@@ -573,7 +573,7 @@ useSeo({
 }
 
 // --- Social Share ---
-.social-section {
+.connect-section {
   padding: $spacing-2xl $spacing-md;
   background-color: $color-canvas;
 
@@ -582,7 +582,7 @@ useSeo({
   }
 }
 
-.social-section__container {
+.connect-section__container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -590,12 +590,12 @@ useSeo({
   gap: $spacing-md;
 }
 
-.social-section__eyebrow {
+.connect-section__eyebrow {
   @include eyebrow;
   margin: 0;
 }
 
-.social-section__title {
+.connect-section__title {
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
   color: $color-ink;
@@ -608,7 +608,7 @@ useSeo({
   }
 }
 
-.social-section__hairline {
+.connect-section__hairline {
   @include hairline($color-fjord, 1px);
   display: block;
   width: 48px;

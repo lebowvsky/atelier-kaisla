@@ -131,20 +131,20 @@ useCollectionPageSchema('Journal')
 
     <!-- Social Contact Section -->
     <section
-      class="blog-social"
-      aria-labelledby="blog-social-title"
+      class="blog-connect"
+      aria-labelledby="blog-connect-title"
     >
-      <div class="container blog-social__container" lang="fr">
+      <div class="container blog-connect__container" lang="fr">
         <template v-if="!socialIsEmpty">
-          <span v-if="socialContent?.eyebrow" class="blog-social__eyebrow">{{ socialContent.eyebrow }}</span>
+          <span v-if="socialContent?.eyebrow" class="blog-connect__eyebrow">{{ socialContent.eyebrow }}</span>
           <h2
             v-if="socialContent?.title"
-            id="blog-social-title"
-            class="blog-social__title"
+            id="blog-connect-title"
+            class="blog-connect__title"
           >
             {{ socialContent.title }}
           </h2>
-          <span class="blog-social__hairline" aria-hidden="true" />
+          <span class="blog-connect__hairline" aria-hidden="true" />
         </template>
         <LazySocialShare hydrate-on-visible />
       </div>
@@ -336,7 +336,7 @@ useCollectionPageSchema('Journal')
 }
 
 // --- Social Section ---
-.blog-social {
+.blog-connect {
   padding: $spacing-2xl $spacing-md;
   background-color: $color-canvas;
 
@@ -345,7 +345,7 @@ useCollectionPageSchema('Journal')
   }
 }
 
-.blog-social__container {
+.blog-connect__container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -353,12 +353,12 @@ useCollectionPageSchema('Journal')
   gap: $spacing-md;
 }
 
-.blog-social__eyebrow {
+.blog-connect__eyebrow {
   @include eyebrow;
   margin: 0;
 }
 
-.blog-social__title {
+.blog-connect__title {
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
   color: $color-ink;
@@ -371,7 +371,7 @@ useCollectionPageSchema('Journal')
   }
 }
 
-.blog-social__hairline {
+.blog-connect__hairline {
   @include hairline($color-fjord, 1px);
   display: block;
   width: 48px;
