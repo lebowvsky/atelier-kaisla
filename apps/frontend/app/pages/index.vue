@@ -13,70 +13,23 @@
 // useHomeGrid uses useState internally for SSR-safe state transfer.
 const { images: homeGridImages, loading: gridLoading, fetchHomeGrid } = useHomeGrid()
 
-// Page content composable - fetches CMS content for the hero section.
-const { content: heroContent, fetchSection: fetchHero } = usePageContent('home', 'hero')
-
-// Page content composable - fetches CMS content for the intro section.
-const { content: introContent, fetchSection: fetchIntro } = usePageContent('home', 'intro')
-
-// Page content composable - fetches CMS content for the gallery section.
-const { content: galleryContent, fetchSection: fetchGallery } = usePageContent('home', 'gallery')
-
-// Page content composable - fetches CMS content for the social section.
-const { content: socialContent, fetchSection: fetchSocial } = usePageContent('home', 'social')
-
-// Hero computed values with static fallback if API returns nothing.
-const heroTitle = computed(() => heroContent.value?.title || 'Welcome to Atelier Kaisla')
-const heroSubtitle = computed(
-  () => heroContent.value?.content || 'Handcrafted wall art and rugs, designed with passion',
-)
-const heroEyebrow = computed(
-  () => heroContent.value?.eyebrow || 'Atelier · Tapis & tentures murales',
-)
+const { content: heroContent, isEmpty: heroIsEmpty, fetchSection: fetchHero } = usePageContent('home', 'hero')
+const { content: introContent, isEmpty: introIsEmpty, fetchSection: fetchIntro } = usePageContent('home', 'intro')
+const { content: galleryContent, isEmpty: galleryIsEmpty, fetchSection: fetchGallery } = usePageContent('home', 'gallery')
+const { content: socialContent, isEmpty: socialIsEmpty, fetchSection: fetchSocial } = usePageContent('home', 'social')
 
 const sanitizedHeroSubtitle = computed(() => {
-  const raw = heroSubtitle.value
+  const raw = heroContent.value?.content ?? ''
+  if (!raw) return ''
   return isHtmlContent(raw) ? sanitizeHtml(raw) : `<p>${raw}</p>`
 })
 
-// Intro computed values with static fallback if API returns nothing.
-const introTitle = computed(() => introContent.value?.title || "Qu'est-ce que Kaisla ?")
-const introEyebrow = computed(() => introContent.value?.eyebrow || 'Notre démarche')
+const galleryDescription = computed(() => sanitizeHtml(galleryContent.value?.content ?? ''))
 
-// Gallery computed values with static fallbacks if API returns nothing.
-const galleryEyebrow = computed(() => galleryContent.value?.eyebrow || 'Collection')
-const galleryTitle = computed(() => galleryContent.value?.title || 'Our Collection')
-const defaultGalleryDescription = '<p>Explore our handcrafted pieces. Click on any image to view it in full size.</p>'
-const galleryDescription = computed(() => {
-  const raw = galleryContent.value?.content
-  return isEmptyHtml(raw) ? defaultGalleryDescription : sanitizeHtml(raw!)
-})
+const introHtml = computed(() => sanitizeHtml(introContent.value?.content ?? ''))
 
-// Social computed values with static fallbacks if API returns nothing.
-const socialEyebrow = computed(() => socialContent.value?.eyebrow || 'Restons en contact')
-const socialTitle = computed(
-  () => socialContent.value?.title || 'Suivez-nous et contactez-nous',
-)
-
-const defaultIntroHtml = `<ul>
-  <li>Un atelier artisanal dédié à la création de pièces murales uniques</li>
-  <li>Chaque création est pensée et réalisée à la main avec soin</li>
-  <li>Des matériaux naturels et durables pour un artisanat responsable</li>
-  <li>Un style contemporain inspiré par la nature et les formes organiques</li>
-  <li>Des œuvres qui transforment votre intérieur en un espace chaleureux et authentique</li>
-</ul>`
-
-const introHtml = computed(() => {
-  const raw = introContent.value?.content
-  return sanitizeHtml(raw || defaultIntroHtml)
-})
-
-// Hero background image from API (full URL stored in DB).
-// Rendered as a NuxtPicture so the browser can pick AVIF/WebP variants
-// and the right resolution from srcset. A separate overlay element
-// reproduces the previous gradient for text readability.
-const heroImageUrl = computed(() => heroContent.value?.image || null)
-const heroImageAlt = computed(() => heroContent.value?.imageAlt || '')
+const heroImageUrl = computed(() => heroContent.value?.image ?? null)
+const heroImageAlt = computed(() => heroContent.value?.imageAlt ?? '')
 
 // Fetch home grid images and hero content using useAsyncData for SSR support.
 // useAsyncData blocks SSR rendering until data is available,
@@ -104,6 +57,7 @@ useSeo({
   <div class="home-page">
     <!-- Hero -->
     <section
+      v-if="!heroIsEmpty"
       :class="['hero', { 'hero--with-image': heroImageUrl }]"
       aria-labelledby="hero-title"
     >
@@ -123,22 +77,22 @@ useSeo({
       <div class="hero__content">
         <span v-if="heroImageAlt" class="visually-hidden">{{ heroImageAlt }}</span>
         <span class="hero__hairline" aria-hidden="true" />
-        <span class="hero__eyebrow">{{ heroEyebrow }}</span>
-        <h1 id="hero-title" class="hero__title">{{ heroTitle }}</h1>
-        <div class="hero__subtitle" v-html="sanitizedHeroSubtitle" />
+        <span v-if="heroContent?.eyebrow" class="hero__eyebrow">{{ heroContent.eyebrow }}</span>
+        <h1 v-if="heroContent?.title" id="hero-title" class="hero__title">{{ heroContent.title }}</h1>
+        <div v-if="sanitizedHeroSubtitle" class="hero__subtitle" v-html="sanitizedHeroSubtitle" />
       </div>
     </section>
 
     <!-- Gallery -->
     <section v-if="homeGridImages.length > 0 || gridLoading" class="gallery-section">
       <div class="container">
-        <header class="gallery-section__header">
+        <header v-if="!galleryIsEmpty" class="gallery-section__header">
           <div class="gallery-section__heading">
-            <span class="gallery-section__eyebrow">{{ galleryEyebrow }}</span>
-            <h2 class="gallery-section__title">{{ galleryTitle }}</h2>
+            <span v-if="galleryContent?.eyebrow" class="gallery-section__eyebrow">{{ galleryContent.eyebrow }}</span>
+            <h2 v-if="galleryContent?.title" class="gallery-section__title">{{ galleryContent.title }}</h2>
             <span class="gallery-section__hairline" aria-hidden="true" />
           </div>
-          <div class="gallery-section__description" v-html="galleryDescription" />
+          <div v-if="galleryDescription" class="gallery-section__description" v-html="galleryDescription" />
         </header>
 
         <p v-if="gridLoading" role="status" class="gallery-section__loading">
@@ -177,23 +131,25 @@ useSeo({
     </section>
 
     <!-- Kaisla Intro -->
-    <section class="kaisla-intro" aria-labelledby="kaisla-intro-title">
+    <section v-if="!introIsEmpty" class="kaisla-intro" aria-labelledby="kaisla-intro-title">
       <div class="container kaisla-intro__container" lang="fr">
         <div class="kaisla-intro__heading">
-          <span class="kaisla-intro__eyebrow">{{ introEyebrow }}</span>
-          <h2 id="kaisla-intro-title" class="kaisla-intro__title">{{ introTitle }}</h2>
+          <span v-if="introContent?.eyebrow" class="kaisla-intro__eyebrow">{{ introContent.eyebrow }}</span>
+          <h2 v-if="introContent?.title" id="kaisla-intro-title" class="kaisla-intro__title">{{ introContent.title }}</h2>
           <span class="kaisla-intro__hairline" aria-hidden="true" />
         </div>
-        <div class="kaisla-intro__content" v-html="introHtml" />
+        <div v-if="introHtml" class="kaisla-intro__content" v-html="introHtml" />
       </div>
     </section>
 
     <!-- Social Share -->
     <section class="social-section" aria-labelledby="social-section-title">
       <div class="container social-section__container">
-        <span class="social-section__eyebrow">{{ socialEyebrow }}</span>
-        <h2 id="social-section-title" class="social-section__title">{{ socialTitle }}</h2>
-        <span class="social-section__hairline" aria-hidden="true" />
+        <template v-if="!socialIsEmpty">
+          <span v-if="socialContent?.eyebrow" class="social-section__eyebrow">{{ socialContent.eyebrow }}</span>
+          <h2 v-if="socialContent?.title" id="social-section-title" class="social-section__title">{{ socialContent.title }}</h2>
+          <span class="social-section__hairline" aria-hidden="true" />
+        </template>
         <LazySocialShare hydrate-on-visible />
       </div>
     </section>

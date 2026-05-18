@@ -50,7 +50,7 @@ const galleryImages = computed(() => props.product.productImages ?? [])
 // --- CMS savoir-faire block ---
 const cmsPageSlug = computed(() => (props.product.category === 'rug' ? 'rugs' : 'wall-hanging'))
 
-const { content: craftContent, fetchSection: fetchCraft } = usePageContent(
+const { content: craftContent, isEmpty: craftIsEmpty, fetchSection: fetchCraft } = usePageContent(
   cmsPageSlug.value,
   'craft',
 )
@@ -58,13 +58,7 @@ const { content: craftContent, fetchSection: fetchCraft } = usePageContent(
 // Trigger the SSR-safe fetch eagerly so the band is populated on first paint.
 await fetchCraft()
 
-const craftEyebrow = computed(() => craftContent.value?.eyebrow || 'Savoir-faire')
-
-const craftTitle = computed(() => craftContent.value?.title || 'Notre savoir-faire')
-
-const defaultCraftCopy = `<p>Chaque pièce est imaginée et tissée à la main dans notre atelier, selon des techniques traditionnelles transmises de génération en génération. Métier à tisser, nouage, finitions : tout est exécuté avec patience.</p><p>Nous travaillons exclusivement des fibres naturelles — laine, coton, lin, jute — souvent teintes avec des pigments végétaux. Chaque création demande plusieurs semaines de travail et porte les irrégularités délicates de la main.</p>`
-
-const craftBody = computed(() => sanitizeHtml(craftContent.value?.content || defaultCraftCopy))
+const craftBody = computed(() => sanitizeHtml(craftContent.value?.content ?? ''))
 </script>
 
 <template>
@@ -89,17 +83,19 @@ const craftBody = computed(() => sanitizeHtml(craftContent.value?.content || def
 
     <!-- Savoir-faire band — full bleed soft canvas -->
     <section
+      v-if="!craftIsEmpty"
       class="product-detail__craft"
       aria-labelledby="product-craft-title"
     >
       <div class="product-detail__craft-inner">
         <header class="product-detail__craft-header">
-          <span class="product-detail__craft-eyebrow">{{ craftEyebrow }}</span>
+          <span v-if="craftContent?.eyebrow" class="product-detail__craft-eyebrow">{{ craftContent.eyebrow }}</span>
           <h2
+            v-if="craftContent?.title"
             id="product-craft-title"
             class="product-detail__craft-title"
           >
-            {{ craftTitle }}
+            {{ craftContent.title }}
           </h2>
           <span
             class="product-detail__craft-hairline"
@@ -107,6 +103,7 @@ const craftBody = computed(() => sanitizeHtml(craftContent.value?.content || def
           />
         </header>
         <div
+          v-if="craftBody"
           class="product-detail__craft-body"
           v-html="craftBody"
         />

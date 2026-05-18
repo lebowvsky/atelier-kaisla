@@ -36,53 +36,14 @@
 import type { ArtworkCardConfig } from '~/types/artwork'
 
 import type { Product } from '~/types/product'
-import type { PageContentBlock } from '~/types/page-content'
 import { adaptProductToArtwork } from '~/composables/useProducts'
 
-const RUGS_INFO_FALLBACK: PageContentBlock[] = [
-  {
-    id: 'fallback-traditional-craftsmanship',
-    title: 'Traditional Craftsmanship',
-    description: 'Every rug is hand-knotted using centuries-old techniques, ensuring exceptional durability and quality. Each piece takes weeks to complete and is built to last generations.',
-    sortOrder: 0,
-  },
-  {
-    id: 'fallback-premium-natural-fibers',
-    title: 'Premium Natural Fibers',
-    description: 'We exclusively use the finest natural materials including pure new wool, organic cotton, and linen. Many rugs feature natural plant-based dyes for rich, lasting color.',
-    sortOrder: 1,
-  },
-  {
-    id: 'fallback-custom-commissions',
-    title: 'Custom Commissions',
-    description: 'Looking for a specific size or color palette? We create custom rugs tailored to your space and style preferences. Contact us to discuss your unique project.',
-    sortOrder: 2,
-  },
-]
+const { content: introContent, isEmpty: introIsEmpty, fetchSection: fetchIntro } = usePageContent('rugs', 'intro')
+const { content: infoContent, isEmpty: infoIsEmpty, fetchSection: fetchInfo } = usePageContent('rugs', 'info')
 
-// Page content composables - intro powers the page header (eyebrow + title +
-// description), info powers the lower information section.
-const { content: introContent, fetchSection: fetchIntro } = usePageContent('rugs', 'intro')
-const { content: infoContent, fetchSection: fetchInfo } = usePageContent('rugs', 'info')
+const infoBlocks = computed(() => infoContent.value?.blocks ?? [])
 
-// Intro computed values with static fallback if API returns nothing.
-const headerEyebrow = computed(() => introContent.value?.eyebrow || 'Collection')
-const introTitle = computed(() => introContent.value?.title || 'Rugs Collection')
-
-// Info section computed values with static fallbacks if API returns nothing.
-const infoEyebrow = computed(() => infoContent.value?.eyebrow || 'Why Atelier Kaisla')
-const infoTitle = computed(() => infoContent.value?.title || 'About our rugs')
-
-const infoBlocks = computed<PageContentBlock[]>(() =>
-  infoContent.value?.blocks?.length ? infoContent.value.blocks : RUGS_INFO_FALLBACK,
-)
-
-const defaultIntroDescription = '<p>Each rug is meticulously hand-knotted using traditional weaving techniques passed down through generations. Premium natural fibers, timeless patterns, and exceptional craftsmanship come together to create pieces that bring warmth, comfort, and enduring beauty to your living space.</p>'
-
-const introDescription = computed(() => {
-  const raw = introContent.value?.content
-  return sanitizeHtml(raw || defaultIntroDescription)
-})
+const introDescription = computed(() => sanitizeHtml(introContent.value?.content ?? ''))
 
 /**
  * Card configuration for rug display
@@ -137,13 +98,13 @@ useCollectionPageSchema('Rugs')
     <Breadcrumbs :items="[{ name: 'Rugs' }]" />
     <div class="container">
       <!-- Page Header -->
-      <header class="page-header">
+      <header v-if="!introIsEmpty" class="page-header">
         <div class="page-header__heading">
-          <span class="page-header__eyebrow">{{ headerEyebrow }}</span>
-          <h1 class="page-header__title">{{ introTitle }}</h1>
+          <span v-if="introContent?.eyebrow" class="page-header__eyebrow">{{ introContent.eyebrow }}</span>
+          <h1 v-if="introContent?.title" class="page-header__title">{{ introContent.title }}</h1>
           <span class="page-header__hairline" aria-hidden="true" />
         </div>
-        <div class="page-header__description" v-html="introDescription" />
+        <div v-if="introDescription" class="page-header__description" v-html="introDescription" />
       </header>
 
       <!-- Artwork Grid -->
@@ -187,21 +148,23 @@ useCollectionPageSchema('Rugs')
 
       <!-- Additional Information Section -->
       <section
+        v-if="!infoIsEmpty"
         class="info-section"
         aria-labelledby="info-heading"
       >
         <header class="info-section__header">
-          <span class="info-section__eyebrow">{{ infoEyebrow }}</span>
+          <span v-if="infoContent?.eyebrow" class="info-section__eyebrow">{{ infoContent.eyebrow }}</span>
           <h2
+            v-if="infoContent?.title"
             id="info-heading"
             class="info-section__title"
           >
-            {{ infoTitle }}
+            {{ infoContent.title }}
           </h2>
           <span class="info-section__hairline" aria-hidden="true" />
         </header>
 
-        <div class="info-section__content">
+        <div v-if="infoBlocks.length > 0" class="info-section__content">
           <div
             v-for="block in infoBlocks"
             :key="block.id ?? block.title"

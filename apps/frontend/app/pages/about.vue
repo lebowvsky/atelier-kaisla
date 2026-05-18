@@ -41,40 +41,13 @@
 import type { AboutSection } from '~/types/about-section'
 import type { Story } from '~/types/story'
 
-// Page content composable - fetches CMS content for the hero section.
-const { content: heroContent, fetchSection: fetchHero } = usePageContent('about', 'hero')
+const { content: heroContent, isEmpty: heroIsEmpty, fetchSection: fetchHero } = usePageContent('about', 'hero')
+const { content: ctaContent, isEmpty: ctaIsEmpty, fetchSection: fetchCta } = usePageContent('about', 'cta')
+const { content: socialContent, isEmpty: socialIsEmpty, fetchSection: fetchSocial } = usePageContent('about', 'social')
 
-// Page content composable - fetches CMS content for the CTA section.
-const { content: ctaContent, fetchSection: fetchCta } = usePageContent('about', 'cta')
+const ctaText = computed(() => sanitizeHtml(ctaContent.value?.content ?? ''))
 
-// Page content composable - fetches CMS content for the social section.
-const { content: socialContent, fetchSection: fetchSocial } = usePageContent('about', 'social')
-
-// Hero computed values with static fallback if API returns nothing.
-const heroTitle = computed(() => heroContent.value?.title || "À Propos d'Atelier Kaisla")
-const heroEyebrow = computed(() => heroContent.value?.eyebrow || 'Atelier')
-
-// CTA computed values with static fallbacks if API returns nothing.
-const ctaEyebrow = computed(() => ctaContent.value?.eyebrow || 'Découvrir')
-const ctaTitle = computed(() => ctaContent.value?.title || 'Explorez Nos Créations')
-const defaultCtaText = "<p>Chaque pièce créée à l'atelier Kaisla est unique et raconte sa propre histoire. Découvrez notre collection de tentures murales et de tapis artisanaux.</p>"
-const ctaText = computed(() => {
-  const raw = ctaContent.value?.content
-  return isEmptyHtml(raw) ? defaultCtaText : sanitizeHtml(raw!)
-})
-
-// Social computed values with static fallbacks if API returns nothing.
-const socialEyebrow = computed(() => socialContent.value?.eyebrow || 'Restons en contact')
-const socialTitle = computed(
-  () => socialContent.value?.title || 'Suivez-nous et contactez-nous',
-)
-
-const defaultHeroSubtitle = "<p>Découvrez l'histoire d'un atelier artisanal dédié à la création de pièces textiles uniques, où tradition et modernité se rencontrent pour donner vie à des œuvres authentiques.</p>"
-
-const heroSubtitle = computed(() => {
-  const raw = heroContent.value?.content
-  return sanitizeHtml(raw || defaultHeroSubtitle)
-})
+const heroSubtitle = computed(() => sanitizeHtml(heroContent.value?.content ?? ''))
 
 // Fetch about sections from backend API using useAsyncData for proper SSR hydration.
 // useAsyncData transfers fetched data from server to client via Nuxt payload,
@@ -127,14 +100,14 @@ useSeo({
   <div class="about-page">
     <Breadcrumbs :items="[{ name: 'About' }]" />
     <!-- Hero Section -->
-    <section class="about-hero" aria-labelledby="about-hero-title">
+    <section v-if="!heroIsEmpty" class="about-hero" aria-labelledby="about-hero-title">
       <div class="container about-hero__container" lang="fr">
         <div class="about-hero__heading">
-          <span class="about-hero__eyebrow">{{ heroEyebrow }}</span>
-          <h1 id="about-hero-title" class="about-hero__title">{{ heroTitle }}</h1>
+          <span v-if="heroContent?.eyebrow" class="about-hero__eyebrow">{{ heroContent.eyebrow }}</span>
+          <h1 v-if="heroContent?.title" id="about-hero-title" class="about-hero__title">{{ heroContent.title }}</h1>
           <span class="about-hero__hairline" aria-hidden="true" />
         </div>
-        <div class="about-hero__subtitle" v-html="heroSubtitle" />
+        <div v-if="heroSubtitle" class="about-hero__subtitle" v-html="heroSubtitle" />
       </div>
     </section>
 
@@ -181,14 +154,14 @@ useSeo({
     </div>
 
     <!-- Call to Action Section -->
-    <section class="about-cta" aria-labelledby="about-cta-title">
+    <section v-if="!ctaIsEmpty" class="about-cta" aria-labelledby="about-cta-title">
       <div class="container about-cta__container" lang="fr">
         <div class="about-cta__heading">
-          <span class="about-cta__eyebrow">{{ ctaEyebrow }}</span>
-          <h2 id="about-cta-title" class="about-cta__title">{{ ctaTitle }}</h2>
+          <span v-if="ctaContent?.eyebrow" class="about-cta__eyebrow">{{ ctaContent.eyebrow }}</span>
+          <h2 v-if="ctaContent?.title" id="about-cta-title" class="about-cta__title">{{ ctaContent.title }}</h2>
           <span class="about-cta__hairline" aria-hidden="true" />
         </div>
-        <div class="about-cta__text" v-html="ctaText" />
+        <div v-if="ctaText" class="about-cta__text" v-html="ctaText" />
         <div class="about-cta__buttons">
           <NuxtLink to="/wall-hanging" class="about-cta__button about-cta__button--primary">
             Tentures Murales
@@ -203,9 +176,11 @@ useSeo({
     <!-- Social Contact Section -->
     <section class="about-social" aria-labelledby="about-social-title">
       <div class="container about-social__container" lang="fr">
-        <span class="about-social__eyebrow">{{ socialEyebrow }}</span>
-        <h2 id="about-social-title" class="about-social__title">{{ socialTitle }}</h2>
-        <span class="about-social__hairline" aria-hidden="true" />
+        <template v-if="!socialIsEmpty">
+          <span v-if="socialContent?.eyebrow" class="about-social__eyebrow">{{ socialContent.eyebrow }}</span>
+          <h2 v-if="socialContent?.title" id="about-social-title" class="about-social__title">{{ socialContent.title }}</h2>
+          <span class="about-social__hairline" aria-hidden="true" />
+        </template>
         <LazySocialShare hydrate-on-visible />
       </div>
     </section>

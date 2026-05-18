@@ -36,53 +36,14 @@
 import type { ArtworkCardConfig } from '~/types/artwork'
 
 import type { Product } from '~/types/product'
-import type { PageContentBlock } from '~/types/page-content'
 import { adaptProductToArtwork } from '~/composables/useProducts'
 
-const WALL_HANGING_INFO_FALLBACK: PageContentBlock[] = [
-  {
-    id: 'fallback-handcrafted-quality',
-    title: 'Handcrafted Quality',
-    description: 'Every piece is handwoven on a traditional loom, ensuring exceptional quality and attention to detail. No two pieces are exactly alike.',
-    sortOrder: 0,
-  },
-  {
-    id: 'fallback-natural-materials',
-    title: 'Natural Materials',
-    description: 'We use only natural, sustainable materials including wool, cotton, linen, and jute. Many pieces feature plant-based natural dyes.',
-    sortOrder: 1,
-  },
-  {
-    id: 'fallback-made-to-order',
-    title: 'Made to Order',
-    description: 'Interested in a custom piece? We offer made-to-order wall hangings in your choice of colors and dimensions. Contact us to discuss your vision.',
-    sortOrder: 2,
-  },
-]
+const { content: introContent, isEmpty: introIsEmpty, fetchSection: fetchIntro } = usePageContent('wall-hanging', 'intro')
+const { content: infoContent, isEmpty: infoIsEmpty, fetchSection: fetchInfo } = usePageContent('wall-hanging', 'info')
 
-// Page content composables - intro powers the page header (eyebrow + title +
-// description), info powers the lower information section.
-const { content: introContent, fetchSection: fetchIntro } = usePageContent('wall-hanging', 'intro')
-const { content: infoContent, fetchSection: fetchInfo } = usePageContent('wall-hanging', 'info')
+const infoBlocks = computed(() => infoContent.value?.blocks ?? [])
 
-// Intro computed values with static fallback if API returns nothing.
-const headerEyebrow = computed(() => introContent.value?.eyebrow || 'Collection')
-const introTitle = computed(() => introContent.value?.title || 'Wall Hanging Collection')
-
-// Info section computed values with static fallbacks if API returns nothing.
-const infoEyebrow = computed(() => infoContent.value?.eyebrow || 'Why Atelier Kaisla')
-const infoTitle = computed(() => infoContent.value?.title || 'About our wall hangings')
-
-const infoBlocks = computed<PageContentBlock[]>(() =>
-  infoContent.value?.blocks?.length ? infoContent.value.blocks : WALL_HANGING_INFO_FALLBACK,
-)
-
-const defaultIntroDescription = '<p>Each wall hanging is thoughtfully designed and handwoven using traditional techniques. Natural materials, contemporary aesthetics, and timeless craftsmanship come together to create pieces that transform your space into a warm, welcoming sanctuary.</p>'
-
-const introDescription = computed(() => {
-  const raw = introContent.value?.content
-  return sanitizeHtml(raw || defaultIntroDescription)
-})
+const introDescription = computed(() => sanitizeHtml(introContent.value?.content ?? ''))
 
 /**
  * Card configuration for wall hanging display
@@ -137,13 +98,13 @@ useCollectionPageSchema('Wall Hangings')
     <Breadcrumbs :items="[{ name: 'Wall Hangings' }]" />
     <div class="container">
       <!-- Page Header -->
-      <header class="page-header">
+      <header v-if="!introIsEmpty" class="page-header">
         <div class="page-header__heading">
-          <span class="page-header__eyebrow">{{ headerEyebrow }}</span>
-          <h1 class="page-header__title">{{ introTitle }}</h1>
+          <span v-if="introContent?.eyebrow" class="page-header__eyebrow">{{ introContent.eyebrow }}</span>
+          <h1 v-if="introContent?.title" class="page-header__title">{{ introContent.title }}</h1>
           <span class="page-header__hairline" aria-hidden="true" />
         </div>
-        <div class="page-header__description" v-html="introDescription" />
+        <div v-if="introDescription" class="page-header__description" v-html="introDescription" />
       </header>
 
       <!-- Artwork Grid -->
@@ -187,21 +148,23 @@ useCollectionPageSchema('Wall Hangings')
 
       <!-- Additional Information Section -->
       <section
+        v-if="!infoIsEmpty"
         class="info-section"
         aria-labelledby="info-heading"
       >
         <header class="info-section__header">
-          <span class="info-section__eyebrow">{{ infoEyebrow }}</span>
+          <span v-if="infoContent?.eyebrow" class="info-section__eyebrow">{{ infoContent.eyebrow }}</span>
           <h2
+            v-if="infoContent?.title"
             id="info-heading"
             class="info-section__title"
           >
-            {{ infoTitle }}
+            {{ infoContent.title }}
           </h2>
           <span class="info-section__hairline" aria-hidden="true" />
         </header>
 
-        <div class="info-section__content">
+        <div v-if="infoBlocks.length > 0" class="info-section__content">
           <div
             v-for="block in infoBlocks"
             :key="block.id ?? block.title"
