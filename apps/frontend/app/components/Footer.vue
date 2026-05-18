@@ -71,7 +71,8 @@ const footerSections = computed<FooterSection[]>(() => [
     title: 'Discover',
     links: [
       navigationItems.value[3], // About
-      navigationItems.value[4], // Blog
+      // Temporarily hidden — uncomment to restore Blog in footer
+      // navigationItems.value[4], // Blog
     ]
   }
 ])

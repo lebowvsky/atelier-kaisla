@@ -32,11 +32,12 @@ export const useNavigation = () => {
       path: '/about',
       ariaLabel: 'Learn more about Atelier Kaisla'
     },
-    {
-      label: 'Blog',
-      path: '/blog',
-      ariaLabel: 'Read our blog articles'
-    }
+    // Temporarily hidden — uncomment to restore Blog in navigation
+    // {
+    //   label: 'Blog',
+    //   path: '/blog',
+    //   ariaLabel: 'Read our blog articles'
+    // }
   ])
 
   return {
