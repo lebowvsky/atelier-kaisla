@@ -73,7 +73,6 @@ useSeo({
         preload
         placeholder
       />
-      <div v-if="heroImageUrl" class="hero__overlay" aria-hidden="true" />
       <div class="hero__content">
         <span v-if="heroImageAlt" class="visually-hidden">{{ heroImageAlt }}</span>
         <span class="hero__hairline" aria-hidden="true" />
@@ -208,6 +207,19 @@ useSeo({
     .hero__subtitle {
       color: rgba(255, 252, 247, 0.92);
     }
+
+    .hero__content {
+      padding: $spacing-lg $spacing-xl;
+      background: rgba(0, 0, 0, 0.68);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: $border-radius-lg;
+
+      @include tablet {
+        padding: $spacing-xl $spacing-2xl;
+      }
+    }
   }
 }
 
@@ -224,18 +236,6 @@ useSeo({
     object-position: center;
     display: block;
   }
-}
-
-.hero__overlay {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.55) 0%,
-    rgba(0, 0, 0, 0.30) 60%,
-    rgba(0, 0, 0, 0.55) 100%
-  );
 }
 
 .hero__content {
