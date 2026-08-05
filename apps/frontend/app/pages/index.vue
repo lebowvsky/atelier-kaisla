@@ -58,28 +58,29 @@ useSeo({
     <!-- Hero -->
     <section
       v-if="!heroIsEmpty"
-      :class="['hero', { 'hero--with-image': heroImageUrl }]"
+      class="hero"
       aria-labelledby="hero-title"
     >
-      <NuxtPicture
-        v-if="heroImageUrl"
-        :src="heroImageUrl"
-        :alt="heroImageAlt"
-        class="hero__media"
-        :img-attrs="{ class: 'hero__img', fetchpriority: 'high' }"
-        sizes="100vw lg:1920px"
-        width="1920"
-        height="900"
-        preload
-        placeholder
-      />
-      <div class="hero__content">
-        <span v-if="heroImageAlt" class="visually-hidden">{{ heroImageAlt }}</span>
+      <div class="hero__text">
         <span class="hero__hairline" aria-hidden="true" />
         <span v-if="heroContent?.eyebrow" class="hero__eyebrow">{{ heroContent.eyebrow }}</span>
         <h1 v-if="heroContent?.title" id="hero-title" class="hero__title">{{ heroContent.title }}</h1>
         <div v-if="sanitizedHeroSubtitle" class="hero__subtitle" v-html="sanitizedHeroSubtitle" />
       </div>
+
+      <figure v-if="heroImageUrl" class="hero__figure">
+        <NuxtPicture
+          :src="heroImageUrl"
+          :alt="heroImageAlt"
+          class="hero__media"
+          :img-attrs="{ class: 'hero__img', fetchpriority: 'high' }"
+          sizes="100vw lg:1920px"
+          width="1920"
+          height="900"
+          preload
+          placeholder
+        />
+      </figure>
     </section>
 
     <!-- Gallery -->
@@ -166,80 +167,12 @@ useSeo({
 
 // --- Hero ---
 .hero {
-  position: relative;
-  isolation: isolate;
-  background: linear-gradient(135deg, $color-canvas 0%, $color-canvas-soft 100%);
-  padding: $spacing-2xl $spacing-md;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: clamp(40vh, 50vh, 520px);
-  overflow: hidden;
-
-  @include tablet {
-    padding: $spacing-3xl $spacing-lg;
-  }
-
-  // Variant with background image from API
-  &--with-image {
-    padding: $spacing-3xl $spacing-md;
-    min-height: clamp(60vh, 70vh, 720px);
-
-    @include tablet {
-      padding: calc($spacing-3xl + $spacing-xl) $spacing-lg;
-    }
-
-    .hero__eyebrow,
-    .hero__title,
-    .hero__subtitle {
-      // Guarantee 4.5:1 even when the CMS image is light-toned
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
-
-    .hero__eyebrow {
-      color: rgba(255, 252, 247, 0.85);
-    }
-
-    .hero__title {
-      color: #fffcf7;
-    }
-
-    .hero__subtitle {
-      color: rgba(255, 252, 247, 0.92);
-    }
-
-    .hero__content {
-      padding: $spacing-lg $spacing-xl;
-      background: rgba(0, 0, 0, 0.68);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: $border-radius-lg;
-
-      @include tablet {
-        padding: $spacing-xl $spacing-2xl;
-      }
-    }
-  }
-}
-
-.hero__media {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
   display: block;
-
-  :deep(img) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-  }
 }
 
-.hero__content {
-  position: relative;
+.hero__text {
+  background: $color-canvas;
+  padding: $spacing-2xl $spacing-md;
   max-width: $container-content-width;
   width: 100%;
   margin: 0 auto;
@@ -249,8 +182,31 @@ useSeo({
   align-items: center;
 
   @include tablet {
+    padding: $spacing-3xl $spacing-lg;
     text-align: left;
     align-items: flex-start;
+  }
+}
+
+.hero__figure {
+  margin: 0;
+  // Panoramic band calibrated on the image's natural ratio (1920×900 ≈ 2.13:1):
+  // ~680px shows almost the full image at desktop widths with minimal crop.
+  height: clamp(360px, 60vh, 680px);
+  overflow: hidden;
+}
+
+.hero__media {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  :deep(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
   }
 }
 
